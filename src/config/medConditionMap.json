@@ -1,0 +1,19 @@
+{
+  "_comment": "REVIEW_REQUIRED clinical safety pass. HISTORY_BUILDER_SPEC section 8: high-specificity med-to-condition mappings only; multi-indication medications are excluded by design (no azathioprine, no beta blockers, no trazodone, no Bactrim). Confirm-only prompts; the patient decides.",
+  "mappings": [
+    { "medication": "tacrolimus", "condition": "Status post organ transplant (organ confirmed by patient)" },
+    { "medication": "cyclosporine", "condition": "Status post organ transplant (organ confirmed by patient)" },
+    { "medication": "sirolimus", "condition": "Post-transplant immunosuppression" },
+    { "medication": "everolimus", "condition": "Post-transplant immunosuppression" },
+    { "medication": "mycophenolate", "condition": "Post-transplant immunosuppression" },
+    { "medication": "allopurinol", "condition": "Gout" },
+    { "medication": "febuxostat", "condition": "Gout" },
+    { "medication": "colchicine", "condition": "Gout" },
+    { "medication": "metformin", "condition": "Type 2 diabetes" },
+    { "medication": "insulin", "condition": "Diabetes" },
+    { "medication": "levothyroxine", "condition": "Hypothyroidism" },
+    { "medication": "valganciclovir", "condition": "CMV prophylaxis" },
+    { "medication": "cinacalcet", "condition": "Parathyroid disorder" },
+    { "medication": "ursodiol", "condition": "Cholestatic liver disease" }
+  ]
+}

@@ -150,6 +150,36 @@ const MIGRATIONS = [
       localStorage.removeItem("mi_imaging");
     },
   },
+  {
+    version: 4,
+    major: false, // additive only: new keys with defaults, one new metadata field; nothing removed or reshaped
+    description: "History Builder (DEC-P44/P45/P46 pending merge): seed mi_attestations and mi_history_builder with defaults, stamp tier 'archive' on existing documents (absent tier already means archive; the stamp makes it explicit), and seed mi_staged_items. Idempotent: every write is skipped when the key or field already exists.",
+    run() {
+      const seed = (key, value) => {
+        if (localStorage.getItem(key) == null) {
+          localStorage.setItem(key, JSON.stringify(value));
+        }
+      };
+      seed("mi_attestations", { medsCompleteAt: null, allergiesResolvedAt: null, conditionsReviewedAt: null });
+      seed("mi_staged_items", []);
+      if (localStorage.getItem("mi_history_builder") == null) {
+        let goal = "skipped";
+        try {
+          const ob = JSON.parse(localStorage.getItem("mi_onboarding_state") || "null");
+          const map = { appointment_prep: "appointment", track_meds_labs: "meds_labs", emergency_packet: "emergency", organize_meds: "organize_meds", patient_profile: "profile" };
+          goal = map[ob?.goal] || "skipped";
+        } catch { /* unmapped resolves to skipped */ }
+        localStorage.setItem("mi_history_builder", JSON.stringify({ goal, targetAppointmentId: null, dismissals: [], s4Covered: false, emergencyReadyShownAt: null }));
+      }
+      for (const key of ["mi_documents", "mi_ref_docs"]) {
+        let docs;
+        try { docs = JSON.parse(localStorage.getItem(key) || "[]"); } catch { docs = []; }
+        if (!Array.isArray(docs) || docs.length === 0) continue;
+        if (docs.every(d => d && d.tier)) continue; // already stamped: idempotent no-op
+        localStorage.setItem(key, JSON.stringify(docs.map(d => (d && !d.tier ? { ...d, tier: "archive" } : d))));
+      }
+    },
+  },
   // Future migrations (A-07 blob-store move, etc.) append here, in order,
   // each bumping `version` by 1.
 ];
