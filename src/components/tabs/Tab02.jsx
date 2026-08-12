@@ -693,7 +693,18 @@ export default function ProfileTab() {
     }
   </style>
 </head>
-<body>${html}</body>
+<body>${html}${(() => {
+      // C-24 provenance lines (HISTORY_BUILDER_SPEC section 5).
+      try {
+        const a = JSON.parse(localStorage.getItem("mi_attestations") || "{}");
+        const fmt = (iso) => { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); };
+        const lines = [];
+        if (a.medsCompleteAt) lines.push(`Medication list confirmed by patient on ${fmt(a.medsCompleteAt)}`);
+        if (a.allergiesResolvedAt) lines.push(`Allergy list confirmed by patient on ${fmt(a.allergiesResolvedAt)}`);
+        if (a.conditionsReviewedAt) lines.push(`Condition list confirmed by patient on ${fmt(a.conditionsReviewedAt)}`);
+        return lines.length ? `<div style="font-size:8pt;color:#777;margin-top:10pt">${lines.join(" &middot; ")}</div>` : "";
+      } catch { return ""; }
+    })()}</body>
 </html>`);
     win.document.close();
     setTimeout(() => { win.focus(); win.print(); }, 400);

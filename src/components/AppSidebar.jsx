@@ -31,6 +31,7 @@ export const NAV = [
   { id: "appointments",icon: "◻", label: "Appointments" },
   { id: "careplan",    icon: "◷", label: "Care Team" },
   // ── System ──────────────────────────────────────────────────────────────────
+  { id: "history",     icon: "▦", label: "History Builder" },
   { id: "records",     icon: "▤", label: "Medical Records" },
   { id: "documents",   icon: "▣", label: "Source Documents" },
   { id: "notes",       icon: "◻", label: "My Notes" },
@@ -45,7 +46,7 @@ export const NAV = [
 export const NAV_GROUPS = [
   { key: "today",  label: "Today",           ids: ["dashboard", "appointments"] },
   { key: "health", label: "My Health",       ids: ["profile", "conditions", "surgeries", "diagnostics", "medications", "labs", "vitals", "symptoms", "careplan"] },
-  { key: "tools",  label: "Records & Tools", ids: ["records", "documents", "notes", "ai", "import", "backup"] },
+  { key: "tools",  label: "Records & Tools", ids: ["history", "records", "documents", "notes", "ai", "import", "backup"] },
 ];
 
 // Plain key on purpose — mi_* keys are vault-managed (encrypted, unreadable

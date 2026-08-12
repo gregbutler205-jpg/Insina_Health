@@ -87,6 +87,16 @@ function printConsultationPrep(appt, analysis) {
     </div>
     <div class="section-title">AI Preparation Analysis</div>
     ${renderText(analysis)}
+    ${(() => {
+      // C-24 provenance line (HISTORY_BUILDER_SPEC section 5).
+      try {
+        const a = JSON.parse(localStorage.getItem("mi_attestations") || "{}");
+        if (!a.medsCompleteAt) return "";
+        const d = new Date(a.medsCompleteAt);
+        const when = isNaN(d) ? a.medsCompleteAt : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+        return `<div style="font-size:9px;color:#777;margin-top:8px">Medication list confirmed by patient on ${escapeHtml(when)}</div>`;
+      } catch { return ""; }
+    })()}
     <div class="footer">
       <span>Insina Health &mdash; Personal Health Intelligence</span>
       <span>Generated ${date}</span>

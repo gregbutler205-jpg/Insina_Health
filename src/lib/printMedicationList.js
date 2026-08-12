@@ -70,6 +70,16 @@ export function printMedicationList(meds) {
     <hr class="rule" />
     ${medsHTML}
     <div class="disclaimer">This list is for reference only. Always confirm medications and dosages with your prescribing physician and pharmacist.</div>
+    ${(() => {
+      // C-24 provenance line (HISTORY_BUILDER_SPEC section 5).
+      try {
+        const a = JSON.parse(localStorage.getItem("mi_attestations") || "{}");
+        if (!a.medsCompleteAt) return "";
+        const d = new Date(a.medsCompleteAt);
+        const when = isNaN(d) ? a.medsCompleteAt : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+        return `<div style="font-size:9px;color:#777;margin-top:8px">Medication list confirmed by patient on ${when}</div>`;
+      } catch { return ""; }
+    })()}
     <div class="footer">
       <span>Insina Health &mdash; Personal Health Intelligence</span>
       <span>Printed ${date}</span>

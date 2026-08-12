@@ -40,6 +40,7 @@ import TabAppointments from './components/tabs/Tab14.jsx';
 import TabConditions   from './components/tabs/Tab15.jsx';
 import TabSurgeries    from './components/tabs/Tab16.jsx'; // "Procedures" in the UI; ids/keys keep the legacy name
 import TabDiagnostics  from './components/tabs/Tab17.jsx';
+import HistoryBuilderTab, { HbPromptCard } from './components/HistoryBuilderTab.jsx';
 
 // ── Routing maps ─────────────────────────────────────────────────────────────
 // These 4 tabs are full standalone apps (own sidebar + own topbar + height:100vh).
@@ -64,6 +65,7 @@ const TAB_COMPONENTS = {
   conditions:   TabConditions,
   surgeries:    TabSurgeries,
   diagnostics:  TabDiagnostics,
+  history:      HistoryBuilderTab,
 };
 
 // ── Featured labs helper ──────────────────────────────────────────────────────
@@ -1126,6 +1128,12 @@ function AppShell() {
                       meds={meds}
                       onLogVitals={() => { setQuickReading(q => ({ ...q, date: q.date || new Date().toISOString().slice(0, 10) })); setShowVitalsModal(true); }}
                     />
+
+                    {/* History Builder next-step card (HISTORY_BUILDER_SPEC section 6):
+                        the same single dismissible card as the builder home, mounted
+                        once on the Dashboard. Coexists with the onboarding task cards
+                        below; the overlap is logged in the WO session report. */}
+                    <HbPromptCard onOpenBuilder={() => setActiveNav("history")} />
 
                     {/* §7 ongoing task engine (ONBOARDING_SPEC v1.1): max 4,
                         priority-ordered, benefit before ask, no percentages. */}

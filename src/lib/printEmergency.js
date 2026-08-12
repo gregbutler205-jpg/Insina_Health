@@ -189,6 +189,19 @@ export function buildEmergencyHtml() {
     ${section("Care Team", teamRows)}
     ${labSections}
     ${cardSection}
+    ${(() => {
+      // C-24 provenance lines (HISTORY_BUILDER_SPEC section 5): rendered only
+      // for lists the patient has confirmed; absent otherwise.
+      try {
+        const a = JSON.parse(localStorage.getItem("mi_attestations") || "{}");
+        const fmt = (iso) => { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); };
+        const lines = [];
+        if (a.medsCompleteAt) lines.push(`Medication list confirmed by patient on ${fmt(a.medsCompleteAt)}`);
+        if (a.allergiesResolvedAt) lines.push(`Allergy list confirmed by patient on ${fmt(a.allergiesResolvedAt)}`);
+        if (a.conditionsReviewedAt) lines.push(`Condition list confirmed by patient on ${fmt(a.conditionsReviewedAt)}`);
+        return lines.length ? `<div style="font-size:9px;color:#777;margin-top:10px">${lines.map(escapeHtml).join(" &middot; ")}</div>` : "";
+      } catch { return ""; }
+    })()}
     <div class="footer">
       <span>Insina Health &mdash; Emergency Information</span>
       <span>Printed ${date}</span>
