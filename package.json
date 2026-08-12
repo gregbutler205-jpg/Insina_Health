@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "npm run test:all",
-    "test:all": "npm run test:thresholds && npm run test:onboarding && npm run test:advisory && npm run test:vault-restore && npm run test:emergency-card && npm run test:ai-filter && npm run test:question-rules && npm run test:ai-session && npm run test:appt-tombstones && npm run test:record-tombstones && npm run test:record-query && npm run test:daily-limit && npm run test:demo-seeder && npm run test:dashboard-sync && npm run test:prep-marks",
+    "test:all": "npm run test:thresholds && npm run test:onboarding && npm run test:advisory && npm run test:vault-restore && npm run test:emergency-card && npm run test:ai-filter && npm run test:question-rules && npm run test:ai-session && npm run test:appt-tombstones && npm run test:record-tombstones && npm run test:record-query && npm run test:daily-limit && npm run test:demo-seeder && npm run test:dashboard-sync && npm run test:prep-marks && npm run test:history-builder",
     "build": "node scripts/build.mjs",
     "build:demo": "node scripts/build-demo.mjs",
     "preview": "vite preview",
@@ -24,7 +24,8 @@
     "test:daily-limit": "node scripts/testDailyQuestionLimit.mjs",
     "test:demo-seeder": "node scripts/testDemoSeeder.mjs",
     "test:dashboard-sync": "node scripts/testDashboardSync.mjs",
-    "test:prep-marks": "node scripts/testPrepMarks.mjs"
+    "test:prep-marks": "node scripts/testPrepMarks.mjs",
+    "test:history-builder": "node scripts/testHistoryBuilder.mjs"
   },
   "dependencies": {
     "jszip": "^3.10.1",
