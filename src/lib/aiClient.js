@@ -29,7 +29,7 @@ import { isDemoMode } from "./secureStorage.js";
 // through, replaces a misleading transient-sounding error with the truth.
 export const DEMO_AI_MESSAGE =
   "AI features are turned off in this public demo, so it can't run up an API bill. " +
-  "Everything else is fully interactive. To see what the AI produces, open My Notes — " +
+  "Everything else is fully interactive. To see what the AI produces, open My Notes: " +
   "a saved example analysis is waiting there.";
 
 function demoBlockedResponse() {

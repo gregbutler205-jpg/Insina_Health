@@ -88,7 +88,7 @@ export default function Records({ onNavChange }) {
   // deliberately narrow drive.file scope). updatedAt stamp = DEC-046 opt-in
   // so the edit survives a two-device sync.
   function editReportLink(rec) {
-    const entered = window.prompt("Paste the report's link (https… — Google Drive “Copy link” works; empty clears):", rec.reportLink || "");
+    const entered = window.prompt("Paste the report's link (https…: Google Drive “Copy link” works; empty clears):", rec.reportLink || "");
     if (entered === null) return;
     const clean = sanitizeReportUrl(entered);
     if (entered.trim() && !clean) { alert("Only https:// links can be saved."); return; }
@@ -273,7 +273,7 @@ export default function Records({ onNavChange }) {
               return (
                 <div style={{ background: "#0b1220", border: "1px solid rgba(167,139,250,.25)", borderRadius: 12, padding: "16px 18px", marginBottom: 16 }}>
                   <div style={{ fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#a78bfa", fontFamily: "'DM Mono',monospace", marginBottom: 8 }}>
-                    Source Document — {doc.name}{doc.addedDate ? ` · added ${formatDateUS(doc.addedDate)}` : ""}
+                    Source Document: {doc.name}{doc.addedDate ? ` · added ${formatDateUS(doc.addedDate)}` : ""}
                   </div>
                   <pre style={{ fontSize: 12, color: "#a8c4dc", fontFamily: "'DM Mono',monospace", whiteSpace: "pre-wrap", lineHeight: 1.6, maxHeight: 300, overflowY: "auto", margin: 0 }}>
                     {doc.text || "(no extracted text stored)"}

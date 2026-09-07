@@ -42,7 +42,7 @@ function ReportArchiveRow({ showToast }) {
     const state = await ensureReportFolders({ interactive: true });
     setBusy(false);
     if (state) { setFolders(state); showToast("Report folders ready in your Drive ✓"); }
-    else showToast("Couldn't set up folders — connect Google Drive first");
+    else showToast("Couldn't set up folders. Connect Google Drive first");
   }
 
   return (
@@ -51,7 +51,7 @@ function ReportArchiveRow({ showToast }) {
         <div style={{ fontSize:12, fontWeight:600, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>REPORT ARCHIVE</div>
         <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", lineHeight:1.6 }}>
           {folders
-            ? <>“{REPORT_ROOT}” is set up in your Drive — imported reports are filed there automatically.{" "}
+            ? <>“{REPORT_ROOT}” is set up in your Drive: imported reports are filed there automatically.{" "}
                 {folders.rootLink && <a href={folders.rootLink} target="_blank" rel="noopener noreferrer" style={{ color:"#7eb8d8" }}>Open folder ↗</a>}</>
             : <>Create a standard folder structure in your Drive (“{REPORT_ROOT}”) so original reports have one predictable home. Imports file themselves there and keep a link on the entry.</>}
         </div>
@@ -179,7 +179,15 @@ const IS_DEMO_BUILD = import.meta.env.VITE_DEMO_BUILD === "true";
 
 export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle", lastSyncTs, onSync = () => {}, onSignOut = () => {} }) {
   // UI-21: two distinct pages — Export & Backup vs App Settings.
-  const [page, setPage] = useState("backup"); // "backup" | "settings"
+  // WO_DASHBOARD_FEED_01 4.12: the avatar menu's Settings and Backup entries
+  // land on their page directly (a transient sessionStorage hint, no PHI).
+  const [page, setPage] = useState(() => {
+    try {
+      const hint = sessionStorage.getItem("insina_backup_page");
+      if (hint) { sessionStorage.removeItem("insina_backup_page"); if (hint === "settings" || hint === "backup") return hint; }
+    } catch { /* non-fatal */ }
+    return "backup"; // "backup" | "settings"
+  });
   const [apiKey, setApiKey]       = useState(() => localStorage.getItem("mi_ak") || "");
   const [pilotToken, setPilotTokenState] = useState(() => getPilotToken());
   const [backupFreq, setBackupFreq] = useState(() => localStorage.getItem("mi_backup_freq") || "Weekly");
@@ -212,10 +220,10 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
       // First backup immediately — the picker click is the user gesture the
       // permission prompt needs, and an empty configured folder is a footgun.
       await backupToFolder({ interactive: true });
-      showToast("Folder chosen — first encrypted backup saved");
+      showToast("Folder chosen: first encrypted backup saved");
     } catch (e) {
       if (e?.name === "AbortError") return; // user closed the picker
-      showToast(e?.code === "permission" ? "Folder permission was declined" : "Folder backup failed — " + (e?.message || "try again"));
+      showToast(e?.code === "permission" ? "Folder permission was declined" : "Folder backup failed: " + (e?.message || "try again"));
     } finally {
       refreshFolderStatus();
     }
@@ -226,7 +234,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
       await backupToFolder({ interactive: true });
       showToast("Encrypted backup saved to your folder");
     } catch (e) {
-      showToast(e?.code === "permission" ? "Folder permission was declined" : "Folder backup failed — " + (e?.message || "try again"));
+      showToast(e?.code === "permission" ? "Folder permission was declined" : "Folder backup failed: " + (e?.message || "try again"));
     } finally {
       refreshFolderStatus();
     }
@@ -234,7 +242,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
 
   async function handleStopFolderBackup() {
     await clearBackupFolder();
-    showToast("Folder backups stopped — existing files were left in place");
+    showToast("Folder backups stopped: existing files were left in place");
     refreshFolderStatus();
   }
 
@@ -375,7 +383,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
     // mi_* keys — a restore would toast "Restored N sections" having written
     // nothing. Refuse up front instead.
     if (!isUnlocked()) {
-      showToast("Unlock your record first — restore can't write while locked");
+      showToast("Unlock your record first. Restore can't write while locked");
       return;
     }
     const input = document.createElement("input");
@@ -396,12 +404,12 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           if (isEncryptedBackupPayload(data)) {
             try {
               const result = restoreEncryptedBackup(data);
-              showToast(`Restored ${result.count} encrypted sections — reloading…`);
+              showToast(`Restored ${result.count} encrypted sections: reloading…`);
               setTimeout(() => window.location.reload(), 1800);
             } catch (err) {
               showToast(err?.code === "envelope-mismatch"
-                ? "That backup belongs to a different vault — refused so you aren't locked out"
-                : "Encrypted restore failed — " + (err?.message || "invalid file"));
+                ? "That backup belongs to a different vault: refused so you aren't locked out"
+                : "Encrypted restore failed: " + (err?.message || "invalid file"));
             }
             return;
           }
@@ -453,10 +461,10 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           // is required to be idempotent, so re-running them on reload is safe
           // and normalizes whatever shape the backup carried.
           if (count > 0) localStorage.setItem("mi_schema_version", "1");
-          showToast(`Restored ${count} data sections — reloading…`);
+          showToast(`Restored ${count} data sections: reloading…`);
           setTimeout(() => window.location.reload(), 1800);
         } catch {
-          showToast("Import failed — invalid JSON file");
+          showToast("Import failed: invalid JSON file");
         }
       };
       reader.readAsText(file);
@@ -479,7 +487,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
   async function handleChangePin() {
     setPinError("");
     const { current, next, confirm } = pinForm;
-    if (next.length < 12) { setPinError("Use at least 12 characters — this is the actual encryption key, not a screen lock."); return; }
+    if (next.length < 12) { setPinError("Use at least 12 characters. This is the actual encryption key, not a screen lock."); return; }
     if (next !== confirm) { setPinError("New passwords don't match."); return; }
     try {
       // changePassphrase() requires the vault already unlocked in this session
@@ -499,7 +507,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
   function handleClearData() {
     localStorage.clear();
     setModal(null);
-    showToast("All data cleared — reloading…");
+    showToast("All data cleared: reloading…");
     setTimeout(() => window.location.reload(), 1500);
   }
 
@@ -508,11 +516,11 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
     try {
       loadDemoData(); // guarded: throws rather than wipe a real record
     } catch (e) {
-      showToast(e.message || "Demo not loaded — a real record exists on this device.");
+      showToast(e.message || "Demo not loaded. A real record exists on this device.");
       return;
     }
     setBackups(INITIAL_BACKUPS);
-    showToast("Demo data loaded — reloading…");
+    showToast("Demo data loaded: reloading…");
     setTimeout(() => window.location.reload(), 1500);
   }
 
@@ -573,7 +581,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:12, borderTop:"1px solid #1c2a40" }}>
               <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>
                 {syncStatus==="syncing" ? "⟳ Syncing…" :
-                 syncStatus==="error"   ? "⚠ Sync failed — check connection" :
+                 syncStatus==="error"   ? "⚠ Sync failed. Check connection" :
                  lastSyncTs             ? `Last synced ${new Date(lastSyncTs).toLocaleDateString("en-US",{month:"short",day:"numeric"})} at ${new Date(lastSyncTs).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}` :
                  "Not yet synced"}
               </div>
@@ -604,7 +612,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                     // scalars arrive) falls back to the no-backup copy.
                     const ts = localStorage.getItem("mi_last_weekly_backup");
                     const label = daysAgoLabel(ts, null);
-                    if (!label) return "No snapshot created yet — will run automatically on next app open.";
+                    if (!label) return "No snapshot created yet: will run automatically on next app open.";
                     return `Last snapshot ${label} · keeps 4 rolling weeks on Drive`;
                   })()}
                 </div>
@@ -612,11 +620,11 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
               <button
                 onClick={async () => {
                   const token = getAccessToken();
-                  if (!token) { showToast("Session expired — click Sync Now to reconnect"); return; }
+                  if (!token) { showToast("Session expired. Click Sync Now to reconnect"); return; }
                   showToast("Running weekly snapshot…");
                   uploadWeeklyBackup(token)
                     .then(() => showToast("Weekly snapshot saved to Drive ✓"))
-                    .catch(() => showToast("Snapshot failed — try Sync Now first"));
+                    .catch(() => showToast("Snapshot failed. Try Sync Now first"));
                 }}
                 style={{ ...btnGhost, whiteSpace:"nowrap", flexShrink:0 }}
               >
@@ -628,13 +636,13 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             <div style={{ paddingTop:10, marginTop:10, borderTop:"1px solid #1c2a40" }}>
               <div style={{ fontSize:12, fontWeight:600, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>SYNC DIAGNOSTICS</div>
               <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", lineHeight:1.7 }}>
-                Vault key fingerprint: <span style={{ color:"#7eb8d8" }}>{vaultFp || "—"}</span> · must match on every device that syncs this record (phone companion shows its own under Sync).
+                Vault key fingerprint: <span style={{ color:"#7eb8d8" }}>{vaultFp || "–"}</span> · must match on every device that syncs this record (phone companion shows its own under Sync).
               </div>
               {syncDiag?.failed > 0 && (
                 <div style={{ marginTop:6, fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", lineHeight:1.7, background:"rgba(245,158,11,.07)", border:"1px solid rgba(245,158,11,.25)", borderRadius:7, padding:"7px 10px" }}>
                   ⚠ Last sync could not read {syncDiag.failed} item{syncDiag.failed !== 1 ? "s" : ""} from Drive
                   ({(syncDiag.failedKeys || []).slice(0, 4).join(", ")}{(syncDiag.failedKeys || []).length > 4 ? "…" : ""}).
-                  This usually means another device holds a different vault key — compare fingerprints, then on the mismatched device use
+                  This usually means another device holds a different vault key: compare fingerprints, then on the mismatched device use
                   "Restore from Google Drive" to re-key it. Nothing was overwritten locally.
                 </div>
               )}
@@ -644,7 +652,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           <div>
             <div style={{ fontSize:12, color:"#7eb8d8", lineHeight:1.7, marginBottom:14 }}>
               Connect your Google account to automatically back up all your health data to your personal Google Drive.
-              Your data is stored only in <em>your</em> Drive — Insina Health servers never hold your health records.
+              Your data is stored only in <em>your</em> Drive: Insina Health servers never hold your health records.
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
               <button
@@ -662,7 +670,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
               <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace" }}>Free with your Google account · no health data stored on our servers</span>
             </div>
             <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", marginTop:10, lineHeight:1.7 }}>
-              No Google account? Creating one is free at accounts.google.com — Drive comes with it.
+              No Google account? Creating one is free at accounts.google.com: Drive comes with it.
               {isFolderBackupSupported()
                 ? " Prefer to skip Google entirely? Use Folder Backup below instead."
                 : " Prefer to skip Google entirely? Use Download Backup below and keep the file somewhere safe (your own cloud folder works)."}
@@ -677,11 +685,11 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           third-party cloud. */}
       {folderStatus?.supported && (
         <div style={{ ...cardStyle, marginBottom: 14 }}>
-          <div style={sectionLbl}>Folder Backup — Works Without Google</div>
+          <div style={sectionLbl}>Folder Backup: Works Without Google</div>
           {!folderStatus.configured ? (
             <div>
               <div style={{ fontSize:12, color:"#7eb8d8", lineHeight:1.7, marginBottom:12 }}>
-                Choose a folder on this computer and Insina will save encrypted backups there —
+                Choose a folder on this computer and Insina will save encrypted backups there: 
                 the same protection as a Drive backup, no Google account involved.
                 Tip: pick a folder inside Dropbox, OneDrive, or iCloud Drive and your own
                 cloud service carries the backups off this device automatically.
@@ -695,7 +703,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
               <div>
                 <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>
                   Saving encrypted backups to “{folderStatus.name}”
-                  {folderStatus.permission !== "granted" && " · permission needed — click Back up now to re-allow"}
+                  {folderStatus.permission !== "granted" && " · permission needed. Click Back up now to re-allow"}
                 </div>
                 <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
                   {(() => {
@@ -721,8 +729,8 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
         <div style={cardStyle}>
           <div style={sectionLbl}>Connected Data Sources</div>
           {[
-            { icon: "E", iconBg: "rgba(79,142,247,.12)", iconBorder: "rgba(79,142,247,.2)", iconColor: "#4f8ef7", name: "Epic MyChart",  sub: "Coming soon — Ochsner · Hattiesburg · SCRMC", status: "Pending", statusColor: "#f59e0b", mono: true },
-            { icon: "♡", iconBg: "rgba(239,68,68,.08)",  iconBorder: "rgba(239,68,68,.15)",  iconColor: "#ef4444", name: "Apple Health", sub: "Coming soon — iOS companion",                 status: "Pending", statusColor: "#f59e0b", mono: false },
+            { icon: "E", iconBg: "rgba(79,142,247,.12)", iconBorder: "rgba(79,142,247,.2)", iconColor: "#4f8ef7", name: "Epic MyChart",  sub: "Coming soon: Ochsner · Hattiesburg · SCRMC", status: "Pending", statusColor: "#f59e0b", mono: true },
+            { icon: "♡", iconBg: "rgba(239,68,68,.08)",  iconBorder: "rgba(239,68,68,.15)",  iconColor: "#ef4444", name: "Apple Health", sub: "Coming soon. IOS companion",                 status: "Pending", statusColor: "#f59e0b", mono: false },
             { icon: "✎", iconBg: "rgba(167,139,250,.1)", iconBorder: "rgba(167,139,250,.2)", iconColor: "#a78bfa", name: "Manual Entry", sub: "Vitals, meds, symptoms, labs",               status: "Active",  statusColor: "#10b981", mono: false },
           ].map((src, i, arr) => (
             <div key={src.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < arr.length - 1 ? "1px solid #1c2a40" : "none" }}>
@@ -795,9 +803,9 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           </button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
-          <ExportTile icon="📄" label="Full Export"     sub="All data as JSON — labs, meds, vitals, notes"  onClick={() => handleExport("Full Export")} />
+          <ExportTile icon="📄" label="Full Export"     sub="All data as JSON: labs, meds, vitals, notes"  onClick={() => handleExport("Full Export")} />
           <ExportTile icon="📊" label="Labs CSV"        sub="All lab results in spreadsheet format"          onClick={() => handleExport("Labs CSV")} />
-          <ExportTile icon="🏥" label="Health Summary"  sub="PDF — share with new providers"                 onClick={() => handleExport("Health Summary")} />
+          <ExportTile icon="🏥" label="Health Summary"  sub="PDF: share with new providers"                 onClick={() => handleExport("Health Summary")} />
           <ExportTile icon="💊" label="Medication List" sub="Current meds + history as PDF"                  onClick={() => handleExport("Medication List")} />
         </div>
       </div>
@@ -811,8 +819,8 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
         const topics = [
           { q: "How do I import lab results?", a: "Go to Import Records in the sidebar. Select 'Lab Results' as the document type, then upload one or more PDF files. The AI will extract your results automatically and save them to the Labs tab." },
           { q: "How do I ask AI about a record or document?", a: "Open any record in the Records tab and tap '✦ Ask AI'. For lab analysis, open the Labs tab and use the AI Analysis panel. You can type follow-up questions in either view." },
-          { q: "What is Standard vs. Advanced AI mode?", a: "Standard mode uses Claude Sonnet — fast and clear for everyday analysis. Advanced mode uses Claude Opus — deeper cross-referenced reasoning for complex cases. Advanced mode requires separate consent and is available as a subscription upgrade." },
-          { q: "Is my data private?", a: "Your health record is stored on your device, encrypted under your own password — Insina Health has no server copy. When you use AI, the specific information your request needs is sent pseudonymously (identified by a random ID, never your name) through Insina's proxy to Anthropic to generate the response; the proxy does not store or log that content. See Privacy Policy for the complete picture, including what pseudonymous does and doesn't mean." },
+          { q: "What is Standard vs. Advanced AI mode?", a: "Standard mode uses Claude Sonnet: fast and clear for everyday analysis. Advanced mode uses Claude Opus: deeper cross-referenced reasoning for complex cases. Advanced mode requires separate consent and is available as a subscription upgrade." },
+          { q: "Is my data private?", a: "Your health record is stored on your device, encrypted under your own password: Insina Health has no server copy. When you use AI, the specific information your request needs is sent pseudonymously (identified by a random ID, never your name) through Insina's proxy to Anthropic to generate the response; the proxy does not store or log that content. See Privacy Policy for the complete picture, including what pseudonymous does and doesn't mean." },
           { q: "What happens if I clear my browser?", a: "Clearing browser data will erase all locally stored records. Always export a Full Backup before clearing, or connect Google Drive in Settings & Backup to automatically protect against data loss." },
           { q: "How do I reorder lab categories?", a: "Go to Settings & Backup → Lab Category Order. Use the up/down arrows to set the order categories appear in the Labs tab." },
         ];
@@ -836,7 +844,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                   <div style={{ fontSize: 14, color: "#6ea3ff", marginTop: 1, flexShrink: 0 }}>{item.icon}</div>
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 600, color: "#c4d8ee", marginBottom: 2 }}>{item.label}</div>
-                    <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono', monospace", lineHeight: 1.5 }}>{item.href ? item.sub : item.sub + " — coming soon"}</div>
+                    <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono', monospace", lineHeight: 1.5 }}>{item.href ? item.sub : item.sub + ": coming soon"}</div>
                   </div>
                 </div>
               ))}
@@ -979,7 +987,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                   Switch to Standard Mode
                 </button>
                 <button
-                  onClick={() => printConsent({ mode: "Advanced", consentDate: consentDate || "—", consentVersion: consentVersion || CONSENT_VERSION })}
+                  onClick={() => printConsent({ mode: "Advanced", consentDate: consentDate || "–", consentVersion: consentVersion || CONSENT_VERSION })}
                   style={{ marginTop: 8, background: "none", border: "none", color: "#4a5c6a", fontSize: 12, fontFamily: "'DM Mono', monospace", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 5 }}
                 ><PrintLabel size={11}>View / reprint consent document</PrintLabel></button>
               </div>
@@ -1073,7 +1081,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             <div style={{ fontSize: 12, fontWeight: 600, color: "#dde8f5", marginBottom: 3 }}>Password</div>
             <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono', monospace" }}>
               Your password is the actual encryption key for your data (P-02). Changing it re-wraps
-              the key — your data is never re-encrypted or at risk during the change.
+              the key. Your data is never re-encrypted or at risk during the change.
             </div>
           </div>
           <button
@@ -1102,7 +1110,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           <div style={{ fontSize: 12, color: "#7eb8d8", marginBottom: 6 }}>Pilot access token</div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ flex: 1, background: "#07090f", border: "1px solid #1c2a40", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: pilotToken ? "#b0c4d8" : "#6a8090", fontFamily: "'DM Mono', monospace" }}>
-              {pilotToken ? "•".repeat(20) : "Not set — not needed for founder use"}
+              {pilotToken ? "•".repeat(20) : "Not set. Not needed for founder use"}
             </div>
             <button onClick={() => setModal("pilot_token")} style={btnGhost}>{pilotToken ? "Change" : "Set"}</button>
           </div>
@@ -1114,7 +1122,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
         <div style={sectionLbl}>Legal</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono', monospace" }}>
-            Terms of Service and Privacy Policy — draft, pending attorney review.
+            Terms of Service and Privacy Policy: draft, pending attorney review.
           </div>
           <button
             onClick={() => setModal("legal")}
@@ -1156,7 +1164,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
       {modal === "clear" && (
         <ConfirmModal
           title="Clear All Data?"
-          body="This will permanently delete all locally stored records, notes, vitals, and settings — including your API key. This cannot be undone."
+          body="This will permanently delete all locally stored records, notes, vitals, and settings, including your API key. This cannot be undone."
           confirmLabel="Yes, clear everything"
           confirmStyle={{ background: "rgba(239,68,68,.15)", border: "1px solid rgba(239,68,68,.35)", color: "#f87171" }}
           onConfirm={handleClearData}
@@ -1233,20 +1241,20 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           <div style={{ background: "#0b1220", border: "1px solid #1a2f4a", borderRadius: 16, padding: "28px", width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto", fontFamily: "'Sora', sans-serif" }}>
             <div style={{ fontSize: 16, fontWeight: 600, color: "#dde8f5", marginBottom: 4 }}>Terms &amp; Privacy</div>
             <div style={{ fontSize: 12, color: "#f59e0b", fontFamily: "'DM Mono', monospace", marginBottom: 18, background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.25)", borderRadius: 6, padding: "6px 10px" }}>
-              DRAFT — pending attorney review. Full text: TERMS_OF_SERVICE.md and PRIVACY_POLICY.md in the project repository.
+              DRAFT: pending attorney review. Full text: TERMS_OF_SERVICE.md and PRIVACY_POLICY.md in the project repository.
             </div>
 
             <div style={{ fontSize: 12, fontWeight: 700, color: "#7eb8d8", fontFamily: "'DM Mono', monospace", textTransform: "uppercase", letterSpacing: ".5px", marginBottom: 6 }}>What Insina Health is</div>
             <div style={{ fontSize: 12, color: "#a8c4dc", lineHeight: 1.65, marginBottom: 16 }}>
               A pre-commercial pilot personal health record app. It is not a medical device and
-              does not diagnose, treat, or direct medical care — every AI feature is
+              does not diagnose, treat, or direct medical care. Every AI feature is
               informational only. This pilot is offered to a small number of invited users at
               Greg Butler's discretion, not to the general public.
             </div>
 
             <div style={{ fontSize: 12, fontWeight: 700, color: "#7eb8d8", fontFamily: "'DM Mono', monospace", textTransform: "uppercase", letterSpacing: ".5px", marginBottom: 6 }}>Your data</div>
             <div style={{ fontSize: 12, color: "#a8c4dc", lineHeight: 1.65, marginBottom: 16 }}>
-              Your health record is stored on your device, encrypted under your own password —
+              Your health record is stored on your device, encrypted under your own password: 
               there is no Insina Health server copy and no password reset. When you use AI,
               information your request needs is sent pseudonymously through Insina's proxy to
               Anthropic; the proxy does not store or log message content, though the hosting
@@ -1258,7 +1266,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
 
             <div style={{ fontSize: 12, fontWeight: 700, color: "#7eb8d8", fontFamily: "'DM Mono', monospace", textTransform: "uppercase", letterSpacing: ".5px", marginBottom: 6 }}>Your responsibility</div>
             <div style={{ fontSize: 12, color: "#a8c4dc", lineHeight: 1.65, marginBottom: 20 }}>
-              You are responsible for your password and recovery key — losing both means your
+              You are responsible for your password and recovery key. Losing both means your
               data cannot be recovered by anyone. Use Insina Health only for your own health
               information (or that of someone you're legally authorized to manage it for).
             </div>

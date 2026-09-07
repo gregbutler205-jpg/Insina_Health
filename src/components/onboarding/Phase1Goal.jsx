@@ -23,7 +23,7 @@ export default function Phase1Goal({ initialGoal, onContinue, onSkip }) {
           What would you like to get done first?
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>
-          Your first report is built around this — you can do the rest later.
+          Your first report is built around this. You can do the rest later.
         </p>
       </div>
 

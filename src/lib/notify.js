@@ -58,7 +58,7 @@ export function scheduleMedReminders() {
   for (const [group, cfg] of Object.entries(reminders)) {
     if (!cfg.on) continue;
     const id = setTimeout(() => {
-      fire("Insina Health — Medications", `Time for your ${group} medications.`);
+      fire("Insina Health: Medications", `Time for your ${group} medications.`);
       scheduleMedReminders();
     }, msUntil(cfg.time));
     medTimers.push(id);
@@ -72,7 +72,7 @@ export function runOpenNotifications(flags = []) {
   if (prefs.appts) {
     const appt = upcomingAppointments()[0];
     const d = appt ? daysUntil(appt.date) : null;
-    if (d != null && d >= 0 && d <= 1) fire("Insina Health — Upcoming visit", `${appt.title} ${d === 0 ? "today" : "tomorrow"}. Review your Pre-Visit Brief.`);
+    if (d != null && d >= 0 && d <= 1) fire("Insina Health: Upcoming visit", `${appt.title} ${d === 0 ? "today" : "tomorrow"}. Review your Pre-Visit Brief.`);
   }
-  if (prefs.alerts && flags.length) fire("Insina Health — Worth a glance", flags[0].title);
+  if (prefs.alerts && flags.length) fire("Insina Health: Worth a glance", flags[0].title);
 }

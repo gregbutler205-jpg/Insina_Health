@@ -72,7 +72,7 @@ export function checkVitalCrossFields(reading) {
   const issues = [];
   const s = reading.bp_s, d = reading.bp_d;
   if (s != null && d != null && s !== "" && d !== "" && parseFloat(s) <= parseFloat(d)) {
-    issues.push({ fields: ["bp_s", "bp_d"], band: "soft", message: "Systolic isn't higher than diastolic — double-check these aren't swapped." });
+    issues.push({ fields: ["bp_s", "bp_d"], band: "soft", message: "Systolic isn't higher than diastolic: double-check these aren't swapped." });
   }
   return issues;
 }

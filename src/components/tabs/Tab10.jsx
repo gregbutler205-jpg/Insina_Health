@@ -174,7 +174,7 @@ function EditorPanel({ note, onUpdate, onDelete, onPin, onAI }) {
           <div style={{ background: "rgba(79,142,247,.07)", border: "1px solid rgba(79,142,247,.22)", borderRadius: 8, padding: "9px 13px", marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 12, background: "rgba(79,142,247,.14)", color: "#6ea3ff", border: "1px solid rgba(79,142,247,.3)", padding: "1px 6px", borderRadius: 3, fontFamily: "'DM Mono', monospace", letterSpacing: "0.5px", flexShrink: 0 }}>AI</span>
             <span style={{ fontSize: 12, color: "#7eb8d8", flex: 1, lineHeight: 1.5 }}>
-              AI-generated analysis — informational only, not clinician text. Verify against source records.
+              AI-generated analysis: informational only, not clinician text. Verify against source records.
             </span>
             <button
               onClick={() => downloadAnalysisMarkdown({

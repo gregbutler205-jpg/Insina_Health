@@ -38,11 +38,11 @@ function Chip({ item, match }) {
 function fieldSummary(item) {
   const f = item.fields;
   switch (item.category) {
-    case "medication": return `${f.name || "?"}${f.strength ? ` ${f.strength}` : ""}${f.dose && f.dose !== f.strength ? ` — ${f.dose}` : ""}${f.frequency ? ` ${f.frequency}` : ""}`;
-    case "allergy": return `${f.substance || "?"}${f.reaction ? ` — ${f.reaction}` : ""}`;
+    case "medication": return `${f.name || "?"}${f.strength ? ` ${f.strength}` : ""}${f.dose && f.dose !== f.strength ? `: ${f.dose}` : ""}${f.frequency ? ` ${f.frequency}` : ""}`;
+    case "allergy": return `${f.substance || "?"}${f.reaction ? `: ${f.reaction}` : ""}`;
     case "condition": return `${f.name || "?"}${f.onset_date ? ` · since ${f.onset_date}` : ""}`;
-    case "care_team": return `${f.name || "?"}${f.credential ? `, ${f.credential}` : ""}${f.specialty ? ` — ${f.specialty}` : ""}`;
-    case "lab": return `${f.test || "?"}: ${f.value ?? "?"}${f.unit ? ` ${f.unit}` : ""}${f.ref_low || f.ref_high ? ` (ref ${f.ref_low || "—"}–${f.ref_high || "—"})` : ""}${f.collected_date ? ` · ${f.collected_date}` : ""}`;
+    case "care_team": return `${f.name || "?"}${f.credential ? `, ${f.credential}` : ""}${f.specialty ? `: ${f.specialty}` : ""}`;
+    case "lab": return `${f.test || "?"}: ${f.value ?? "?"}${f.unit ? ` ${f.unit}` : ""}${f.ref_low || f.ref_high ? ` (ref ${f.ref_low || "–"}–${f.ref_high || "–"})` : ""}${f.collected_date ? ` · ${f.collected_date}` : ""}`;
     case "procedure": return `${f.name || "?"}${f.date ? ` · ${formatDateUS(f.date)}` : ""}`;
     case "immunization": return `${f.name || "?"}${f.date ? ` · ${formatDateUS(f.date)}` : ""}`;
     case "vital": return `${f.type || "?"}: ${f.value ?? "?"}${f.unit ? ` ${f.unit}` : ""}${f.date ? ` · ${formatDateUS(f.date)}` : ""}`;
@@ -122,7 +122,7 @@ function ItemCard({ item, match, conflict, onAction, onZoom, onCompare }) {
             not taken over. (advisory_hit is only set when the flag is enabled.) */}
         {item.advisory_hit && !item.advisory_hit.takeover && (
           <div style={{ marginTop: 8, padding: "7px 12px", borderRadius: 8, fontSize: 12, background: "var(--stale-bg)", border: "1px solid var(--stale-bd)", color: "var(--stale-fg)" }}>
-            ⚠ Historical critical value ({item.advisory_hit.tier === "EMERGENCY" ? "emergency" : "urgent"} range) — from an older document. Verify it against the original report and discuss with your care team.
+            ⚠ Historical critical value ({item.advisory_hit.tier === "EMERGENCY" ? "emergency" : "urgent"} range): from an older document. Verify it against the original report and discuss with your care team.
           </div>
         )}
 
@@ -188,13 +188,13 @@ function CompareModal({ item, match, onResolve, onClose }) {
 
         <div style={{ display: "grid", gridTemplateColumns: mergeMode ? "1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 0, border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
           <div style={{ padding: "8px 12px", background: "var(--bg-deep)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-label)", textTransform: "uppercase" }}>Field</div>
-          <div style={{ padding: "8px 12px", background: "var(--bg-deep)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-label)", textTransform: "uppercase" }}>Current — {existingSource}</div>
-          <div style={{ padding: "8px 12px", background: "var(--bg-deep)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-label)", textTransform: "uppercase" }}>New — {stagedDoc?.source_name || "imported"}{stagedDoc?.doc_date ? ` (${stagedDoc.doc_date})` : ""}</div>
+          <div style={{ padding: "8px 12px", background: "var(--bg-deep)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-label)", textTransform: "uppercase" }}>Current: {existingSource}</div>
+          <div style={{ padding: "8px 12px", background: "var(--bg-deep)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-label)", textTransform: "uppercase" }}>New: {stagedDoc?.source_name || "imported"}{stagedDoc?.doc_date ? ` (${stagedDoc.doc_date})` : ""}</div>
           {fieldsToShow.map(k => {
             const differs = differing.includes(k);
             return (
               <FragmentRow key={k} k={k} differs={differs} mergeMode={mergeMode} pick={picks[k]}
-                current={String(existing?.[k] ?? "—")} staged={String(staged?.[k] ?? "—")}
+                current={String(existing?.[k] ?? "–")} staged={String(staged?.[k] ?? "–")}
                 onPick={side => setPicks(p => ({ ...p, [k]: side }))} />
             );
           })}
@@ -402,7 +402,7 @@ export default function ReviewQueue({ onDone, embedded = false }) {
         {bulkGroups.map(g => (
           <button key={g.docId || "all"} style={{ ...primaryBtn, alignSelf: "flex-start" }}
             onClick={() => { bulkConfirmItems(g.items); refresh(); }}>
-            Accept all {g.items.length} high-confidence {CAT_LABEL[cat].toLowerCase()}{g.label ? ` — ${g.label}` : ""}
+            Accept all {g.items.length} high-confidence {CAT_LABEL[cat].toLowerCase()}{g.label ? `: ${g.label}` : ""}
           </button>
         ))}
 
@@ -411,7 +411,7 @@ export default function ReviewQueue({ onDone, embedded = false }) {
             onAction={handleAction} onZoom={setZoom} onCompare={(it, m) => setCompare({ item: it, match: m })} />
         ))}
         {staged.length === 0 && remaining === 0 && (
-          <div style={{ ...card, textAlign: "center", color: "var(--text-dim)", fontSize: 13 }}>All reviewed — nice work.</div>
+          <div style={{ ...card, textAlign: "center", color: "var(--text-dim)", fontSize: 13 }}>All reviewed: nice work.</div>
         )}
 
         {deferred.length > 0 && (
@@ -457,7 +457,7 @@ export default function ReviewQueue({ onDone, embedded = false }) {
         <div style={{ textAlign: "center" }}>
           <h1 style={{ fontFamily: "var(--font-serif)", fontSize: 26, fontWeight: 400, color: "var(--text-bright)", letterSpacing: "-0.5px" }}>Review &amp; confirm</h1>
           <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>
-            Nothing enters your record until you approve it. Medications first — they matter most.
+            Nothing enters your record until you approve it. Medications first. They matter most.
           </p>
         </div>
       )}

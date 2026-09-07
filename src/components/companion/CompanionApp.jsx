@@ -87,7 +87,7 @@ function SyncBar({ syncState, lastSynced, onSync, vaultFp, diag }) {
       <div style={{ padding: "6px 16px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ width: 6, height: 6, borderRadius: "50%", background: syncState === "done" ? C.green : syncState === "syncing" ? C.amber : C.ghost, boxShadow: syncState === "done" ? `0 0 5px ${C.green}60` : "none", flexShrink: 0 }} />
         <span style={{ flex: 1, fontSize: 12, color: C.ghost, fontFamily: mono }}>
-          {syncState === "syncing" ? "Syncing with Drive…" : syncState === "done" && lastSynced ? `Synced ${lastSynced}` : syncState === "error" ? "Sync failed — tap to retry" : "Drive connected"}
+          {syncState === "syncing" ? "Syncing with Drive…" : syncState === "done" && lastSynced ? `Synced ${lastSynced}` : syncState === "error" ? "Sync failed. Tap to retry" : "Drive connected"}
           {vaultFp ? ` · key ${vaultFp}` : ""}
         </span>
         <button onClick={onSync} disabled={syncState === "syncing"} style={{ background: "none", border: "none", color: C.blue, fontSize: 12, fontFamily: mono, cursor: "pointer", opacity: syncState === "syncing" ? 0.4 : 1 }}>
@@ -96,7 +96,7 @@ function SyncBar({ syncState, lastSynced, onSync, vaultFp, diag }) {
       </div>
       {diag?.failed > 0 && (
         <div style={{ padding: "5px 16px 7px", fontSize: 12, color: C.amber, fontFamily: mono, lineHeight: 1.5 }}>
-          ⚠ {diag.failed} item{diag.failed !== 1 ? "s" : ""} from Drive couldn't be read — if this key code doesn't match the one under
+          ⚠ {diag.failed} item{diag.failed !== 1 ? "s" : ""} from Drive couldn't be read. If this key code doesn't match the one under
           Settings &amp; Backup on the web app, this phone holds a different vault key: use "Restore from Google Drive" here to re-key it.
         </div>
       )}
@@ -314,7 +314,7 @@ function CompanionInner() {
     }}>
       {!online && (
         <div style={{ background: "#141f00", borderBottom: "1px solid #3a5a00", padding: "5px 16px", fontSize: 12, color: "#a3e635", fontFamily: mono, textAlign: "center", flexShrink: 0 }}>
-          📶 Offline — you can still capture; it’ll sync when you’re back online
+          📶 Offline. You can still capture; it’ll sync when you’re back online
         </div>
       )}
       <SyncBar syncState={syncState} lastSynced={lastSynced} onSync={handleSync} vaultFp={vaultFp} diag={syncDiag} />

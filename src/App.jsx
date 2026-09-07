@@ -98,9 +98,9 @@ function generateAutoAlerts() {
       if (!latest[key] || new Date(l.date || 0) > new Date(latest[key].date || 0)) latest[key] = l;
     });
     Object.values(latest).filter(l => l.flag).forEach(l => {
-      const text = `${l.name} flagged${l.value ? ` — value: ${l.value}${l.unit ? " " + l.unit : ""}` : ""}${l.refRange ? ` (ref: ${l.refRange})` : ""}`;
+      const text = `${l.name} flagged${l.value ? `: value: ${l.value}${l.unit ? " " + l.unit : ""}` : ""}${l.refRange ? ` (ref: ${l.refRange})` : ""}`;
       const fp = `auto:warn:${text.substring(0, 60)}`;
-      if (!dismissed.has(fp)) alerts.push({ type:"warn", text, time: l.date ? l.date.slice(5).replace("-","/") : "—", fp, source:"auto" });
+      if (!dismissed.has(fp)) alerts.push({ type:"warn", text, time: l.date ? l.date.slice(5).replace("-","/") : "–", fp, source:"auto" });
     });
     // Flagged vitals
     const readings = JSON.parse(localStorage.getItem("mi_readings") || "[]");
@@ -108,7 +108,7 @@ function generateAutoAlerts() {
       const bpStr = (r.bp_s != null && r.bp_d != null) ? ` BP ${r.bp_s}/${r.bp_d}` : "";
       const text = `Flagged vital reading${bpStr}`;
       const fp = `auto:warn:${text.substring(0,60)}:${r.date||""}`;
-      if (!dismissed.has(fp)) alerts.push({ type:"warn", text, time: r.date || "—", fp, source:"auto" });
+      if (!dismissed.has(fp)) alerts.push({ type:"warn", text, time: r.date || "–", fp, source:"auto" });
     });
   } catch {}
   return alerts;
@@ -194,7 +194,7 @@ function DataFreshnessCard() {
           <div key={label} style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <span style={{ fontSize:12, color:"#7eb8d8", fontFamily:"'DM Mono',monospace" }}>{label}</span>
             <span style={{ fontSize:12, color: date ? "#c4d8ee" : "#4a5c6a", fontFamily:"'DM Mono',monospace" }}>
-              {date ?? "—"}
+              {date ?? "–"}
             </span>
           </div>
         ))}
@@ -209,7 +209,7 @@ function printRefills(meds, logoUrl) {
   const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
   const win = window.open("", "_blank", "width=760,height=620");
   win.document.write(`<!DOCTYPE html><html><head>
-    <title>Refills Due — Insina Health</title>
+    <title>Refills Due: Insina Health</title>
     <style>
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:Arial,sans-serif; max-width:700px; margin:40px auto; color:#1a1a1a; font-size:13px; line-height:1.65; padding:0 24px; }
@@ -225,22 +225,22 @@ function printRefills(meds, logoUrl) {
   </head><body>
     <img src="${logoUrl}" class="logo" />
     <h1>Upcoming Refills</h1>
-    <div class="subtitle">Printed ${date} &mdash; ${refills.length} medication${refills.length !== 1 ? "s" : ""} with refill dates on file</div>
+    <div class="subtitle">Printed ${date}: ${refills.length} medication${refills.length !== 1 ? "s" : ""} with refill dates on file</div>
     <table>
       <thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Refill Date</th><th>Prescriber</th></tr></thead>
       <tbody>
         ${refills.sort((a, b) => new Date(a.refillDate) - new Date(b.refillDate)).map(m => `
           <tr>
             <td><strong>${m.name}</strong>${m.brandName ? ` <span style="color:#888;font-size:11px">(${m.brandName})</span>` : ""}</td>
-            <td>${m.dose || "—"}</td>
-            <td>${m.frequency || "—"}</td>
-            <td>${m.refillDate || "—"}</td>
-            <td>${m.prescriber || "—"}</td>
+            <td>${m.dose || "–"}</td>
+            <td>${m.frequency || "–"}</td>
+            <td>${m.refillDate || "–"}</td>
+            <td>${m.prescriber || "–"}</td>
           </tr>`).join("")}
       </tbody>
     </table>
     <div class="footer">
-      <span>Insina Health &mdash; Medication Refill List</span>
+      <span>Insina Health: Medication Refill List</span>
       <span>${date}</span>
     </div>
   </body></html>`);
@@ -337,7 +337,7 @@ function DashboardHotButtons({ setActiveNav, syncStatus, lastSyncTs, lastWeeklyB
             </span>
           </div>
           <span style={{ fontSize: 12, color: "#c4d8ee", fontFamily: "'DM Mono',monospace" }}>
-            {fmtSync(lastSyncTs) || "—"}
+            {fmtSync(lastSyncTs) || "–"}
           </span>
         </button>
         {showFreshnessPopup && (
@@ -351,14 +351,14 @@ function DashboardHotButtons({ setActiveNav, syncStatus, lastSyncTs, lastWeeklyB
             {freshnessRows.map(({ label, date }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
                 <span style={{ fontSize: 12, color: "#7eb8d8", fontFamily: "'DM Mono',monospace" }}>{label}</span>
-                <span style={{ fontSize: 12, color: date ? "#c4d8ee" : "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>{date ?? "—"}</span>
+                <span style={{ fontSize: 12, color: date ? "#c4d8ee" : "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>{date ?? "–"}</span>
               </div>
             ))}
             <div style={{ borderTop: "1px solid #1c2a40", marginTop: 10, paddingTop: 10 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
                 <span style={{ fontSize: 12, color: "#6ea3ff", fontFamily: "'DM Mono',monospace" }}>Last Sync</span>
                 <span style={{ fontSize: 12, color: lastSyncTs ? "#c4d8ee" : "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
-                  {lastSyncTs ? new Date(lastSyncTs).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "—"}
+                  {lastSyncTs ? new Date(lastSyncTs).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "–"}
                 </span>
               </div>
               {/* Last Drive backup — a date, not a time: backups are weekly, so
@@ -368,7 +368,7 @@ function DashboardHotButtons({ setActiveNav, syncStatus, lastSyncTs, lastWeeklyB
                 <span style={{ fontSize: 12, color: lastWeeklyBackup ? "#c4d8ee" : "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
                   {lastWeeklyBackup
                     ? formatDateUS(lastWeeklyBackup)
-                    : "—"}
+                    : "–"}
                 </span>
               </div>
               <button
@@ -398,7 +398,7 @@ function RefillsCard({ meds }) {
         <div>
           <div style={{ fontSize:12, fontWeight:600, color:"#7eb8d8", marginBottom:6 }}>Refills ≤7 Days</div>
           <div style={{ fontSize:26, fontWeight:700, color:"#dde8f5", letterSpacing:"-1px", lineHeight:1, marginBottom:6 }}>{refills.length}</div>
-          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>{fmt(now)} – {fmt(end)}</div>
+          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>{fmt(now)}: {fmt(end)}</div>
         </div>
         <div style={{ fontSize:14, color:"#f59e0b", marginTop:2, transition:"transform .2s", transform:open?"rotate(180deg)":"rotate(0deg)" }}>▾</div>
       </div>
@@ -1093,7 +1093,7 @@ function AppShell() {
                             {daysAgoLabel(lastWeeklyBackup, null)
                               ? `Last backed up ${daysAgoLabel(lastWeeklyBackup, null)}.`
                               : "Your data has never been backed up."}
-                            {" "}Connect Google Drive in Settings for automatic weekly backups{isFolderBackupSupported() ? " — or choose a backup folder in Export & Backup (no Google needed)" : ""}.
+                            {" "}Connect Google Drive in Settings for automatic weekly backups{isFolderBackupSupported() ? ". Or choose a backup folder in Export & Backup (no Google needed)" : ""}.
                           </div>
                         </div>
                         <button
@@ -1180,7 +1180,7 @@ function AppShell() {
                               <div key={label} style={{ background:"#080c14", border:`1px solid ${flag ? "rgba(239,68,68,.25)" : "#1c2a40"}`, borderRadius:8, padding:"10px 12px" }}>
                                 <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:4 }}>{label}</div>
                                 <div style={{ fontSize:14, fontWeight:700, color: val != null ? (flag ? "#f87171" : color) : "#4a5c6a", lineHeight:1, marginBottom:2 }}>
-                                  {val != null ? `${val}${unit ? " " + unit : ""}` : "—"}
+                                  {val != null ? `${val}${unit ? " " + unit : ""}` : "–"}
                                 </div>
                                 {date && val != null && <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>{formatDateUS(date)}</div>}
                               </div>
@@ -1296,7 +1296,7 @@ function AppShell() {
                                   {/* Info */}
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:2 }}>
-                                      <span style={{ fontSize:13, fontWeight:600, color:"#c4d8ee" }}>{d.name || "—"}</span>
+                                      <span style={{ fontSize:13, fontWeight:600, color:"#c4d8ee" }}>{d.name || "–"}</span>
                                       {d.pcp && <span style={{ fontSize:12, background:"rgba(79,142,247,.12)", color:"#6ea3ff", border:"1px solid rgba(79,142,247,.25)", borderRadius:10, padding:"1px 7px", fontFamily:"'DM Mono',monospace" }}>PCP</span>}
                                     </div>
                                     {(d.role || d.specialty) && <div style={{ fontSize:12, color:"#7eb8d8", fontFamily:"'DM Mono',monospace", marginBottom:1 }}>{d.role}{d.specialty ? ` · ${d.specialty}` : ""}</div>}
@@ -1344,7 +1344,7 @@ function AppShell() {
                               if (!lab) return (
                                 <div key={label} style={{ background: "#080c14", border: "1px solid #1c2a40", borderRadius: 8, padding: "10px 12px", opacity: 0.45 }}>
                                   <div style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", marginBottom: 4 }}>{label}</div>
-                                  <div style={{ fontSize: 13, color: "#6a8090" }}>—</div>
+                                  <div style={{ fontSize: 13, color: "#6a8090" }}>–</div>
                                 </div>
                               );
                               const val = parseFloat(lab.value);
@@ -1464,7 +1464,7 @@ function AppShell() {
                       ))}
                     </div>
                   ) : (
-                    <div style={{ fontSize:12, color:"#98afc4" }}>No suggested correction — please edit the value manually.</div>
+                    <div style={{ fontSize:12, color:"#98afc4" }}>No suggested correction. Please edit the value manually.</div>
                   )}
                 </div>
               ))}

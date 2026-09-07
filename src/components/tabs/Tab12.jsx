@@ -40,7 +40,7 @@ function OnboardingQueueCard() {
       <div style={{ background:"#0b1220", border:"1px solid rgba(79,142,247,.3)", borderRadius:12, padding:"12px 18px", marginBottom:20, display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
         <span style={{ flex:1, fontSize:13, color:"#c4d8ee" }}>
           {waiting > 0
-            ? <>Your onboarding import has <strong>{waiting} item{waiting !== 1 ? "s" : ""}</strong> waiting for review — they stay out of your record until you confirm them.</>
+            ? <>Your onboarding import has <strong>{waiting} item{waiting !== 1 ? "s" : ""}</strong> waiting for review. They stay out of your record until you confirm them.</>
             : <>{rejected} rejected onboarding item{rejected !== 1 ? "s" : ""} still recoverable.</>}
         </span>
         <button className="imp-btn" onClick={() => setOpen(true)}
@@ -118,7 +118,7 @@ ${formatDocumentBlock({ id: docType, source: "upload", date: "", text, maxLength
   });
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`API error: ${response.status} — ${err}`);
+    throw new Error(`API error: ${response.status}: ${err}`);
   }
   const data = await response.json();
   let raw = data.content[0].text.trim();
@@ -185,7 +185,7 @@ ${formatDocumentBlock({ id: "lab-report", source: "upload", date: "", text: chun
     });
     if (!response.ok) {
       const err = await response.text();
-      throw new Error(`Claude API error: ${response.status} — ${err}`);
+      throw new Error(`Claude API error: ${response.status}: ${err}`);
     }
     const data = await response.json();
     let raw = data.content[0].text.trim();
@@ -387,13 +387,13 @@ export default function ImportTab({ onImport, onNavChange }) {
           sessionLabDocsRef.current.add(archiveDoc.id);
           setPdfStatus("idle");
           setLabReview({ docId: archiveDoc.id, file });
-          showToast(`Found ${extracted.length} lab result${extracted.length !== 1 ? "s" : ""} — review before they join your record.`);
+          showToast(`Found ${extracted.length} lab result${extracted.length !== 1 ? "s" : ""}. Review before they join your record.`);
         } else {
           const extracted = await parseDocWithClaude(text, uploadDocType);
           if (!extracted || !extracted.title) throw new Error("Could not extract document information from PDF.");
           setDocPreview({ ...extracted, _label: uploadDocType, _recordType: docTypeMeta.type, _color: docTypeMeta.color });
           setPdfStatus("done");
-          showToast("Document extracted — review and save to Records.");
+          showToast("Document extracted. Review and save to Records.");
         }
       } catch (err) {
         setPdfStatus("error");
@@ -453,7 +453,7 @@ export default function ImportTab({ onImport, onNavChange }) {
           try {
             const docId = batchDocId;
             const existing = JSON.parse(localStorage.getItem("mi_ref_docs") || "[]");
-            const docText = text || (record.summary ? `[PDF text could not be extracted — possible scanned document]\n\nDocument summary: ${record.summary}` : "[PDF text could not be extracted — possible scanned document]");
+            const docText = text || (record.summary ? `[PDF text could not be extracted: possible scanned document]\n\nDocument summary: ${record.summary}` : "[PDF text could not be extracted: possible scanned document]");
             const newDoc = { id: docId, name: record.title, text: docText, addedDate: new Date().toLocaleDateString(), studyDate: record.date, docType: record.type, facility: record.facility };
             localStorage.setItem("mi_ref_docs", JSON.stringify([newDoc, ...existing]));
           } catch {}
@@ -478,7 +478,7 @@ export default function ImportTab({ onImport, onNavChange }) {
       const fail = summary.filter(s => !s.ok).length;
       const firstDocId = [...sessionLabDocsRef.current][0];
       if (firstDocId) setLabReview({ docId: firstDocId, file: labFilesRef.current.get(firstDocId) || null });
-      showToast(`${allLabs.length} lab result${allLabs.length !== 1 ? "s" : ""} extracted from ${ok} file${ok !== 1 ? "s" : ""} — review each before they join your record.${fail ? ` ${fail} file${fail !== 1 ? "s" : ""} failed.` : ""}`);
+      showToast(`${allLabs.length} lab result${allLabs.length !== 1 ? "s" : ""} extracted from ${ok} file${ok !== 1 ? "s" : ""}. Review each before they join your record.${fail ? ` ${fail} file${fail !== 1 ? "s" : ""} failed.` : ""}`);
     } else if (!isLabs) {
       const ok   = summary.filter(s => s.ok).length;
       const fail = summary.filter(s => !s.ok).length;
@@ -511,7 +511,7 @@ export default function ImportTab({ onImport, onNavChange }) {
     // (scanned PDFs get a summary fallback so the AI at least knows the doc exists)
     try {
       const existing = JSON.parse(localStorage.getItem("mi_ref_docs") || "[]");
-      const docText = pdfText || (record.summary ? `[PDF text could not be extracted — possible scanned document]\n\nDocument summary: ${record.summary}` : "[PDF text could not be extracted — possible scanned document]");
+      const docText = pdfText || (record.summary ? `[PDF text could not be extracted: possible scanned document]\n\nDocument summary: ${record.summary}` : "[PDF text could not be extracted: possible scanned document]");
       const newDoc = { id: docId, name: record.title, text: docText, addedDate: new Date().toLocaleDateString(), studyDate: record.date, docType: record.type, facility: record.facility };
       localStorage.setItem("mi_ref_docs", JSON.stringify([newDoc, ...existing]));
     } catch {}
@@ -803,7 +803,7 @@ export default function ImportTab({ onImport, onNavChange }) {
           <div style={{ background:"#0b1220", border:"1px solid #1c2a40", borderRadius:12, padding:"14px 18px", marginBottom:20, animation:"fadeUp .3s ease both" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
               <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", fontWeight:600 }}>
-                Batch Import — {batchSummary.filter(s=>s.ok).length} of {batchSummary.length} succeeded
+                Batch Import: {batchSummary.filter(s=>s.ok).length} of {batchSummary.length} succeeded
               </div>
               <button onClick={() => setBatchSummary([])} style={{ background:"transparent", border:"none", color:"#6a8090", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>Clear</button>
             </div>
@@ -815,12 +815,12 @@ export default function ImportTab({ onImport, onNavChange }) {
                     {item.ok ? (
                       <span style={{ fontSize:12, color:"#c4d8ee", fontFamily:"'DM Mono',monospace" }}>
                         {item.title || item.name}
-                        {item.count !== undefined && <span style={{ color:"#6a8090" }}> — {item.count} result{item.count!==1?"s":""}</span>}
+                        {item.count !== undefined && <span style={{ color:"#6a8090" }}>–{item.count} result{item.count!==1?"s":""}</span>}
                         {item.date && <span style={{ color:"#6a8090" }}> · {formatDateUS(item.date)}</span>}
                       </span>
                     ) : (
                       <span style={{ fontSize:12, color:"#f87171", fontFamily:"'DM Mono',monospace" }}>
-                        {item.name} — {item.error}
+                        {item.name}: {item.error}
                       </span>
                     )}
                   </div>
@@ -865,7 +865,7 @@ export default function ImportTab({ onImport, onNavChange }) {
           <div style={{ background:`rgba(${docPreview._color === "#a78bfa" ? "167,139,250" : docPreview._color === "#4f8ef7" ? "79,142,247" : docPreview._color === "#10b981" ? "16,185,129" : docPreview._color === "#f59e0b" ? "245,158,11" : docPreview._color === "#ef4444" ? "239,68,68" : "152,175,196"},.06)`, border:`1px solid ${docPreview._color}30`, borderRadius:12, padding:20, marginBottom:24, animation:"fadeUp .3s ease both" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
               <div style={{ fontSize:13, color: docPreview._color, fontFamily:"'DM Mono',monospace", fontWeight:600 }}>
-                ✦ Document extracted — review then save
+                ✦ Document extracted. Review then save
               </div>
               <div style={{ display:"flex", gap:8 }}>
                 <button onClick={discardDoc} style={{ padding:"6px 14px", background:"transparent", border:"1px solid #1a2f4a", borderRadius:7, color:"#b0c4d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>Discard</button>
@@ -916,7 +916,7 @@ export default function ImportTab({ onImport, onNavChange }) {
                         <div style={{ fontSize:12, fontWeight:600, color:"#c4d8ee" }}>{e.source || "Import"}</div>
                         {e.docName && <div style={{ fontSize:12, color:"#a78bfa", fontFamily:"'DM Mono',monospace" }}>→ {e.docName}</div>}
                       </div>
-                      <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>{e.ts ? `${formatDateUS(e.ts)} · ${new Date(e.ts).toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" })}` : "—"}</span>
+                      <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>{e.ts ? `${formatDateUS(e.ts)} · ${new Date(e.ts).toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" })}` : "–"}</span>
                       <span style={{ fontSize:12, color:"#2dd4a0", fontFamily:"'DM Mono',monospace" }}>{e.records ?? 0} record{(e.records ?? 0) !== 1 ? "s" : ""}</span>
                       {e.excluded > 0 && <span style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace" }}>{e.excluded} excluded in review</span>}
                       <span style={{ fontSize:12, fontFamily:"'DM Mono',monospace", padding:"2px 8px", borderRadius:4,
@@ -1035,7 +1035,7 @@ export default function ImportTab({ onImport, onNavChange }) {
                         <span style={{ fontSize:20, fontWeight:700, color: latest.flag ? "#f87171" : "#6ea3ff", letterSpacing:"-0.5px" }}>{latest.value}</span>
                         <span style={{ fontSize:12, color:"#7eb8d8" }}>{latest.unit}</span>
                         {latest.refRange && <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>ref: {latest.refRange}</span>}
-                        <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>· {formatDateUS(latest.date, "—")}</span>
+                        <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>· {formatDateUS(latest.date, "–")}</span>
                       </div>
                     </div>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
@@ -1055,13 +1055,13 @@ export default function ImportTab({ onImport, onNavChange }) {
                       {group.map((lab, j) => (
                         <div key={lab.id} style={{ display:"grid", gridTemplateColumns:"1fr 80px 120px 120px auto", gap:0, padding:"7px 0", borderBottom: j < group.length-1 ? "1px solid #1c2a40" : "none", alignItems:"center" }}>
                           <div style={{ fontSize:12, color:"#c4d8ee", fontFamily:"'DM Mono',monospace", padding:"0 4px" }}>
-                            {lab.date ? new Date(lab.date + "T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "—"}
+                            {lab.date ? new Date(lab.date + "T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "–"}
                           </div>
                           <div style={{ fontSize:13, fontWeight:700, color: lab.flag ? "#f87171" : "#2dd4a0", padding:"0 4px" }}>
                             {lab.value} <span style={{ fontSize:12, color:"#7eb8d8", fontWeight:400 }}>{lab.unit}</span>
                           </div>
-                          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", padding:"0 4px" }}>{lab.refRange || "—"}</div>
-                          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", padding:"0 4px" }}>{lab.facility || "—"}</div>
+                          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", padding:"0 4px" }}>{lab.refRange || "–"}</div>
+                          <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", padding:"0 4px" }}>{lab.facility || "–"}</div>
                           <div style={{ display:"flex", gap:4, padding:"0 4px" }}>
                             <button className="imp-btn btn-ghost" style={{ padding:"3px 8px", fontSize:12 }} onClick={e => { e.stopPropagation(); handleEdit(lab); }}>Edit</button>
                             <button className="imp-btn btn-danger" style={{ padding:"3px 8px", fontSize:12 }} onClick={e => { e.stopPropagation(); setDeleteId(lab.id); }}>✕</button>

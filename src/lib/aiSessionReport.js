@@ -96,7 +96,7 @@ export function buildContactBlock(careTeam) {
   if (team.length === 0) return "**Contact your care team**\n- No care team members are on file.";
   const rank = p => p.phone24 ? 0 : /coordinator/i.test(`${p.role || ""} ${p.specialty || ""}`) ? 1 : 2;
   const rows = [...team].sort((a, b) => rank(a) - rank(b)).map(p => {
-    const who = `${p.name || "—"}${p.role || p.specialty ? ` (${p.role || p.specialty})` : ""}`;
+    const who = `${p.name || "–"}${p.role || p.specialty ? ` (${p.role || p.specialty})` : ""}`;
     const phones = [
       p.phone24 ? `24 hr: ${displayPhone(p.phone24)}` : "",
       p.phone ? `office: ${displayPhone(p.phone)}` : "",
@@ -129,7 +129,7 @@ export function buildSessionReportText({ convMessages = [], careTeam = [], start
   const lastTs = [...convMessages].reverse().find(m => m.ts)?.ts || null;
   const firstTs = convMessages.find(m => m.ts)?.ts || null;
 
-  const header = `**AI Conversation Report**\nSession: ${fmtTs(startedAt || firstTs)} — ${fmtTs(endedAt || lastTs)}`;
+  const header = `**AI Conversation Report**\nSession: ${fmtTs(startedAt || firstTs)}–${fmtTs(endedAt || lastTs)}`;
 
   const transcript = convMessages.map(m => {
     if (m.role === "user") {
@@ -173,8 +173,8 @@ export function buildSessionReportText({ convMessages = [], careTeam = [], start
 import { segmentTransition, SESSION_COPY } from "./aiSessions.js";
 import { stripControlChars } from "../prompts/documents.js";
 
-const PRIOR_OPEN  = "[PRIOR SESSION SEGMENTS — BEGIN]";
-const PRIOR_CLOSE = "[PRIOR SESSION SEGMENTS — END]";
+const PRIOR_OPEN  = "[PRIOR SESSION SEGMENTS: BEGIN]";
+const PRIOR_CLOSE = "[PRIOR SESSION SEGMENTS: END]";
 
 /** The reopen context rule (spec Sec 2): prior segments enter context
  * delimited by their stamps and marked as prior-state content. S-07
@@ -184,7 +184,7 @@ export function buildPriorSegmentBlock(priorSegments) {
   const parts = [PRIOR_OPEN,
     "The following earlier parts of this conversation were generated against " +
     "PREVIOUS states of the patient's record. They are reference context only. " +
-    "Values in them may be superseded — always answer from the CURRENT record " +
+    "Values in them may be superseded: always answer from the CURRENT record " +
     "data in the system prompt, and note when something has changed."];
   priorSegments.forEach((seg, i) => {
     parts.push(`--- Segment ${i + 1} · ${seg.stamp?.ts || "undated"} · record-state ${seg.stamp?.recordHash || "unknown"} (superseded) ---`);

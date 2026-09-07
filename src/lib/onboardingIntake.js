@@ -24,11 +24,11 @@ export function validateFiles(files) {
   [...files].forEach((f, i) => {
     const ext = fileExtension(f.name);
     if (!ACCEPTED_EXTENSIONS.includes(ext)) {
-      rejected.push({ name: f.name, reason: `Unsupported type .${ext || "?"} — PDF, JPG, PNG, HEIC, or ZIP.` });
+      rejected.push({ name: f.name, reason: `Unsupported type .${ext || "?"}: PDF, JPG, PNG, HEIC, or ZIP.` });
     } else if (f.size > MAX_FILE_MB * 1024 * 1024) {
       rejected.push({ name: f.name, reason: `Over the ${MAX_FILE_MB} MB per-file limit.` });
     } else if (accepted.length >= MAX_FILES_PER_BATCH) {
-      rejected.push({ name: f.name, reason: `Batch limit is ${MAX_FILES_PER_BATCH} files — add this one in the next batch.` });
+      rejected.push({ name: f.name, reason: `Batch limit is ${MAX_FILES_PER_BATCH} files. Add this one in the next batch.` });
     } else {
       accepted.push(f);
     }
@@ -65,7 +65,7 @@ export async function unpackZip(file) {
 }
 
 export class PdfPasswordError extends Error {
-  constructor() { super("Password didn't work — you can retry or skip this file."); this.name = "PdfPasswordError"; }
+  constructor() { super("Password didn't work. You can retry or skip this file."); this.name = "PdfPasswordError"; }
 }
 
 /**
@@ -128,7 +128,7 @@ function withTimeout(promise, ms, message) {
 export async function renderPdfPagesToImages(doc, pageNumbers) {
   const images = [];
   for (const p of pageNumbers) {
-    const page = await withTimeout(doc.getPage(p), 30000, `Page ${p} took too long to open — try re-adding the file.`);
+    const page = await withTimeout(doc.getPage(p), 30000, `Page ${p} took too long to open. Try re-adding the file.`);
     const viewport = page.getViewport({ scale: 150 / 72 });
     const canvas = document.createElement("canvas");
     canvas.width = Math.ceil(viewport.width);
@@ -139,7 +139,7 @@ export async function renderPdfPagesToImages(doc, pageNumbers) {
     await withTimeout(
       page.render({ canvasContext: canvas.getContext("2d"), viewport, intent: "print" }).promise,
       30000,
-      `Page ${p} took too long to read — try re-adding the file, or photograph the page instead.`
+      `Page ${p} took too long to read. Try re-adding the file, or photograph the page instead.`
     );
     images.push(canvas.toDataURL("image/jpeg", VISION_JPEG_QUALITY));
   }

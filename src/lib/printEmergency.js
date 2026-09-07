@@ -163,9 +163,9 @@ export function buildEmergencyHtml() {
   // Immunosuppressants print first — they're the drugs an ED must not stop or
   // interact with casually, and the banner above announces why they matter.
   const medsSorted = [...meds].sort((a, b) => (isImmunosuppressant(a) ? 0 : 1) - (isImmunosuppressant(b) ? 0 : 1));
-  const medRows  = medsSorted.map(m => `<strong>${escapeHtml(m.name)}</strong>${m.dose ? ` ${escapeHtml(m.dose)}` : ""}${m.frequency ? ` — ${escapeHtml(m.frequency)}` : ""}${m.prescriber ? ` <span class="dim">(${escapeHtml(m.prescriber)})</span>` : ""}`);
+  const medRows  = medsSorted.map(m => `<strong>${escapeHtml(m.name)}</strong>${m.dose ? ` ${escapeHtml(m.dose)}` : ""}${m.frequency ? `: ${escapeHtml(m.frequency)}` : ""}${m.prescriber ? ` <span class="dim">(${escapeHtml(m.prescriber)})</span>` : ""}`);
   const algRows  = allergies.map(a => `<span class="badge allergy">${escapeHtml(a.allergen || a.name)}</span>${a.reaction ? ` <span class="dim">→ ${escapeHtml(a.reaction)}</span>` : ""}`);
-  const ctRows   = contacts.map(c => `<strong>${escapeHtml(c.name)}</strong>${c.relationship ? ` (${escapeHtml(c.relationship)})` : ""} — <a href="tel:${escapeHtml(c.phone)}">${escapeHtml(displayPhone(c.phone))}</a>`);
+  const ctRows   = contacts.map(c => `<strong>${escapeHtml(c.name)}</strong>${c.relationship ? ` (${escapeHtml(c.relationship)})` : ""}: <a href="tel:${escapeHtml(c.phone)}">${escapeHtml(displayPhone(c.phone))}</a>`);
 
   // Care team — anyone with a 24-hour line first (that's the number an ED
   // calls at 2 AM), then the transplant coordinator, then the rest.
@@ -175,13 +175,13 @@ export function buildEmergencyHtml() {
   });
   const teamRows = teamSorted.map(p =>
     `<strong>${escapeHtml(p.name)}</strong>${p.role || p.specialty ? ` <span class="dim">(${escapeHtml(p.role || p.specialty)})</span>` : ""}` +
-    (p.phone24 ? ` — <strong style="color:#dc2626">24 hr: <a href="tel:${escapeHtml(p.phone24)}" style="color:#dc2626">${escapeHtml(displayPhone(p.phone24))}</a></strong>` : "") +
-    (p.phone ? ` ${p.phone24 ? '<span class="dim">· office:</span>' : "—"} <a href="tel:${escapeHtml(p.phone)}">${escapeHtml(displayPhone(p.phone))}</a>` : "")
+    (p.phone24 ? `: <strong style="color:#dc2626">24 hr: <a href="tel:${escapeHtml(p.phone24)}" style="color:#dc2626">${escapeHtml(displayPhone(p.phone24))}</a></strong>` : "") +
+    (p.phone ? ` ${p.phone24 ? '<span class="dim">· office:</span>' : "–"} <a href="tel:${escapeHtml(p.phone)}">${escapeHtml(displayPhone(p.phone))}</a>` : "")
   );
 
   const fmtDay = iso => formatDateUS(iso, "date unknown"); // v1.56.2: lab draw dates are data fields -> mm/dd/yyyy
   const labSections = labPanels.map(p => section(
-    `${p.key} — ${p.latest ? fmtDay(p.latest) : "date unknown"}`, // p.key is a literal from CARD_PANELS, not user data
+    `${p.key}: ${p.latest ? fmtDay(p.latest) : "date unknown"}`, // p.key is a literal from CARD_PANELS, not user data
     p.rows.map(l => `${l.flag ? '<span class="badge flag">⚠</span> ' : ""}<strong>${escapeHtml(l.name)}</strong>: ${escapeHtml(l.value)}${l.unit ? " " + escapeHtml(l.unit) : ""}${l.refRange ? ` <span class="dim">(ref ${escapeHtml(l.refRange)})</span>` : ""}`)
   )).join("");
 
@@ -190,8 +190,8 @@ export function buildEmergencyHtml() {
   // metacharacters, so escapeHtml is a no-op on real data — but src and label are
   // both escaped so a tampered mi_cards value can't break out of the attribute.
   const cardImgs = cards.flatMap(c => [
-    c.front ? `<div class="idcard"><div class="idcard-lbl">${escapeHtml(c.label || "Card")} — front</div><img src="${escapeHtml(c.front)}" /></div>` : "",
-    c.back  ? `<div class="idcard"><div class="idcard-lbl">${escapeHtml(c.label || "Card")} — back</div><img src="${escapeHtml(c.back)}" /></div>` : "",
+    c.front ? `<div class="idcard"><div class="idcard-lbl">${escapeHtml(c.label || "Card")}: front</div><img src="${escapeHtml(c.front)}" /></div>` : "",
+    c.back  ? `<div class="idcard"><div class="idcard-lbl">${escapeHtml(c.label || "Card")}: back</div><img src="${escapeHtml(c.back)}" /></div>` : "",
   ].filter(Boolean));
   const cardSection = cardImgs.length === 0 ? "" : `
     <div class="section">
@@ -200,7 +200,7 @@ export function buildEmergencyHtml() {
     </div>`;
 
   return `<!DOCTYPE html><html><head>
-    <title>Emergency Info — ${escapeHtml(profile.name || "Patient")}</title>
+    <title>Emergency Info: ${escapeHtml(profile.name || "Patient")}</title>
     <style>
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:Arial,sans-serif; max-width:820px; margin:36px auto; color:#1a1a1a; font-size:13px; line-height:1.6; padding:0 20px; }
@@ -230,7 +230,7 @@ export function buildEmergencyHtml() {
       /* v1.49.3 (Greg): printers/PDF default to dropping background colors
          ("Background graphics" off), which turned the banner's white-on-red
          into faint gray. In print, both top strips render as red TYPE with a
-         red border — no background dependence, legible on every printer. */
+         red border. No background dependence, legible on every printer. */
       @media print {
         body { margin:20px; }
         .printbtn { display:none; }
@@ -255,7 +255,7 @@ export function buildEmergencyHtml() {
       <div class="section-title">Code Status, Directives &amp; Devices</div>
       ${statusRows.map(r => `<div class="row">${r}</div>`).join("")}
     </div>` : ""}
-    ${section(immunoMeds.length ? "Active Medications — immunosuppressants first" : "Active Medications", medRows)}
+    ${section(immunoMeds.length ? "Active Medications: immunosuppressants first" : "Active Medications", medRows)}
     ${section("Active Conditions", condRows)}
     ${section("Allergies &amp; Reactions", algRows)}
     ${section("Care Team", teamRows)}
@@ -264,7 +264,7 @@ export function buildEmergencyHtml() {
     ${labSections}
     ${cardSection}
     <div class="footer">
-      <span>Insina Health &mdash; Emergency Information</span>
+      <span>Insina Health: Emergency Information</span>
       <span>Printed ${date}</span>
     </div>
   </body></html>`;

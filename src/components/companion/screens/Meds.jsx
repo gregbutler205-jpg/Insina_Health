@@ -119,7 +119,7 @@ export default function Meds({ queueSync, openMedList }) {
             {canConfirm && (
               done
                 ? <button onClick={() => toggleGroup(g.key)} style={{ width: "100%", marginTop: 10, padding: 10, background: "rgba(16,185,129,.12)", border: `1px solid ${C.green}55`, borderRadius: 8, color: C.green, fontSize: 12, fontFamily: mono, fontWeight: 600, cursor: "pointer" }}>
-                    ✓ Confirmed — tap to undo
+                    ✓ Confirmed. Tap to undo
                   </button>
                 : <Btn onClick={() => toggleGroup(g.key)} color={C.green} style={{ marginTop: 10 }}>Took my {g.label.toLowerCase()} meds</Btn>
             )}
@@ -163,7 +163,7 @@ export default function Meds({ queueSync, openMedList }) {
             <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: `1px solid ${C.b2}` }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, color: C.p }}>{e.medName}</div>
-                <div style={{ fontSize: 12, color: C.amber, fontFamily: mono }}>{EXCEPTION_TYPES.find(t => t.key === e.type)?.label || e.type}{e.note ? ` — ${e.note}` : ""}</div>
+                <div style={{ fontSize: 12, color: C.amber, fontFamily: mono }}>{EXCEPTION_TYPES.find(t => t.key === e.type)?.label || e.type}{e.note ? `: ${e.note}` : ""}</div>
               </div>
               <button onClick={() => dropException(e.id)} style={{ background: "none", border: "none", color: C.ghost, cursor: "pointer", fontSize: 13 }}>✕</button>
             </div>

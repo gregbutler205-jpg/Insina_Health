@@ -18,7 +18,7 @@ export default function SignIn({ onSignIn, onSkip }) {
       <div style={{ fontSize: 12, color: C.s, fontFamily: mono, letterSpacing: "3px", textTransform: "uppercase", marginTop: 6 }}>Companion</div>
 
       <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: "22px 0 30px", maxWidth: 300 }}>
-        Sign in with Google to sync your health record. Your data stays in your own Google Drive — Insina’s servers never see it.
+        Sign in with Google to sync your health record. Your data stays in your own Google Drive: Insina’s servers never see it.
       </div>
 
       <div style={{ width: "100%", maxWidth: 320 }}>
@@ -34,7 +34,7 @@ export default function SignIn({ onSignIn, onSkip }) {
       </div>
 
       <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, lineHeight: 1.6, marginTop: 30, maxWidth: 300 }}>
-        You can capture vitals, meds, symptoms, and visits offline either way — they’ll sync once you connect.
+        You can capture vitals, meds, symptoms, and visits offline either way. They’ll sync once you connect.
       </div>
     </div>
   );

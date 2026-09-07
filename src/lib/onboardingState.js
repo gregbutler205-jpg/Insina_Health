@@ -123,7 +123,7 @@ export function validateTransplantDate(iso, now = new Date()) {
   if (isNaN(d)) return { ok: false, error: "Enter a valid date." };
   if (d > now) return { ok: false, error: "Transplant date can't be in the future." };
   const fifty = new Date(now); fifty.setFullYear(fifty.getFullYear() - 50);
-  if (d < fifty) return { ok: true, warn: "That's more than 50 years ago — double-check the year." };
+  if (d < fifty) return { ok: true, warn: "That's more than 50 years ago: double-check the year." };
   return { ok: true, warn: null };
 }
 

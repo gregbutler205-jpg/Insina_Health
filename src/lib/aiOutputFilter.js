@@ -64,7 +64,7 @@ function splitSentences(text) {
 }
 
 const REDACTION_NOTE =
-  "[Insina Health removed a line here — it appeared to give a specific medication or dose instruction. " +
+  "[Insina Health removed a line here. It appeared to give a specific medication or dose instruction. " +
   "Insina explains and organizes your record; it does not tell you what to do. " +
   "Discuss any medication or dose change with your care team.]";
 

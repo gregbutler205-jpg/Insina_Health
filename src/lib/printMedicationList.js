@@ -21,7 +21,7 @@ export function printMedicationList(meds) {
   });
   const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const fmtRefill = (str) => {
-    if (!str) return "—";
+    if (!str) return "–";
     if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return formatDateUS(str);
     return str;
   };
@@ -32,11 +32,11 @@ export function printMedicationList(meds) {
       <tbody>
         ${catMeds.map(m => `<tr>
           <td><strong>${esc(m.name)}</strong>${m.brand ? `<br><span class="brand">${esc(m.brand)}</span>` : ""}${m.flag ? `<span class="flag-badge"> REVIEW</span>` : ""}</td>
-          <td>${esc(m.dose||"—")}</td>
-          <td>${esc(m.frequency||"—")}</td>
-          <td>${esc(m.schedule||"—")}</td>
-          <td>${esc(m.prescriber||"—")}</td>
-          <td>${esc(m.rxNumber||"—")}</td>
+          <td>${esc(m.dose||"–")}</td>
+          <td>${esc(m.frequency||"–")}</td>
+          <td>${esc(m.schedule||"–")}</td>
+          <td>${esc(m.prescriber||"–")}</td>
+          <td>${esc(m.rxNumber||"–")}</td>
           <td>${esc(fmtRefill(m.refillDate))}</td>
         </tr>`).join("")}
       </tbody>
@@ -45,7 +45,7 @@ export function printMedicationList(meds) {
   const win = window.open("", "_blank", "width=960,height=700");
   if (!win) return;
   win.document.write(`<!DOCTYPE html><html><head>
-    <title>Medication List — Insina Health</title>
+    <title>Medication List: Insina Health</title>
     <style>
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:Georgia,serif; max-width:860px; margin:40px auto; color:#1a1a1a; font-size:13px; line-height:1.6; padding:0 24px; }
@@ -68,13 +68,13 @@ export function printMedicationList(meds) {
   </head><body>
     <img src="${PRINT_LOGO}" class="logo" />
     <h1>Medication List</h1>
-    <div class="subtitle">${patientName ? patientName + " &mdash; " : ""}Insina Health</div>
+    <div class="subtitle">${patientName ? patientName + ": " : ""}Insina Health</div>
     <div class="meta">${active.length} active medications &nbsp;·&nbsp; ${date}</div>
     <hr class="rule" />
     ${medsHTML}
     <div class="disclaimer">This list is for reference only. Always confirm medications and dosages with your prescribing physician and pharmacist.</div>
     <div class="footer">
-      <span>Insina Health &mdash; Personal Health Intelligence</span>
+      <span>Insina Health: Personal Health Intelligence</span>
       <span>Printed ${date}</span>
     </div>
   </body></html>`);

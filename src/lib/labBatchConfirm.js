@@ -219,7 +219,7 @@ export function parseRefRange(refRange) {
   const s = String(refRange || "").trim();
   if (!s) return null;
   const num = "([0-9]*\\.?[0-9]+)";
-  let m = new RegExp(`^${num}\\s*[-–—]\\s*${num}$`).exec(s);
+  let m = new RegExp(`^${num}\\s*[-––]\\s*${num}$`).exec(s);
   if (m) return { lo: parseFloat(m[1]), hi: parseFloat(m[2]) };
   m = new RegExp(`^[<≤]\\s*${num}$`).exec(s);
   if (m) return { lo: null, hi: parseFloat(m[1]) };

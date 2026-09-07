@@ -23,7 +23,7 @@ function saveSurgeries(list) {
   localStorage.setItem("mi_surgeries", JSON.stringify(list));
 }
 function fmtDate(iso) {
-  return formatDateUS(iso, "—"); // v1.56.2: date fields read mm/dd/yyyy
+  return formatDateUS(iso, "–"); // v1.56.2: date fields read mm/dd/yyyy
 }
 function outcomeColor(o) {
   if (o === "Successful") return "#10b981";
@@ -215,7 +215,7 @@ export default function SurgeriesTab() {
     const { suggestions: next, added } = runProcedureScan();
     setSuggestions(next);
     if (added > 0) setScanNotice({ count: added });
-    else if (!auto) setScanMsg("No new procedure mentions found in your records — you're up to date.");
+    else if (!auto) setScanMsg("No new procedure mentions found in your records. You're up to date.");
   };
   // Auto-scan once a day on tab entry; the ran-flag is set when the scan FIRES
   // (StrictMode's dev double-mount cancels the first timer).
@@ -322,7 +322,7 @@ export default function SurgeriesTab() {
               </span>
             </div>
             <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'Sora',sans-serif", marginBottom:14, lineHeight:1.5 }}>
-              These procedures are described in your records but aren't on your Procedures list. Nothing is added until you review it —
+              These procedures are described in your records but aren't on your Procedures list. Nothing is added until you review it: 
               Confirm to add one (the date comes from the document; edit anything first), or Dismiss it and it won't be suggested again.
             </div>
             {suggestions.map(sug => (
@@ -339,7 +339,7 @@ export default function SurgeriesTab() {
                   {sug.sources.slice(0, 3).map((s, i) => (
                     <div key={i} style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", lineHeight:1.6, marginBottom:2 }}>
                       <span style={{ color:"#f59e0b" }}>{s.store}</span>
-                      {" — "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
+                      {": "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
                       {s.snippet ? <span style={{ color:"#6a8090" }}>{" · “"}{s.snippet}{"”"}</span> : null}
                     </div>
                   ))}
@@ -361,7 +361,7 @@ export default function SurgeriesTab() {
         {/* List */}
         {allProcedures.length === 0 ? (
           <div style={{ textAlign:"center", padding:"60px 0", color:"#a0b4c8", fontFamily:"'DM Mono',monospace", fontSize:12 }}>
-            No procedures added yet — click Add Procedure to get started.
+            No procedures added yet. Click Add Procedure to get started.
           </div>
         ) : (
           // UI-24: reverse-chronological at render time too — restored/legacy
@@ -416,7 +416,7 @@ export default function SurgeriesTab() {
               {scanNotice.count} possible procedure{scanNotice.count !== 1 ? "s" : ""} found in your records
             </h2>
             <div style={{ fontSize:13, color:"#b0c4d8", fontFamily:"'Sora',sans-serif", lineHeight:1.6, marginBottom:20 }}>
-              They're listed under <b style={{ color:"#f59e0b" }}>Suggested from your records</b> at the top of this page —
+              They're listed under <b style={{ color:"#f59e0b" }}>Suggested from your records</b> at the top of this page: 
               nothing goes on your Procedures list until you review each one.
               <b style={{ color:"#7eb8d8" }}> Confirm</b> to add it, or <b style={{ color:"#7eb8d8" }}>Dismiss</b> it.
             </div>

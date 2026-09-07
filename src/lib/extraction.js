@@ -23,12 +23,12 @@ export const EXTRACTION_MODE = import.meta.env?.VITE_EXTRACTION_MODE === "live" 
 export const PAGES_PER_CALL = 15; // §4.2: batch ≤15 pages per model call, merge client-side
 
 export class ExtractionConsentError extends Error {
-  constructor() { super("AI processing consent has not been granted — extraction is blocked."); this.name = "ExtractionConsentError"; }
+  constructor() { super("AI processing consent has not been granted: extraction is blocked."); this.name = "ExtractionConsentError"; }
 }
 
 /** Thrown when live extraction is requested but the proxy route isn't wired yet (F-09). */
 export class ExtractionNotWiredError extends Error {
-  constructor() { super("Live extraction is not available yet — the proxy extraction route is not implemented. Use fixture mode."); this.name = "ExtractionNotWiredError"; }
+  constructor() { super("Live extraction is not available yet. The proxy extraction route is not implemented. Use fixture mode."); this.name = "ExtractionNotWiredError"; }
 }
 
 function assertConsent() {

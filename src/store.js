@@ -186,5 +186,5 @@ export function getLastImportLabel() {
       return new Date(log[0].ts).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     }
   } catch { /* fall through */ }
-  return "—";
+  return "–";
 }

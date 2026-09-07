@@ -245,7 +245,7 @@ const VITALS = [
   {
     id: "bp", label: "Blood Pressure", unit: "mmHg", color: "#4f8ef7", source: "manual",
     goodMin: 90, goodMax: 130, yMin: 50, yMax: 180,
-    latestFn: r => (r.bp_s != null && r.bp_d != null) ? `${r.bp_s}/${r.bp_d}` : "—",
+    latestFn: r => (r.bp_s != null && r.bp_d != null) ? `${r.bp_s}/${r.bp_d}` : "–",
     latestNum: r => r.bp_s,
     statusFn: r => r.bp_s == null ? { label: "No data", color: "#98afc4" } : r.bp_s >= 140 || r.bp_d >= 90 ? { label: "High", color: "#ef4444" } : r.bp_s >= 130 ? { label: "Elevated", color: "#f59e0b" } : { label: "Normal", color: "#10b981" },
     chartType: "line", chartKeys: ["bp_s", "bp_d"], chartColors: ["#4f8ef7", "#a78bfa"],
@@ -257,7 +257,7 @@ const VITALS = [
   {
     id: "hr", label: "Heart Rate", unit: "bpm", color: "#ef4444", source: "manual",
     goodMin: 60, goodMax: 100, yMin: 40, yMax: 120,
-    latestFn: r => r.hr != null ? `${r.hr}` : "—",
+    latestFn: r => r.hr != null ? `${r.hr}` : "–",
     latestNum: r => r.hr,
     statusFn: r => r.hr == null ? { label: "No data", color: "#98afc4" } : r.hr < 50 ? { label: "Low", color: "#f59e0b" } : r.hr > 100 ? { label: "High", color: "#ef4444" } : { label: "Normal", color: "#10b981" },
     chartType: "line", chartKeys: ["hr"], chartColors: ["#ef4444"],
@@ -269,7 +269,7 @@ const VITALS = [
   {
     id: "resting_hr", label: "Resting Heart Rate", unit: "bpm", color: "#f87171", source: "manual",
     goodMin: 50, goodMax: 70, yMin: 40, yMax: 90,
-    latestFn: r => r.resting_hr != null ? `${r.resting_hr}` : "—",
+    latestFn: r => r.resting_hr != null ? `${r.resting_hr}` : "–",
     latestNum: r => r.resting_hr,
     statusFn: r => r.resting_hr == null ? { label: "No data", color: "#98afc4" } : r.resting_hr > 70 ? { label: "Elevated", color: "#f59e0b" } : r.resting_hr < 50 ? { label: "Low", color: "#4f8ef7" } : { label: "Good", color: "#10b981" },
     chartType: "line", chartKeys: ["resting_hr"], chartColors: ["#f87171"],
@@ -281,7 +281,7 @@ const VITALS = [
   {
     id: "o2", label: "O2 Saturation", unit: "%", color: "#10b981", source: "manual",
     goodMin: 95, goodMax: 100, yMin: 88, yMax: 102,
-    latestFn: r => r.o2 != null ? `${r.o2}%` : "—",
+    latestFn: r => r.o2 != null ? `${r.o2}%` : "–",
     latestNum: r => r.o2,
     statusFn: r => r.o2 == null ? { label: "No data", color: "#98afc4" } : r.o2 >= 98 ? { label: "Excellent", color: "#10b981" } : r.o2 >= 95 ? { label: "Normal", color: "#7eb8d8" } : { label: "Low", color: "#ef4444" },
     chartType: "line", chartKeys: ["o2"], chartColors: ["#10b981"],
@@ -293,7 +293,7 @@ const VITALS = [
   {
     id: "weight", label: "Weight", unit: "lbs", color: "#f59e0b", source: "manual",
     goodMin: 180, goodMax: 190, yMin: 170, yMax: 200,
-    latestFn: r => r.weight != null ? `${r.weight}` : "—",
+    latestFn: r => r.weight != null ? `${r.weight}` : "–",
     latestNum: r => r.weight,
     statusFn: (r, prev) => {
       if (r.weight == null) return { label: "No data", color: "#98afc4" };
@@ -310,7 +310,7 @@ const VITALS = [
   {
     id: "temp", label: "Temperature", unit: "°F", color: "#7eb8d8", source: "manual",
     goodMin: 97, goodMax: 99.5, yMin: 96, yMax: 101,
-    latestFn: r => r.temp != null ? `${r.temp}°` : "—",
+    latestFn: r => r.temp != null ? `${r.temp}°` : "–",
     latestNum: r => r.temp,
     statusFn: r => r.temp == null ? { label: "No data", color: "#98afc4" } : r.temp < 97 ? { label: "Low", color: "#4f8ef7" } : r.temp > 99.5 ? { label: "Fever", color: "#ef4444" } : { label: "Normal", color: "#10b981" },
     chartType: "line", chartKeys: ["temp"], chartColors: ["#7eb8d8"],
@@ -322,7 +322,7 @@ const VITALS = [
   {
     id: "glucose", label: "Blood Glucose", unit: "mg/dL", color: "#a78bfa", source: "manual",
     goodMin: 70, goodMax: 100, yMin: 60, yMax: 130,
-    latestFn: r => r.glucose != null ? `${r.glucose}` : "—",
+    latestFn: r => r.glucose != null ? `${r.glucose}` : "–",
     latestNum: r => r.glucose,
     statusFn: r => r.glucose == null ? { label: "No data", color: "#98afc4" } : r.glucose > 125 ? { label: "High", color: "#ef4444" } : r.glucose > 100 ? { label: "Pre-diabetic", color: "#f59e0b" } : r.glucose < 70 ? { label: "Low", color: "#ef4444" } : { label: "Normal", color: "#10b981" },
     chartType: "line", chartKeys: ["glucose"], chartColors: ["#a78bfa"],
@@ -334,7 +334,7 @@ const VITALS = [
   {
     id: "bmi", label: "BMI", unit: "", color: "#10b981", source: "manual",
     goodMin: 18.5, goodMax: 24.9, yMin: 15, yMax: 40,
-    latestFn: r => { const b = calcBMI(r.weight); return b != null ? `${b}` : "—"; },
+    latestFn: r => { const b = calcBMI(r.weight); return b != null ? `${b}` : "–"; },
     latestNum: r => calcBMI(r.weight),
     statusFn: r => bmiLabel(calcBMI(r.weight)),
     chartType: "line", chartKeys: ["bmi_calc"], chartColors: ["#10b981"],
@@ -346,7 +346,7 @@ const VITALS = [
   {
     id: "sleep", label: "Sleep", unit: "hrs", color: "#60a5fa", source: "manual",
     goodMin: 7, goodMax: 9, yMin: 3, yMax: 11,
-    latestFn: r => r.sleep != null ? `${r.sleep}h` : "—",
+    latestFn: r => r.sleep != null ? `${r.sleep}h` : "–",
     latestNum: r => r.sleep,
     statusFn: r => r.sleep == null ? { label: "No data", color: "#98afc4" } : r.sleep < 6 ? { label: "Poor", color: "#ef4444" } : r.sleep < 7 ? { label: "Below goal", color: "#f59e0b" } : { label: "Good", color: "#10b981" },
     chartType: "bar",
@@ -398,7 +398,7 @@ function LogPanel({ onClose, onSave }) {
         </div>
         {form.date !== todayISO && (
           <div style={{ fontSize: 12, color: "#6ea3ff", fontFamily: "'DM Mono',monospace", marginTop: -10, marginBottom: 16 }}>
-            Logging for past date — {new Date(form.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}{form.time ? ` at ${form.time}` : ""}
+            Logging for past date: {new Date(form.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}{form.time ? ` at ${form.time}` : ""}
           </div>
         )}
         <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", marginBottom: 16 }}>Leave blank to skip any vital.</div>
@@ -468,7 +468,7 @@ function PlausibilityGate({ pending, onConfirm, onSuggestion, onCancel }) {
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: 12, color: "#98afc4" }}>No suggested correction — please edit the value manually.</div>
+              <div style={{ fontSize: 12, color: "#98afc4" }}>No suggested correction. Please edit the value manually.</div>
             )}
           </div>
         ))}
@@ -723,7 +723,7 @@ export default function App({ onNavChange }) {
                   </div>
                   <div style={{ display:"flex", alignItems:"baseline", gap:5, marginBottom:2 }}>
                     <span style={{ fontSize:19, fontWeight:700, color: status && status.color === "#ef4444" ? "#f87171" : "#dde8f5", lineHeight:1 }}>
-                      {latestR ? vc.latestFn(latestR) : "—"}
+                      {latestR ? vc.latestFn(latestR) : "–"}
                     </span>
                     <span style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>{vc.unit}</span>
                   </div>
@@ -800,7 +800,7 @@ export default function App({ onNavChange }) {
                     onClick={() => {
                       const latestR = isWatch ? latestWatch : latest;
                       const latestStr = latestR ? config.latestFn(latestR) : null;
-                      const showLatest = latestStr && latestStr !== "—";
+                      const showLatest = latestStr && latestStr !== "–";
                       const prompt = `Please analyze my ${config.label} readings${showLatest ? ` (most recent: ${latestStr}${config.unit ? " " + config.unit : ""})` : ""} over the last ${timeRange} month${timeRange > 1 ? "s" : ""}. Cross-reference the trend with my medications, conditions, other vitals, and labs; flag anything concerning; and tell me what to discuss with my care team.`;
                       localStorage.setItem("mi_ai_pending", prompt);
                       onNavChange?.("ai");
@@ -830,8 +830,8 @@ export default function App({ onNavChange }) {
                     return v != null && (v < config.goodMin || v > config.goodMax);
                   }).length;
                   return [
-                    { label:"Latest", value: latestR ? config.latestFn(latestR) : "—", sub: isWatch ? latestWatch?.date : latest?.date, color: status?.color ?? "#dde8f5" },
-                    { label:"Avg (period)", value: avgVal ? avgVal.toFixed(1) : "—", sub: config.unit, color:"#c4d8ee" },
+                    { label:"Latest", value: latestR ? config.latestFn(latestR) : "–", sub: isWatch ? latestWatch?.date : latest?.date, color: status?.color ?? "#dde8f5" },
+                    { label:"Avg (period)", value: avgVal ? avgVal.toFixed(1) : "–", sub: config.unit, color:"#c4d8ee" },
                     { label:"Out of Range", value: flagged, sub:`of ${filteredData.length} readings`, color: flagged > 0 ? "#ef4444" : "#10b981" },
                     { label:"Data Source", value: isWatch ? "Watch" : "Manual", sub: isWatch ? "HealthKit daily" : "Sporadic entry", color: isWatch ? "#4f8ef7" : "#7eb8d8" },
                   ];
@@ -893,36 +893,36 @@ export default function App({ onNavChange }) {
                     // column definitions per vital
                     const cols = id === "bp"
                       ? [{ h:"Date", fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Systolic",  fn:r=>r.bp_s??'—', c:r=>r.bp_s>=140?"#ef4444":r.bp_s>=130?"#f59e0b":"#c4d8ee", bold:true },
-                         { h:"Diastolic", fn:r=>r.bp_d??'—', c:r=>r.bp_d>=90?"#ef4444":"#c4d8ee" },
-                         { h:"HR",        fn:r=>r.hr??'—',   c:r=>"#7eb8d8" }]
+                         { h:"Systolic",  fn:r=>r.bp_s??'–', c:r=>r.bp_s>=140?"#ef4444":r.bp_s>=130?"#f59e0b":"#c4d8ee", bold:true },
+                         { h:"Diastolic", fn:r=>r.bp_d??'–', c:r=>r.bp_d>=90?"#ef4444":"#c4d8ee" },
+                         { h:"HR",        fn:r=>r.hr??'–',   c:r=>"#7eb8d8" }]
                     : id === "o2"
                       ? [{ h:"Date",       fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"O2 Sat %",     fn:r=>r.o2!=null?`${r.o2}%`:'—', c:r=>r.o2!=null&&r.o2<95?"#ef4444":r.o2!=null&&r.o2<97?"#f59e0b":"#10b981", bold:true },
-                         { h:"HR",         fn:r=>r.hr??'—',  c:r=>"#7eb8d8" }]
+                         { h:"O2 Sat %",     fn:r=>r.o2!=null?`${r.o2}%`:'–', c:r=>r.o2!=null&&r.o2<95?"#ef4444":r.o2!=null&&r.o2<97?"#f59e0b":"#10b981", bold:true },
+                         { h:"HR",         fn:r=>r.hr??'–',  c:r=>"#7eb8d8" }]
                     : id === "weight"
                       ? [{ h:"Date",   fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Weight (lbs)", fn:r=>r.weight??'—', c:r=>"#f59e0b", bold:true },
-                         { h:"Change", fn:(r,i,arr)=>{const p=arr[i+1]; return p&&r.weight&&p.weight?(r.weight-p.weight>0?"+":"")+(r.weight-p.weight).toFixed(1):"—"}, c:(r,i,arr)=>{const p=arr[i+1]; if(!p||!r.weight||!p.weight)return"#a0b4c8"; return r.weight>p.weight?"#ef4444":r.weight<p.weight?"#10b981":"#a0b4c8";} }]
+                         { h:"Weight (lbs)", fn:r=>r.weight??'–', c:r=>"#f59e0b", bold:true },
+                         { h:"Change", fn:(r,i,arr)=>{const p=arr[i+1]; return p&&r.weight&&p.weight?(r.weight-p.weight>0?"+":"")+(r.weight-p.weight).toFixed(1):"–"}, c:(r,i,arr)=>{const p=arr[i+1]; if(!p||!r.weight||!p.weight)return"#a0b4c8"; return r.weight>p.weight?"#ef4444":r.weight<p.weight?"#10b981":"#a0b4c8";} }]
                     : id === "temp"
                       ? [{ h:"Date",     fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Temp °F",  fn:r=>r.temp!=null?`${r.temp}°`:'—', c:r=>r.temp>99.5?"#ef4444":r.temp>99?"#f59e0b":"#b0c4d8", bold:true }]
+                         { h:"Temp °F",  fn:r=>r.temp!=null?`${r.temp}°`:'–', c:r=>r.temp>99.5?"#ef4444":r.temp>99?"#f59e0b":"#b0c4d8", bold:true }]
                     : id === "glucose"
                       ? [{ h:"Date",       fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Glucose mg/dL", fn:r=>r.glucose??'—', c:r=>r.glucose>125?"#ef4444":r.glucose>100?"#f59e0b":r.glucose<70?"#ef4444":"#10b981", bold:true },
+                         { h:"Glucose mg/dL", fn:r=>r.glucose??'–', c:r=>r.glucose>125?"#ef4444":r.glucose>100?"#f59e0b":r.glucose<70?"#ef4444":"#10b981", bold:true },
                          { h:"Status", fn:r=>r.glucose>125?"High":r.glucose>100?"Pre-diabetic":r.glucose<70?"Low":"Normal", c:r=>r.glucose>125?"#ef4444":r.glucose>100?"#f59e0b":r.glucose<70?"#ef4444":"#10b981" }]
                     : id === "resting_hr"
                       ? [{ h:"Date",       fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Resting HR", fn:r=>r.resting_hr!=null?`${r.resting_hr} bpm`:'—', c:r=>r.resting_hr==null?"#a0b4c8":r.resting_hr>70?"#f59e0b":"#10b981", bold:true },
-                         { h:"Status", fn:r=>r.resting_hr==null?"—":r.resting_hr>70?"Elevated":r.resting_hr<50?"Low":"Good", c:r=>r.resting_hr==null?"#a0b4c8":r.resting_hr>70?"#f59e0b":"#10b981" }]
+                         { h:"Resting HR", fn:r=>r.resting_hr!=null?`${r.resting_hr} bpm`:'–', c:r=>r.resting_hr==null?"#a0b4c8":r.resting_hr>70?"#f59e0b":"#10b981", bold:true },
+                         { h:"Status", fn:r=>r.resting_hr==null?"–":r.resting_hr>70?"Elevated":r.resting_hr<50?"Low":"Good", c:r=>r.resting_hr==null?"#a0b4c8":r.resting_hr>70?"#f59e0b":"#10b981" }]
                     : id === "bmi"
                       ? [{ h:"Date",   fn:r=><>{formatDateUS(r.date)}</>, c:r=>"#98afc4" },
-                         { h:"Weight", fn:r=>r.weight!=null?`${r.weight} lbs`:'—', c:r=>"#f59e0b" },
-                         { h:"BMI",    fn:r=>{const b=calcBMI(r.weight);return b!=null?`${b}`:'—';}, c:r=>{const b=calcBMI(r.weight);return bmiLabel(b).color;}, bold:true },
+                         { h:"Weight", fn:r=>r.weight!=null?`${r.weight} lbs`:'–', c:r=>"#f59e0b" },
+                         { h:"BMI",    fn:r=>{const b=calcBMI(r.weight);return b!=null?`${b}`:'–';}, c:r=>{const b=calcBMI(r.weight);return bmiLabel(b).color;}, bold:true },
                          { h:"Category", fn:r=>bmiLabel(calcBMI(r.weight)).label, c:r=>bmiLabel(calcBMI(r.weight)).color }]
                     : id === "sleep"
                       ? [{ h:"Date",     fn:r=><>{formatDateUS(r.date)}{r.flag&&<span style={{marginLeft:3,fontSize:12,color:"#f87171"}}>▲</span>}</>, c:r=>"#98afc4" },
-                         { h:"Sleep hrs", fn:r=>r.sleep?`${r.sleep}h`:'—', c:r=>r.sleep<6?"#ef4444":r.sleep<7?"#f59e0b":"#10b981", bold:true },
+                         { h:"Sleep hrs", fn:r=>r.sleep?`${r.sleep}h`:'–', c:r=>r.sleep<6?"#ef4444":r.sleep<7?"#f59e0b":"#10b981", bold:true },
                          { h:"Status", fn:r=>r.sleep<6?"Poor":r.sleep<7?"Below goal":"Good", c:r=>r.sleep<6?"#ef4444":r.sleep<7?"#f59e0b":"#10b981" }]
                       : [];
                     if (!cols.length) return null;

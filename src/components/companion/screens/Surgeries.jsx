@@ -27,7 +27,7 @@ export default function Surgeries({ onBack }) {
           </Card>
         ))}
         <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, textAlign: "center", padding: "12px 0 20px" }}>
-          Read-only — edit on the web app.
+          Read-only. Edit on the web app.
         </div>
       </div>
     </div>

@@ -119,7 +119,7 @@ export function addUpcomingAppointment({ title, provider, specialty, date }) {
   const appts = readArr("mi_appointments");
   appts.unshift({
     id: `ob_${Date.now().toString(36)}`,
-    title: title || `${specialty || "Appointment"} — ${provider || ""}`.trim(),
+    title: title || `${specialty || "Appointment"}: ${provider || ""}`.trim(),
     provider: provider || "", specialty: specialty || "", date: date || "",
     time: "", status: "upcoming", urgency: "med", reminder: true,
     source: "Entered manually", addedAt: new Date().toISOString(),

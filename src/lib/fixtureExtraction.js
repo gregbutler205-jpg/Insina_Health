@@ -101,7 +101,7 @@ export function renderFixtureDocImage(title, docDate, lines) {
   ctx.font = "17px Georgia"; ctx.fillStyle = "#222";
   lines.forEach((line, i) => ctx.fillText(line, 60, 180 + i * 34));
   ctx.font = "12px Georgia"; ctx.fillStyle = "#999";
-  ctx.fillText("Fixture document — generated for onboarding demo mode. Not a real record.", 60, 1060);
+  ctx.fillText("Fixture document: generated for onboarding demo mode. Not a real record.", 60, 1060);
   return canvas.toDataURL("image/jpeg", 0.8);
 }
 
@@ -109,11 +109,11 @@ export function fixtureDocLines(doc) {
   return doc.items.slice(0, 24).map(it => {
     const f = it.fields;
     switch (it.category) {
-      case "medication": return `•  ${f.name} ${f.strength || ""} — ${f.dose || ""} ${f.frequency || ""}`.trim();
+      case "medication": return `•  ${f.name} ${f.strength || ""}: ${f.dose || ""} ${f.frequency || ""}`.trim();
       case "allergy": return `•  Allergy: ${f.substance}${f.reaction ? ` (${f.reaction})` : ""}`;
       case "condition": return `•  Dx: ${f.name}`;
       case "care_team": return `•  Provider: ${f.name}, ${f.specialty || ""}`;
-      case "lab": return `•  ${f.test}: ${f.value} ${f.unit || ""}  (ref ${f.ref_low || "—"}–${f.ref_high || "—"})`;
+      case "lab": return `•  ${f.test}: ${f.value} ${f.unit || ""}  (ref ${f.ref_low || "–"}–${f.ref_high || "–"})`;
       case "procedure": return `•  Procedure: ${f.name} (${f.date || ""})`;
       case "immunization": return `•  Immunization: ${f.name} (${f.date || ""})`;
       default: return `•  ${JSON.stringify(f).slice(0, 70)}`;

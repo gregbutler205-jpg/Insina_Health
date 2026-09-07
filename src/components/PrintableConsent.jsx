@@ -22,7 +22,7 @@ export function printConsent(consentData = {}) {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Insina Health — Advanced Mode Consent</title>
+  <title>Insina Health: Advanced Mode Consent</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -101,8 +101,8 @@ export function printConsent(consentData = {}) {
 <body>
 
   <img src="${PRINT_LOGO}" class="logo" alt="Insina Health" />
-  <h1>Advanced AI Mode — Informed Consent</h1>
-  <div class="subtitle">Insina Health &mdash; Consent Document v${consentVersion}</div>
+  <h1>Advanced AI Mode: Informed Consent</h1>
+  <div class="subtitle">Insina Health: Consent Document v${consentVersion}</div>
   <hr class="rule" />
 
   <h2>What Advanced Mode Does</h2>
@@ -115,7 +115,7 @@ export function printConsent(consentData = {}) {
 
   <h2>Understanding the Limitations</h2>
   <p>
-    Advanced Mode AI analysis is a <strong>personal health intelligence tool</strong> — it is
+    Advanced Mode AI analysis is a <strong>personal health intelligence tool</strong>. It is
     <strong>not</strong> a substitute for professional medical advice, diagnosis, or treatment.
     Specifically:
   </p>
@@ -123,14 +123,14 @@ export function printConsent(consentData = {}) {
     <li>AI responses are informational only and do not constitute medical advice.</li>
     <li>Always consult your physician or transplant team before making any changes to your medications, diet, or treatment plan.</li>
     <li>The AI model may make errors or omissions. Do not act on AI analysis alone.</li>
-    <li>In an emergency, call 911 or go to your nearest emergency room — do not consult the app.</li>
+    <li>In an emergency, call 911 or go to your nearest emergency room. Do not consult the app.</li>
   </ul>
 
   <h2>Your Data and Privacy</h2>
   <p>
     Your health record is stored on your device. When you use AI, information needed for your
     request is sent pseudonymously and securely through Insina to Anthropic to generate the
-    response. Insina's proxy does not store or log message content — no request content is
+    response. Insina's proxy does not store or log message content. No request content is
     retained after the response is delivered. The hosting infrastructure that runs the proxy
     (Render) retains standard HTTP access metadata (IP addresses, timestamps, request paths) as
     part of normal server operation, independent of anything Insina's own code does. Pseudonymous
@@ -158,17 +158,17 @@ export function printConsent(consentData = {}) {
 
   <div class="consent-record">
     <div class="label">Consent Mode</div>
-    <div class="value">${mode} Mode — Advanced AI Analysis</div>
+    <div class="value">${mode} Mode: Advanced AI Analysis</div>
     <div class="label">Consent Date</div>
     <div class="value">${consentDate}</div>
     <div class="label">Consent Version</div>
     <div class="value">v${consentVersion}</div>
     <div class="label">Consent Status</div>
-    <div class="value" style="color:#16a34a">&#10003; Active — Informed Consent Given</div>
+    <div class="value" style="color:#16a34a">&#10003; Active: Informed Consent Given</div>
   </div>
 
   <div class="footer">
-    <span>Insina Health &mdash; Personal Health Intelligence</span>
+    <span>Insina Health: Personal Health Intelligence</span>
     <span>Printed ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
   </div>
 
@@ -205,16 +205,16 @@ export default function ConsentText({ style = {} }) {
     <div style={s}>
       <div style={h2}>What Advanced Mode Does</div>
       <p style={{ marginBottom: 10 }}>
-        Advanced Mode uses Claude Opus — a more capable AI model — to provide deeper cross-referenced
+        Advanced Mode uses Claude Opus, a more capable AI model, to provide deeper cross-referenced
         analysis of your labs, medications, vitals, and history. Responses are richer and more detailed
         than Standard Mode.
       </p>
 
       <div style={h2}>Important Limitations</div>
       <ul style={{ paddingLeft: 16, marginBottom: 10 }}>
-        <li style={li}>AI responses are informational only — not medical advice.</li>
+        <li style={li}>AI responses are informational only. Not medical advice.</li>
         <li style={li}>Always consult your physician before changing medications or treatment.</li>
-        <li style={li}>In an emergency, call 911 — do not rely on this app.</li>
+        <li style={li}>In an emergency, call 911. Do not rely on this app.</li>
         <li style={li}>The AI may make errors. Never act on AI analysis alone.</li>
       </ul>
 
@@ -222,7 +222,7 @@ export default function ConsentText({ style = {} }) {
       <ul style={{ paddingLeft: 16, marginBottom: 10 }}>
         <li style={li}>Your health record is stored on your device. Information needed for your request is sent pseudonymously and securely through Insina to Anthropic to generate the response.</li>
         <li style={li}>Insina's proxy does not store or log message content, though the hosting infrastructure retains standard HTTP access metadata (IPs, timestamps, paths) as part of normal operation.</li>
-        <li style={li}>Pseudonymous is not the same as anonymous — your data is identified by a random ID, never your name, but it is still your data.</li>
+        <li style={li}>Pseudonymous is not the same as anonymous. Your data is identified by a random ID, never your name, but it is still your data.</li>
         <li style={li}>You can return to Standard Mode at any time in Settings &amp; Backup.</li>
       </ul>
 

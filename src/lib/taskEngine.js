@@ -67,12 +67,12 @@ export const STORAGE_PROMPT = {
 
 // T2 per-element copy: benefit-before-ask, artifact-specific.
 const T2_COPY = {
-  name_dob:    (artifact) => ({ reason: `Add your name and date of birth — needed for your ${artifact}.`, benefit: "Every report is labeled correctly for your care team.", minutes: 1, route: "profile", ctaLabel: "Add basics" }),
-  tier0:       (artifact) => ({ reason: `Add your transplant details — needed for your ${artifact}.`, benefit: "Your reports carry the context every clinician asks for first.", minutes: 2, route: "onboarding:2", ctaLabel: "Add details" }),
-  medication:  (artifact) => ({ reason: `Add at least one medication — needed for your ${artifact}.`, benefit: "Your first report becomes available the moment one is confirmed.", minutes: 2, route: "import", ctaLabel: "Add medications" }),
-  allergies:   (artifact) => ({ reason: `Confirm your allergies — needed for your ${artifact}.`, benefit: "Contraindication checks in your reports depend on this.", minutes: 1, route: "import", ctaLabel: "Review allergies" }),
-  condition:   (artifact) => ({ reason: `Add a condition (or confirm you have none) — needed for your ${artifact}.`, benefit: "Your profile tells the whole story at a glance.", minutes: 1, route: "conditions", ctaLabel: "Add condition" }),
-  appointment: (artifact) => ({ reason: `Add your upcoming appointment — needed for your ${artifact}.`, benefit: "Your prep brief is built around the visit.", minutes: 1, route: "appointments", ctaLabel: "Add appointment" }),
+  name_dob:    (artifact) => ({ reason: `Add your name and date of birth: needed for your ${artifact}.`, benefit: "Every report is labeled correctly for your care team.", minutes: 1, route: "profile", ctaLabel: "Add basics" }),
+  tier0:       (artifact) => ({ reason: `Add your transplant details: needed for your ${artifact}.`, benefit: "Your reports carry the context every clinician asks for first.", minutes: 2, route: "onboarding:2", ctaLabel: "Add details" }),
+  medication:  (artifact) => ({ reason: `Add at least one medication: needed for your ${artifact}.`, benefit: "Your first report becomes available the moment one is confirmed.", minutes: 2, route: "import", ctaLabel: "Add medications" }),
+  allergies:   (artifact) => ({ reason: `Confirm your allergies: needed for your ${artifact}.`, benefit: "Contraindication checks in your reports depend on this.", minutes: 1, route: "import", ctaLabel: "Review allergies" }),
+  condition:   (artifact) => ({ reason: `Add a condition (or confirm you have none): needed for your ${artifact}.`, benefit: "Your profile tells the whole story at a glance.", minutes: 1, route: "conditions", ctaLabel: "Add condition" }),
+  appointment: (artifact) => ({ reason: `Add your upcoming appointment: needed for your ${artifact}.`, benefit: "Your prep brief is built around the visit.", minutes: 1, route: "appointments", ctaLabel: "Add appointment" }),
 };
 
 /**
@@ -111,7 +111,7 @@ export function evaluateTasks(now = new Date()) {
     if (thin.length === 0 && state?.labs_import_task_queued && readArr("mi_labs").length === 0) {
       tasks.push({
         key: "T3-first-labs", rule: "T3",
-        benefit: "Trends need history — your labs become graphs instead of numbers.",
+        benefit: "Trends need history. Your labs become graphs instead of numbers.",
         reason: "Import your lab results from recent visits.",
         minutes: 5, route: "import", ctaLabel: "Import labs",
       });
@@ -120,8 +120,8 @@ export function evaluateTasks(now = new Date()) {
       const needed = 3 - n;
       tasks.push({
         key: `T3-${test}`, rule: "T3",
-        benefit: "Trends need history — this one becomes a graph instead of a number.",
-        reason: `Import earlier ${test} results — ${needed} more unlock${needed === 1 ? "s" : ""} trends.`,
+        benefit: "Trends need history. This one becomes a graph instead of a number.",
+        reason: `Import earlier ${test} results: ${needed} more unlock${needed === 1 ? "s" : ""} trends.`,
         minutes: 3, route: "import", ctaLabel: "Import labs",
       });
     });
@@ -140,7 +140,7 @@ export function evaluateTasks(now = new Date()) {
     if (!covered) tasks.push({
       key: `T4-${nextAppt.specialty}`, rule: "T4",
       benefit: "Your prep brief and emergency packet know who to name.",
-      reason: `Add your ${nextAppt.specialty} — improves your prep brief.`,
+      reason: `Add your ${nextAppt.specialty}: improves your prep brief.`,
       minutes: 1, route: "careplan", ctaLabel: "Add to care team",
     });
   }
@@ -159,7 +159,7 @@ export function evaluateTasks(now = new Date()) {
   if (!(t0.organ && t0.tx_date)) tasks.push({
     key: "T6", rule: "T6",
     benefit: "Your Emergency Card leads with what ER teams need first.",
-    reason: "Add your transplant details — 2 minutes, needed for your Emergency Card.",
+    reason: "Add your transplant details: 2 minutes, needed for your Emergency Card.",
     minutes: 2, route: "onboarding:2", ctaLabel: "Add details",
   });
 
@@ -168,7 +168,7 @@ export function evaluateTasks(now = new Date()) {
   if (activeMeds.length >= 3 && !activeMeds.some(m => m.pharmacy)) tasks.push({
     key: "T7", rule: "T7",
     benefit: "Refill reminders can tell you where to call.",
-    reason: "Add your pharmacy — helps with refill tracking.",
+    reason: "Add your pharmacy: helps with refill tracking.",
     minutes: 1, route: "profile", ctaLabel: "Add pharmacy",
   });
 
@@ -196,7 +196,7 @@ export function evaluateTasks(now = new Date()) {
   const keptBoth = readArr("mi_meds_full").filter(m => m.reviewFlag === "kept-both-duplicate").length;
   if (keptBoth > 0) tasks.push({
     key: "T5-kept-both", rule: "T5",
-    benefit: "You kept both copies of a duplicate — one of them is probably right.",
+    benefit: "You kept both copies of a duplicate. One of them is probably right.",
     reason: `Review ${keptBoth} medication entr${keptBoth !== 1 ? "ies" : "y"} you kept as duplicates.`,
     minutes: 1, route: "medications", ctaLabel: "Review",
   });

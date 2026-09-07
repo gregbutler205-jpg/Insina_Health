@@ -95,7 +95,7 @@ function PreVisitBrief({ visit, onStart }) {
       })
       .catch(e => {
         const net = /failed to fetch|networkerror|load failed/i.test(e.message || "");
-        setPrepErr(net ? "Couldn’t reach the AI server — check your connection and try again." : (e.message || "Couldn’t generate prep — try again when online."));
+        setPrepErr(net ? "Couldn’t reach the AI server. Check your connection and try again." : (e.message || "Couldn’t generate prep. Try again when online."));
       })
       .finally(() => setPrepLoading(false));
   };
@@ -116,7 +116,7 @@ function PreVisitBrief({ visit, onStart }) {
       <Card style={{ marginBottom: 12 }}>
         <div style={{ fontSize: 15, color: C.p, fontWeight: 600 }}>{visit.apptTitle}</div>
         <div style={{ fontSize: 12, color: C.s, fontFamily: mono, marginTop: 3 }}>
-          {visit.provider || "—"}{visit.date ? ` · ${relDate(visit.date)} · ${fmtShort(visit.date)}` : ""}
+          {visit.provider || "–"}{visit.date ? ` · ${relDate(visit.date)} · ${fmtShort(visit.date)}` : ""}
         </div>
       </Card>
 
@@ -162,7 +162,7 @@ function PreVisitBrief({ visit, onStart }) {
           <>
             {prepErr && <div style={{ fontSize: 12, color: C.amber, fontFamily: mono, marginBottom: 8 }}>{prepErr}</div>}
             <div style={{ fontSize: 12, color: C.dim, marginBottom: 8 }}>
-              {navigator.onLine ? "Tailored prep will appear here." : "You’re offline — here are a few questions from your record. Tailored prep generates when you’re back online."}
+              {navigator.onLine ? "Tailored prep will appear here." : "You’re offline. Here are a few questions from your record. Tailored prep generates when you’re back online."}
             </div>
             {fallbackQuestions.map((q, i) => (
               <div key={i} style={{ display: "flex", gap: 8, padding: "4px 0", fontSize: 12, color: C.dim }}>
@@ -186,7 +186,7 @@ function Consent({ onChoose, onBack }) {
       <div style={{ background: "#1c1200", border: `1px solid ${C.amber}40`, borderRadius: 10, padding: "12px 14px", marginBottom: 14 }}>
         <div style={{ fontSize: 12, color: C.amber, fontFamily: mono, textTransform: "uppercase", letterSpacing: "1px", marginBottom: 4 }}>⚠ Always ask first</div>
         <div style={{ fontSize: 12, color: "#fcd34d", lineHeight: 1.55 }}>
-          Recording laws vary by state — your care spans <b>Mississippi</b> and <b>Louisiana</b>, which have different consent rules. Ask the doctor’s permission before recording.
+          Recording laws vary by state. Your care spans <b>Mississippi</b> and <b>Louisiana</b>, which have different consent rules. Ask the doctor’s permission before recording.
         </div>
       </div>
 
@@ -198,9 +198,9 @@ function Consent({ onChoose, onBack }) {
       </Card>
 
       <SL>What did the doctor say?</SL>
-      <Btn onClick={() => onChoose("agreed")} color={C.green} style={{ marginBottom: 8 }}>✓ Doctor agreed — record audio</Btn>
-      <Btn onClick={() => onChoose("declined")} color={C.amber} style={{ marginBottom: 8 }}>Doctor declined — manual notes only</Btn>
-      <Btn onClick={() => onChoose("skipped")} color={C.dim} style={{ marginBottom: 16 }}>Skip recording — manual notes only</Btn>
+      <Btn onClick={() => onChoose("agreed")} color={C.green} style={{ marginBottom: 8 }}>✓ Doctor agreed: record audio</Btn>
+      <Btn onClick={() => onChoose("declined")} color={C.amber} style={{ marginBottom: 8 }}>Doctor declined: manual notes only</Btn>
+      <Btn onClick={() => onChoose("skipped")} color={C.dim} style={{ marginBottom: 16 }}>Skip recording: manual notes only</Btn>
 
       <button onClick={onBack} style={{ width: "100%", background: "none", border: "none", color: C.ghost, fontSize: 12, fontFamily: mono, cursor: "pointer" }}>← Back to brief</button>
     </div>

@@ -116,7 +116,7 @@ export default function ManualEntry({ onDone, onCancel }) {
           Enter your medications
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>
-          Type a few letters and pick from the list — about ten minutes, and it unlocks your first report.
+          Type a few letters and pick from the list: about ten minutes, and it unlocks your first report.
         </p>
       </div>
 
@@ -210,7 +210,7 @@ export default function ManualEntry({ onDone, onCancel }) {
             {meds.map((m, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "var(--bg-deep)", border: "1px solid var(--border)", borderRadius: 10 }}>
                 <span style={{ flex: 1, fontSize: 13, color: "var(--text-primary)" }}>
-                  <strong>{m.name}</strong>{m.dose ? ` ${m.dose}` : ""} — {m.frequency}
+                  <strong>{m.name}</strong>{m.dose ? ` ${m.dose}` : ""}: {m.frequency}
                   {m.unverifiedName && <span style={{ marginLeft: 8, fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--amber)" }}>name to verify</span>}
                 </span>
                 <button aria-label={`Remove ${m.name}`} onClick={() => setMeds(list => list.filter((_, j) => j !== i))}
@@ -265,7 +265,7 @@ export default function ManualEntry({ onDone, onCancel }) {
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
             {allergies.map((a, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "var(--bg-deep)", border: "1px solid var(--border)", borderRadius: 10 }}>
-                <span style={{ flex: 1, fontSize: 13, color: "var(--text-primary)" }}><strong>{a.name}</strong>{a.reaction ? ` — ${a.reaction}` : ""}</span>
+                <span style={{ flex: 1, fontSize: 13, color: "var(--text-primary)" }}><strong>{a.name}</strong>{a.reaction ? `: ${a.reaction}` : ""}</span>
                 <button aria-label={`Remove ${a.name}`} onClick={() => setAllergies(list => list.filter((_, j) => j !== i))}
                   style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: 14, minWidth: 32, minHeight: 32 }}>✕</button>
               </div>

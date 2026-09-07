@@ -76,12 +76,12 @@ export default function PreflightHost({ onNavChange }) {
         <div style={{ padding: "18px 20px 12px", borderBottom: "1px solid #1c2a40", flexShrink: 0 }}>
           <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 20, color: "#dde8f5" }}>Before generating: {REPORT_LABELS[ctx.reportType] || "Report"}</div>
           <div style={{ fontSize: 12, color: "#98afc4", fontFamily: mono, marginTop: 4 }}>
-            {crit.length > 0 ? `${crit.length} issue(s) should be resolved or overridden before sharing.` : "A few items to review — none block this report."}
+            {crit.length > 0 ? `${crit.length} issue(s) should be resolved or overridden before sharing.` : "A few items to review. None block this report."}
           </div>
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "14px 18px" }}>
-          <Section title="Critical — resolve or override" list={crit} color={SEV.critical.color} />
+          <Section title="Critical: resolve or override" list={crit} color={SEV.critical.color} />
           <Section title="Warnings" list={warn} color={SEV.warning.color} />
           {info.length > 0 && (
             <div style={{ marginBottom: 6 }}>

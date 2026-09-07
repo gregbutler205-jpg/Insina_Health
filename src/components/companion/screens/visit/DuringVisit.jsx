@@ -46,7 +46,7 @@ export default function DuringVisit({ visit, onStop }) {
       setPhase("live");
     } catch {
       setAudioFailed(true);
-      setErr("Microphone unavailable — continuing with manual notes. You can still capture the visit.");
+      setErr("Microphone unavailable: continuing with manual notes. You can still capture the visit.");
       setPhase("live");
     }
   }
@@ -88,7 +88,7 @@ export default function DuringVisit({ visit, onStop }) {
       {/* Status / timer */}
       <div style={{ textAlign: "center", padding: "24px 0 16px" }}>
         <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, marginBottom: 8 }}>
-          {phase === "idle" ? (wantsAudio ? "Ready to record" : "Manual notes — no audio")
+          {phase === "idle" ? (wantsAudio ? "Ready to record" : "Manual notes. No audio")
             : recordingLive ? (paused ? "Paused" : "● Recording") : "Capturing notes"}
         </div>
         <div style={{ fontSize: 44, fontFamily: mono, color: recordingLive && !paused ? C.red : C.p, letterSpacing: "2px" }}>{fmt(sec)}</div>
@@ -122,7 +122,7 @@ export default function DuringVisit({ visit, onStop }) {
           <div style={{ fontSize: 12, color: C.dim, fontFamily: mono, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>
             Note (optional)
           </div>
-          <textarea value={note} onChange={e => setNote(e.target.value)} rows={4} placeholder={wantsAudio ? "Jot a word if you like — not required." : "Type what you want to remember from this visit."}
+          <textarea value={note} onChange={e => setNote(e.target.value)} rows={4} placeholder={wantsAudio ? "Jot a word if you like. Not required." : "Type what you want to remember from this visit."}
             style={{ width: "100%", background: C.bg, border: `1px solid ${C.b1}`, borderRadius: 10, padding: "10px 12px", color: C.p, fontSize: 13, outline: "none", boxSizing: "border-box", resize: "vertical" }} />
         </div>
       )}

@@ -19,7 +19,7 @@ const BLANK = {
 };
 function genId() { return Math.random().toString(36).slice(2); }
 function fmtDate(iso) {
-  return formatDateUS(iso, "—"); // v1.56.2: date fields read mm/dd/yyyy
+  return formatDateUS(iso, "–"); // v1.56.2: date fields read mm/dd/yyyy
 }
 
 // ── Modal ──────────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
       setForm(f => ({ ...f, reportLink: res.url, reportFileId: res.fileId }));
       setUploadState("");
     } else {
-      setUploadState("Couldn't upload — connect Google Drive in Settings & Backup first, or paste a link instead.");
+      setUploadState("Couldn't upload. Connect Google Drive in Settings & Backup first, or paste a link instead.");
     }
   }
 
@@ -57,7 +57,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
           <div style={{ gridColumn:"1/-1" }}>
             <label style={lbl}>Study Name *</label>
-            <input style={inp} value={form.name} onChange={e => set("name", e.target.value)} placeholder="e.g. MRI — Liver, EKG, EMG — Left Leg, Echocardiogram" />
+            <input style={inp} value={form.name} onChange={e => set("name", e.target.value)} placeholder="e.g. MRI: Liver, EKG, EMG: Left Leg, Echocardiogram" />
           </div>
           <div>
             <label style={lbl}>Date of Study</label>
@@ -78,7 +78,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
           <div style={{ gridColumn:"1/-1" }}>
             <label style={lbl}>Related Condition</label>
             <select style={inp} value={form.relatedCondition} onChange={e => set("relatedCondition", e.target.value)}>
-              <option value="">— None / not linked —</option>
+              <option value="">– None / not linked –</option>
               {conditions.map(c => <option key={c} value={c}>{c}</option>)}
               {/* keep a stored value selectable even if the condition was later renamed/removed */}
               {form.relatedCondition && !conditions.includes(form.relatedCondition) && (
@@ -88,12 +88,12 @@ function StudyModal({ study, conditions, onSave, onClose }) {
           </div>
           <div style={{ gridColumn:"1/-1" }}>
             <label style={lbl}>Impression / Findings</label>
-            <textarea style={{ ...inp, height:90, resize:"vertical" }} value={form.impression} onChange={e => set("impression", e.target.value)} placeholder="Reading provider's impression — e.g. No acute findings. Stable post-transplant appearance." />
+            <textarea style={{ ...inp, height:90, resize:"vertical" }} value={form.impression} onChange={e => set("impression", e.target.value)} placeholder="Reading provider's impression, e.g. No acute findings. Stable post-transplant appearance." />
           </div>
           <div style={{ gridColumn:"1/-1" }}>
             <label style={lbl}>Report Link (your Google Drive)</label>
             <div style={{ display:"flex", gap:8 }}>
-              <input style={{ ...inp, flex:1 }} value={form.reportLink} onChange={e => set("reportLink", e.target.value)} placeholder="Paste the report's Drive link — or upload it →" />
+              <input style={{ ...inp, flex:1 }} value={form.reportLink} onChange={e => set("reportLink", e.target.value)} placeholder="Paste the report's Drive link. Or upload it →" />
               <button type="button" onClick={() => uploadRef.current?.click()} disabled={uploadState === "busy"}
                 style={{ padding:"8px 12px", background:"rgba(167,139,250,.1)", border:"1px solid rgba(167,139,250,.3)", borderRadius:8, color:"#a78bfa", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer", whiteSpace:"nowrap", opacity: uploadState === "busy" ? 0.6 : 1 }}>
                 {uploadState === "busy" ? "⏳ Uploading…" : "⬆ Upload to Drive"}
@@ -104,7 +104,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
               <div style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", marginTop:5 }}>{uploadState}</div>
             )}
             <div style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", marginTop:5 }}>
-              The file goes to your own Drive ("Insina Health Reports / Imaging &amp; Diagnostics") — Insina keeps only this link, never the document.
+              The file goes to your own Drive ("Insina Health Reports / Imaging &amp; Diagnostics"): Insina keeps only this link, never the document.
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
           <button onClick={() => {
             if (!form.name.trim()) return;
             const link = sanitizeReportUrl(form.reportLink);
-            if (form.reportLink.trim() && !link) { setUploadState("Only https:// links can be saved — check the report link."); return; }
+            if (form.reportLink.trim() && !link) { setUploadState("Only https:// links can be saved. Check the report link."); return; }
             onSave({ ...form, name: form.name.trim(), reportLink: link, id: form.id || genId() });
           }} style={btnPrimary}>
             {form.id ? "Save Changes" : "Add Study"}
@@ -207,7 +207,7 @@ export default function DiagnosticsTab() {
         {/* List */}
         {sorted.length === 0 ? (
           <div style={{ textAlign:"center", padding:"60px 0", color:"#a0b4c8", fontFamily:"'DM Mono',monospace", fontSize:12 }}>
-            No diagnostic studies yet — click Add Study to record imaging, EKGs, EMGs, and other observational studies.
+            No diagnostic studies yet. Click Add Study to record imaging, EKGs, EMGs, and other observational studies.
           </div>
         ) : (
           sorted.map(s => (
@@ -234,7 +234,7 @@ export default function DiagnosticsTab() {
                   {s.impression && <div style={{ fontSize:12, color:"#7eb8d8", lineHeight:1.55 }}>{s.impression}</div>}
                   {s.migratedFromImaging && !s.impression && (
                     <div style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", marginTop:4 }}>
-                      Migrated from Imaging History — add ordered-by, reading provider, and impression when known.
+                      Migrated from Imaging History. Add ordered-by, reading provider, and impression when known.
                     </div>
                   )}
                 </div>

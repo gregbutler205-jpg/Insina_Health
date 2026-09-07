@@ -127,7 +127,7 @@ export default function LabBatchReview({ doc, file, onDone, onClose }) {
 
           <div style={{ flex:1, overflowY:"auto", padding:"14px 18px" }}>
             <div style={{ fontSize:12, letterSpacing:"1.5px", textTransform:"uppercase", color:"#a0b4c8", fontFamily:mono, marginBottom:10 }}>
-              Extracted rows — include, correct, acknowledge
+              Extracted rows: include, correct, acknowledge
             </div>
 
             {rows.filter(r => r.state !== "promoted").map(r => {

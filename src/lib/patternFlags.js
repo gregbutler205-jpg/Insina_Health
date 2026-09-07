@@ -73,7 +73,7 @@ export function computePatternFlags() {
         flags.push({
           id: `lab-drift-${name}-${recent.num}`, level: "caution",
           title: `${name} moving further from range`,
-          detail: `${nums.join(" → ")} ${recent.unit || ""} (ref ${recent.refRange || `${range.low}-${range.high}`}). Drifting the wrong way — flag for review.`,
+          detail: `${nums.join(" → ")} ${recent.unit || ""} (ref ${recent.refRange || `${range.low}-${range.high}`}). Drifting the wrong way: flag for review.`,
         });
       }
     }

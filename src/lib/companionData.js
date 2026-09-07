@@ -37,17 +37,17 @@ export function daysUntil(dateLike) {
 }
 export function relDate(dateLike) {
   const d = daysUntil(dateLike);
-  if (d == null) return "—";
+  if (d == null) return "–";
   if (d < 0)   return "Past";
   if (d === 0) return "Today";
   if (d === 1) return "Tomorrow";
   if (d <= 6)  return `In ${d} days`;
   const dt = parseDate(dateLike);
-  return dt ? dt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—";
+  return dt ? dt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "–";
 }
 export function fmtShort(dateLike) {
   const d = parseDate(dateLike);
-  return d ? d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "—";
+  return d ? d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "–";
 }
 
 // ── Profile ─────────────────────────────────────────────────────────────────
@@ -141,7 +141,7 @@ export function refillsDue(within = 7) {
 
 // ── Medication tracking mode ──────────────────────────────────────────────────
 export const MED_MODES = [
-  { key: "reminders", label: "Reminders only", blurb: "Nudge at dose times — nothing to log." },
+  { key: "reminders", label: "Reminders only", blurb: "Nudge at dose times. Nothing to log." },
   { key: "quick",     label: "Quick confirm",  blurb: "One tap confirms a whole group." },
   { key: "full",      label: "Full logging",   blurb: "Per-group confirm + flag any exception." },
   { key: "off",       label: "Off",            blurb: "List stays viewable; no daily interaction." },
@@ -230,10 +230,10 @@ export function flaggedLabs() { return latestLabs().filter(l => l.flag); }
 export function safetyFlags() {
   const out = [];
   const isImmunosuppressed = activeMeds().some(m => /immunosuppress/i.test(m.category || ""));
-  if (isImmunosuppressed) out.push({ level: "critical", text: "On immunosuppression — infection risk; coordinate any new meds with transplant team." });
+  if (isImmunosuppressed) out.push({ level: "critical", text: "On immunosuppression: infection risk; coordinate any new meds with transplant team." });
   activeConditions().forEach(c => {
     const major = /major/i.test(c.severity || "") || /transplant/i.test(c.name || "");
-    out.push({ level: major ? "critical" : "info", text: c.severity ? `${c.name} — ${c.severity}` : c.name });
+    out.push({ level: major ? "critical" : "info", text: c.severity ? `${c.name}: ${c.severity}` : c.name });
   });
   allergies().forEach(a => out.push({ level: "caution", text: `Allergy: ${a.name}${a.reaction ? ` (${a.reaction})` : ""}` }));
   flaggedLabs().forEach(l => out.push({ level: "caution", text: `${l.name} flagged: ${l.value}${l.unit ? " " + l.unit : ""}${l.refRange ? ` (ref ${l.refRange})` : ""}` }));
@@ -270,7 +270,7 @@ export function primaryContact() {
   if (!raw) return null;
   const phone = (raw.match(/[\d().+\- ]{7,}/) || [])[0]?.trim();
   const rel = (raw.match(/\(([^)]+)\)\s*$/) || [])[1];
-  const name = raw.split("—")[0].split("-")[0].trim();
+  const name = raw.split("–")[0].split("-")[0].trim();
   return { name: name || raw, phone, relationship: rel };
 }
 export function emergencyData() {

@@ -96,13 +96,13 @@ function FieldRow({ label, value, editing, field, vals, setVals, options, placeh
       {editing
         ? options
           ? <select value={current} onChange={e => setVals(p => ({ ...p, [field]: e.target.value }))} style={inp}>
-              <option value="">— select —</option>
+              <option value="">– select –</option>
               {options.map(o => <option key={o} value={o}>{o}</option>)}
               {/* keep a stored value selectable even if it isn't in the list */}
               {current && !options.includes(current) && <option value={current}>{current}</option>}
             </select>
           : <input value={current} onChange={e => setVals(p => ({ ...p, [field]: field === "phone" ? formatPhone(e.target.value) : e.target.value }))} style={inp} placeholder={placeholder || ""} />
-        : <span style={{ fontSize:13, color:T.s, lineHeight:1.45 }}>{shown || <span style={{ color:T.ghost, fontStyle:"italic" }}>—</span>}</span>
+        : <span style={{ fontSize:13, color:T.s, lineHeight:1.45 }}>{shown || <span style={{ color:T.ghost, fontStyle:"italic" }}>–</span>}</span>
       }
     </div>
   );
@@ -362,7 +362,7 @@ function CardModal({ card, onSave, onClose }) {
         <div style={{ display:"flex", gap:10, justifyContent:"flex-end" }}>
           <button onClick={onClose} style={{ padding:"8px 18px", background:"transparent", border:`1px solid ${T.borderHover}`, borderRadius:8, color:T.dim, fontFamily:"'Sora',sans-serif", fontSize:12, cursor:"pointer" }}>Cancel</button>
           <button onClick={() => { if (!form.label.trim()) { setErr("Give the card a name."); return; } if (!form.front && !form.back) { setErr("Add at least one photo."); return; }
-              try { onSave({ ...form, label: form.label.trim() }); } catch { setErr("Storage is full — remove an old card or photo and try again."); } }}
+              try { onSave({ ...form, label: form.label.trim() }); } catch { setErr("Storage is full. Remove an old card or photo and try again."); } }}
             style={{ padding:"8px 18px", background:"rgba(79,142,247,.12)", border:"1px solid rgba(79,142,247,.35)", borderRadius:8, color:T.blue, fontFamily:"'Sora',sans-serif", fontSize:12, cursor:"pointer" }}>
             Save Card
           </button>
@@ -379,7 +379,7 @@ function CardViewer({ card, side, onClose }) {
   const [note, setNote] = useState("");
   async function share() {
     const how = await shareImageDataUrl(img, `${card.label || "card"}-${view}.jpg`, `${card.label} (${view})`);
-    if (how === "downloaded") setNote("No share option here — image downloaded instead.");
+    if (how === "downloaded") setNote("No share option here: image downloaded instead.");
   }
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.92)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", zIndex:300, padding:16 }} onClick={onClose}>
@@ -688,7 +688,7 @@ export default function ProfileTab() {
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>Insina Health — Patient Profile</title>
+  <title>Insina Health: Patient Profile</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #ffffff; color: #000000; font-family: Georgia, serif; font-size: 10pt; }
@@ -758,7 +758,7 @@ export default function ProfileTab() {
     ["Phone","phone"],["Email","email"],["Address","address"],
     // ED-critical fields (2026-07-20): print on the Emergency Card + report when filled.
     ["Code Status","codeStatus",{ options:["Full Code","DNR (Do Not Resuscitate)","DNI (Do Not Intubate)","DNR/DNI","Comfort Care Only"] }],
-    ["Advance Directive","advanceDirective",{ placeholder:"e.g. Living will + healthcare POA (Maria Rivera, 555-847-3042) — copies at UMC" }],
+    ["Advance Directive","advanceDirective",{ placeholder:"e.g. Living will + healthcare POA (Maria Rivera, 555-847-3042): copies at UMC" }],
     ["Implanted Devices","implantedDevices",{ placeholder:"e.g. Biliary stent (2024); right hip replacement (2021)" }],
   ];
   const INSURANCE_FIELDS = [
@@ -799,7 +799,7 @@ export default function ProfileTab() {
         <div style={{ marginBottom:24 }}>
           <h1 style={{ fontFamily:"'DM Serif Display',serif", fontSize:28, color:T.p, fontWeight:400, letterSpacing:"-0.5px" }}>Health Profile</h1>
           <p style={{ fontSize:12, color:T.ghost, marginTop:5, fontFamily:"'DM Mono',monospace" }}>
-            {P.name || "—"} · Last updated {new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+            {P.name || "–"} · Last updated {new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
           </p>
         </div>
 
@@ -829,7 +829,7 @@ export default function ProfileTab() {
                     <span style={{ fontSize:13, color:T.s, lineHeight:1.45 }}>
                       {computedAge}
                       <span style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", marginLeft:8 }}>
-                        calculated from DOB{edPersonal ? " — edit Date of Birth to change it" : ""}
+                        calculated from DOB{edPersonal ? ". Edit Date of Birth to change it" : ""}
                       </span>
                     </span>
                   </div>
@@ -842,7 +842,7 @@ export default function ProfileTab() {
                     <span style={{ fontSize:13, color:T.s, lineHeight:1.45 }}>
                       {vitalsWeightLbs}
                       <span style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", marginLeft:8 }}>
-                        auto from Vitals{vitalsWeightDate ? ` · ${vitalsWeightDate}` : ""}{edPersonal ? " — log a new weight on the Vitals tab to change it" : ""}
+                        auto from Vitals{vitalsWeightDate ? ` · ${vitalsWeightDate}` : ""}{edPersonal ? ": log a new weight on the Vitals tab to change it" : ""}
                       </span>
                     </span>
                   </div>
@@ -1082,7 +1082,7 @@ export default function ProfileTab() {
                       <div>
                         <div style={{ fontSize:13, fontWeight:600, color:T.s }}>{s.procedure}</div>
                         <div style={{ fontSize:12, color:T.blue, fontFamily:"'DM Mono',monospace", marginTop:2 }}>
-                          {formatDateUS(s.date, "—")}
+                          {formatDateUS(s.date, "–")}
                           {s.facility ? ` · ${s.facility}` : ""}
                         </div>
                         {s.surgeon && <div style={{ fontSize:12, color:T.ghost, marginTop:1 }}>{s.surgeon}</div>}
@@ -1100,15 +1100,15 @@ export default function ProfileTab() {
               <span style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace" }}>from Diagnostics tab ↗</span>
             </div>
             {allDiagnostics.length === 0
-              ? <div style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", padding:"16px 0", textAlign:"center" }}>No diagnostic studies recorded — add imaging, EKGs, EMGs, and other studies on the Diagnostics tab.</div>
+              ? <div style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", padding:"16px 0", textAlign:"center" }}>No diagnostic studies recorded. Add imaging, EKGs, EMGs, and other studies on the Diagnostics tab.</div>
               : <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 32px" }}>
                   {allDiagnostics.map((d, i) => {
-                    const dateStr = formatDateUS(d.date, "—");
+                    const dateStr = formatDateUS(d.date, "–");
                     return (
                       <div key={d.id || i} style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"10px 0", borderBottom: i < allDiagnostics.length - 1 ? `1px solid ${T.border}` : "none" }}>
                         <div style={{ width:8, height:8, borderRadius:"50%", background:"#a78bfa", marginTop:4, flexShrink:0 }} />
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:13, fontWeight:600, color:T.s }}>{d.name || "—"}</div>
+                          <div style={{ fontSize:13, fontWeight:600, color:T.s }}>{d.name || "–"}</div>
                           <div style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", marginTop:1 }}>
                             {[d.orderedBy && `Ordered by ${d.orderedBy}`, d.readingProvider && `Read by ${d.readingProvider}`, d.facility, d.relatedCondition].filter(Boolean).join(" · ")}
                           </div>
@@ -1152,7 +1152,7 @@ export default function ProfileTab() {
                     if (!lab) return (
                       <div key={label} style={{ background:"#080c14", border:`1px solid ${T.border}`, borderRadius:8, padding:"10px 12px", opacity:0.45 }}>
                         <div style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace", marginBottom:4 }}>{label}</div>
-                        <div style={{ fontSize:13, color:T.ghost }}>—</div>
+                        <div style={{ fontSize:13, color:T.ghost }}>–</div>
                       </div>
                     );
                     const isFlag = lab.flag;
@@ -1175,7 +1175,7 @@ export default function ProfileTab() {
             <div style={{ ...card, gridColumn:"1/-1" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
                 <span style={{ fontSize:12, letterSpacing:"1.5px", textTransform:"uppercase", color:T.faint, fontFamily:"'DM Mono',monospace" }}>Latest Vitals</span>
-                <span style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace" }}>from Vitals tab ↗ · {latestVitals.ts ? new Date(latestVitals.ts).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "—"}</span>
+                <span style={{ fontSize:12, color:T.ghost, fontFamily:"'DM Mono',monospace" }}>from Vitals tab ↗ · {latestVitals.ts ? new Date(latestVitals.ts).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "–"}</span>
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(140px,1fr))", gap:12 }}>
                 {[
@@ -1293,7 +1293,7 @@ export default function ProfileTab() {
           <h2>Allergies</h2>
           {allergies.map((a,i)=>(
             <div key={i} className="allergy-row">
-              <strong>{a.name}</strong> — {a.reaction} <span style={{fontSize:"8pt",color:"#555"}}>({a.severity})</span>
+              <strong>{a.name}</strong>: {a.reaction} <span style={{fontSize:"8pt",color:"#555"}}>({a.severity})</span>
             </div>
           ))}
         </>}
@@ -1309,7 +1309,7 @@ export default function ProfileTab() {
             return (STA[a.status]??9)-(STA[b.status]??9);
           }).map((c,i)=>(
             <div key={i} className="pr">
-              <span className="pr-lbl">{c.diagnosedDate ? new Date(c.diagnosedDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "—"}</span>
+              <span className="pr-lbl">{c.diagnosedDate ? new Date(c.diagnosedDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "–"}</span>
               <span className="pr-val">{c.name} <span style={{fontSize:"8pt",color:"#666"}}>({c.status})</span></span>
             </div>
           ))}
@@ -1322,7 +1322,7 @@ export default function ProfileTab() {
             {activeMeds.map((m,i)=>(
               <div key={i} className="pr">
                 <span className="pr-lbl">{m.name}{m.brand?` (${m.brand})`:""}</span>
-                <span className="pr-val">{m.dose} — {m.frequency}{m.prescriber?` · ${m.prescriber}`:""}</span>
+                <span className="pr-val">{m.dose}: {m.frequency}{m.prescriber?` · ${m.prescriber}`:""}</span>
               </div>
             ))}
           </div>
@@ -1335,7 +1335,7 @@ export default function ProfileTab() {
           if (!hasAny) return null;
           const latestDate = featuredLabs.filter(f=>f.lab?.date).map(f=>f.lab.date).sort().reverse()[0];
           return (<>
-            <h2>Recent Lab Results{latestDate ? ` — ${new Date(latestDate+"T12:00:00").toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}` : ""}</h2>
+            <h2>Recent Lab Results{latestDate ? `: ${new Date(latestDate+"T12:00:00").toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}` : ""}</h2>
             <div className="grid2">
               {featuredLabs.map(({ label, lab }) => lab ? (
                 <div key={label} className="pr">
@@ -1373,7 +1373,7 @@ export default function ProfileTab() {
           {allSurgeries.map((s,i)=>(
             <div key={i} className="pr" style={{alignItems:"flex-start", paddingTop:5, paddingBottom:5}}>
               <span className="pr-lbl" style={{paddingTop:1}}>
-                {formatDateUS(s.date, "—")}
+                {formatDateUS(s.date, "–")}
               </span>
               <span className="pr-val">
                 <strong>{s.procedure}</strong>
@@ -1391,7 +1391,7 @@ export default function ProfileTab() {
           {allDiagnostics.map((d, i) => (
             <div key={i} className="pr" style={{ alignItems:"flex-start", paddingTop:5, paddingBottom:5 }}>
               <span className="pr-lbl" style={{ paddingTop:1 }}>
-                {d.date ? new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) : "—"}
+                {d.date ? new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) : "–"}
               </span>
               <span className="pr-val">
                 <strong>{d.name}</strong>

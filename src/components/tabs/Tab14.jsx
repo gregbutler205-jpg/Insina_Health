@@ -45,7 +45,7 @@ function saveVisitPrep(apptId, entry) {
 
 function printConsultationPrep(appt, analysis) {
   const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
-  const apptDate = appt.date ? new Date(appt.date + "T12:00:00").toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" }) : "—";
+  const apptDate = appt.date ? new Date(appt.date + "T12:00:00").toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" }) : "–";
   const win = window.open("", "_blank", "width=900,height=700");
   if (!win) return;
   const renderText = rawText => {
@@ -181,7 +181,7 @@ function saveAppts(appts) {
 // formatPhone comes from displaySafe.js (v1.56.2 shared field formats).
 
 function fmtDate(iso) {
-  if (!iso) return "—";
+  if (!iso) return "–";
   return new Date(iso + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" });
 }
 function daysUntil(iso) {
@@ -586,7 +586,7 @@ const ATT_META = {
 function loadAttachables() {
   const safe = k => { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch { return []; } };
   const docs    = safe("mi_documents").map(d => ({ type: "document", refId: d.id, title: d.title || "Untitled document", date: d.date || d.studyDate || "" }));
-  const imaging = safe("mi_diagnostics").map(i => ({ type: "imaging", refId: i.id, title: i.name || [i.type, i.bodyPart].filter(Boolean).join(" — ") || "Diagnostic study", date: i.date || "" }));
+  const imaging = safe("mi_diagnostics").map(i => ({ type: "imaging", refId: i.id, title: i.name || [i.type, i.bodyPart].filter(Boolean).join(": ") || "Diagnostic study", date: i.date || "" }));
   const notes   = safe("mi_notes").map(n => ({ type: "note", refId: n.id, title: n.title || "Note", date: n.date || "" }));
   const records = safe("mi_records").map(r => ({ type: "record", refId: r.id, title: r.title || "Untitled record", date: r.date || "" }));
   return [...docs, ...imaging, ...notes, ...records];
@@ -650,7 +650,7 @@ function AttachModal({ appt, onSave, onClose }) {
         </>}
         {others.length > 0 && <>
           <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", letterSpacing:"1px", textTransform:"uppercase", margin:"14px 0 8px" }}>
-            All records — newest first{others.length > othersShown ? ` (showing ${Math.min(othersShown, others.length)} of ${others.length})` : ""}
+            All records: newest first{others.length > othersShown ? ` (showing ${Math.min(othersShown, others.length)} of ${others.length})` : ""}
           </div>
           {others.slice(0, othersShown).map(i => <Row key={attKey(i)} item={i} />)}
           {others.length > othersShown && (
@@ -761,7 +761,7 @@ async function captureDocument({ file, title, category, apptDate }) {
     sourceColor:       "#4f8ef7",
     provider:          "Appointment",
     type:              file?.type || "Document",
-    pages:             "—",
+    pages:             "–",
     tags:              [],
     flagged:           false,
     isRef:             false,
@@ -772,8 +772,8 @@ async function captureDocument({ file, title, category, apptDate }) {
     findingsExtracted: false,
     preview:           image ? "[Image captured at visit]"
                      : extractedText ? extractedText.slice(0, 3000)
-                     : `File: ${file?.name || "—"}`,
-    fileSize:          file ? `${(file.size / 1024).toFixed(1)} KB` : "—",
+                     : `File: ${file?.name || "–"}`,
+    fileSize:          file ? `${(file.size / 1024).toFixed(1)} KB` : "–",
     uploadedAt:        new Date().toISOString(),
   };
   const docs = (() => { try { return JSON.parse(localStorage.getItem("mi_documents") || "[]"); } catch { return []; } })();
@@ -789,7 +789,7 @@ async function captureImaging({ imgType, bodyPart, facility, apptDate, file }) {
   if (file?.type?.startsWith("image/")) image = await compressImage(file);
   const rec = {
     id: Date.now(),
-    name: [imgType, (bodyPart || "").trim()].filter(Boolean).join(" — ") || "Imaging study",
+    name: [imgType, (bodyPart || "").trim()].filter(Boolean).join(": ") || "Imaging study",
     date: apptDate || "", orderedBy: "", readingProvider: "", impression: "",
     relatedCondition: "", facility: facility || "", ...(image ? { image } : {}),
   };
@@ -939,7 +939,7 @@ function PostVisitModal({ appt, onCaptured, onClose }) {
     } catch (e) {
       const quota = e?.name === "QuotaExceededError" || /quota|exceeded/i.test(String(e?.message || e));
       setErr(quota
-        ? "Storage is full — try a smaller image, or remove old documents first."
+        ? "Storage is full. Try a smaller image, or remove old documents first."
         : (e?.message || "Could not save. Please try again."));
       return false;
     } finally { setBusy(false); }
@@ -949,7 +949,7 @@ function PostVisitModal({ appt, onCaptured, onClose }) {
   const rows = [
     { key: "documents", icon: "▣", label: "Clinical notes / documents", desc: "Visit summary, after-visit notes, letters.",
       form: <FileCaptureForm {...capProps} category="other" accept="image/*,application/pdf,.txt,.doc,.docx"
-              hint="Photo or PDF — images are compressed, PDF text is pulled in automatically." /> },
+              hint="Photo or PDF: images are compressed, PDF text is pulled in automatically." /> },
     { key: "labs", icon: "◈", label: "Lab results", desc: "A lab report to keep with this visit.",
       form: <FileCaptureForm {...capProps} category="lab" accept="image/*,application/pdf"
               hint="Attach the lab PDF or a photo. Full value extraction stays in Import Records." /> },
@@ -969,7 +969,7 @@ function PostVisitModal({ appt, onCaptured, onClose }) {
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#7eb8d8", fontSize: 18, cursor: "pointer" }}>✕</button>
         </div>
         <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", marginBottom: 16, lineHeight: 1.6 }}>
-          Capture anything from &ldquo;{appt.title}&rdquo;? Add what applies below — each item is saved and attached to this appointment automatically.
+          Capture anything from &ldquo;{appt.title}&rdquo;? Add what applies below. Each item is saved and attached to this appointment automatically.
         </div>
 
         {err && <div style={{ fontSize: 12, color: "#f87171", fontFamily: "'DM Mono',monospace", marginBottom: 12 }}>⚠ {err}</div>}
@@ -1105,14 +1105,14 @@ Please provide:
         // the shared QUESTION GENERATION / WHY YOU'RE ASKING rules. This surface
         // still predates the A-09 builder architecture (no CSC — see surfaceH.js
         // scope note); migrating it fully is tracked in DECISIONS.md, not done here.
-        system:[{ type:"text", text:"You are a personal health assistant helping prepare a patient for a medical appointment. Be direct, specific, and clinically relevant. No emojis. Bold section headers on their own line. Use bullet points for lists. Use ----- as section dividers. Only ask a clarifying question if the answer genuinely cannot be given without it — this should be rare; provide the best guidance possible with available information.\n\n" + QUESTION_RULES, cache_control:{ type:"ephemeral" } }],
+        system:[{ type:"text", text:"You are a personal health assistant helping prepare a patient for a medical appointment. Be direct, specific, and clinically relevant. No emojis. Bold section headers on their own line. Use bullet points for lists. Use ----- as section dividers. Only ask a clarifying question if the answer genuinely cannot be given without it. This should be rare; provide the best guidance possible with available information.\n\n" + QUESTION_RULES, cache_control:{ type:"ephemeral" } }],
         messages:[{ role:"user", content:buildPrompt() }],
       });
       if (!res.ok) {
         const e = await res.json().catch(()=>({}));
         const isServerSleep = res.status === 503 || String(e?.error||"").includes("503");
         const errMsg = typeof e?.error === "string" ? e.error : e?.error?.message || e?.message || `Server error ${res.status}`;
-        throw new Error(isServerSleep ? "Server is waking up (takes ~30 sec) — wait and try again." : errMsg);
+        throw new Error(isServerSleep ? "Server is waking up (takes ~30 sec). Wait and try again." : errMsg);
       }
       const data = await res.json();
       const text = data.content?.[0]?.text || "No response";
@@ -1130,7 +1130,7 @@ Please provide:
     <div style={{ marginTop:16, background:"rgba(79,142,247,.04)", border:"1px solid rgba(79,142,247,.15)", borderRadius:12, padding:18 }}>
       <div style={{ fontSize:12, fontWeight:600, color:"#6ea3ff", fontFamily:"'DM Mono',monospace", letterSpacing:"1px", marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
         <span>✦</span> AI Appointment Prep
-        {stale && <span style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", letterSpacing:0 }}>· details changed — regenerate</span>}
+        {stale && <span style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", letterSpacing:0 }}>· details changed: regenerate</span>}
         {analysis && <button onClick={() => requestReport("consultationPrep", () => printConsultationPrep(appt, analysis))} style={{ marginLeft:"auto", padding:"3px 10px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:6, color:"#7eb8d8", fontSize:12, cursor:"pointer", fontFamily:"'DM Mono',monospace" }}><PrintLabel size={11} /></button>}
       </div>
       {/* DEC-046: what marked analyses will ride into this prep — visible and
@@ -1299,12 +1299,12 @@ export default function AppointmentsTab({ onNavChange }) {
       localStorage.setItem(GCAL_LAST_SYNC_KEY, todayISO());
       if (added > 0) {
         setFilter("suggested");
-        setSyncMsg({ kind:"ok", text: `${auto ? "Auto-synced — " : ""}${added} new appointment${added !== 1 ? "s" : ""} from "${cal.summary}" to review below — edit to fill gaps, then Confirm or Dismiss.` });
+        setSyncMsg({ kind:"ok", text: `${auto ? "Auto-synced: " : ""}${added} new appointment${added !== 1 ? "s" : ""} from "${cal.summary}" to review below. Edit to fill gaps, then Confirm or Dismiss.` });
         // v1.56.1 (Greg): the inline banner is easy to miss — a pop-up says
         // where synced events landed (Suggested, not Upcoming) until dismissed.
         setSyncNotice({ count: added, calName: cal.summary });
       } else if (!auto) {
-        setSyncMsg({ kind:"ok", text: `No new appointments in "${cal.summary}" — you're up to date.` });
+        setSyncMsg({ kind:"ok", text: `No new appointments in "${cal.summary}". You're up to date.` });
       }
     } catch (e) {
       if (!auto) setSyncMsg({ kind:"err", text: e.message || "Calendar sync failed." });
@@ -1416,7 +1416,7 @@ export default function AppointmentsTab({ onNavChange }) {
     if (choice === "keepBoth") setSyncMsg({ kind: "ok", text: "Appointment saved." });
     if (choice === "useExisting") {
       setSyncMsg({ kind: "ok", text: existing.status === "suggested"
-        ? "Calendar suggestion confirmed — it's now an upcoming appointment."
+        ? "Calendar suggestion confirmed. It's now an upcoming appointment."
         : "Showing your existing appointment." });
     }
   };
@@ -1596,7 +1596,7 @@ export default function AppointmentsTab({ onNavChange }) {
                   <div style={{ fontSize:12, color:"#7eb8d8" }}>appointment{thisMonth.length !== 1 ? "s" : ""} remaining</div>
                   {thisMonth.map((a,i) => (
                     <div key={i} style={{ marginTop:6, fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace" }}>
-                      {new Date(a.date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})} — {a.title}
+                      {new Date(a.date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}: {a.title}
                     </div>
                   ))}
                 </>
@@ -1657,7 +1657,7 @@ export default function AppointmentsTab({ onNavChange }) {
                   {/* Date block */}
                   <div style={{ flexShrink:0, width:48, textAlign:"center" }}>
                     <div style={{ fontSize:18, fontWeight:700, color:"#dde8f5", lineHeight:1 }}>
-                      {appt.date ? new Date(appt.date+"T12:00:00").getDate() : "—"}
+                      {appt.date ? new Date(appt.date+"T12:00:00").getDate() : "–"}
                     </div>
                     <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", textTransform:"uppercase" }}>
                       {appt.date ? new Date(appt.date+"T12:00:00").toLocaleDateString("en-US",{month:"short"}) : ""}
@@ -1673,7 +1673,7 @@ export default function AppointmentsTab({ onNavChange }) {
 
                   {/* Time */}
                   <div style={{ textAlign:"right", flexShrink:0 }}>
-                    <div style={{ fontSize:12, color:"#b0c4d8", fontFamily:"'DM Mono',monospace" }}>{appt.time || "—"}</div>
+                    <div style={{ fontSize:12, color:"#b0c4d8", fontFamily:"'DM Mono',monospace" }}>{appt.time || "–"}</div>
                     {days !== null && appt.status === "upcoming" && (
                       <div style={{ fontSize:12, color:days<=3?"#f87171":days<=7?"#f59e0b":"#98afc4", fontFamily:"'DM Mono',monospace", marginTop:2 }}>
                         {days === 0 ? "Today" : days === 1 ? "Tomorrow" : days < 0 ? "Past" : `${days}d`}
@@ -1789,7 +1789,7 @@ export default function AppointmentsTab({ onNavChange }) {
               {syncNotice.count} appointment{syncNotice.count !== 1 ? "s" : ""} imported from Google Calendar
             </h2>
             <div style={{ fontSize:13, color:"#b0c4d8", fontFamily:"'Sora',sans-serif", lineHeight:1.6, marginBottom:20 }}>
-              They're waiting in the <b style={{ color:"#7eb8d8" }}>Suggested</b> tab — nothing goes on your schedule until you review it.
+              They're waiting in the <b style={{ color:"#7eb8d8" }}>Suggested</b> tab. Nothing goes on your schedule until you review it.
               Open each one, then <b style={{ color:"#7eb8d8" }}>Confirm</b> to add it or <b style={{ color:"#7eb8d8" }}>Dismiss</b> it.
             </div>
             <button
@@ -1815,9 +1815,9 @@ export default function AppointmentsTab({ onNavChange }) {
             <div style={{ fontSize:12, color:"#98afc4", marginBottom:22, lineHeight:1.6 }}>
               "{dupPrompt.incoming.title}" looks like "{dupPrompt.existing.title}"
               {dupPrompt.existing.provider ? ` with ${dupPrompt.existing.provider}` : ""} already on {fmtDate(dupPrompt.existing.date)}
-              {dupPrompt.existing.status === "suggested" ? " — a suggested appointment synced from your calendar, not yet confirmed"
+              {dupPrompt.existing.status === "suggested" ? ". A suggested appointment synced from your calendar, not yet confirmed"
                 : dupPrompt.existing.status && dupPrompt.existing.status !== "upcoming" ? ` (${dupPrompt.existing.status})` : ""}.
-              Nothing has been saved yet — choose what to do.
+              Nothing has been saved yet. Choose what to do.
               {dupPrompt.existing.status === "suggested" && " \"Use existing\" will confirm it as your upcoming appointment."}
             </div>
             <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
@@ -1836,8 +1836,8 @@ export default function AppointmentsTab({ onNavChange }) {
             <div style={{ fontSize:12, color:"#98afc4", marginBottom:22 }}>
               This cannot be undone.
               {appts.find(a => a.id === deleteConfirm)?.gcalId
-                ? " It also won't come back from calendar sync or Drive sync — deletions now stick everywhere."
-                : " It also won't be restored by Drive sync — deletions now stick everywhere."}
+                ? " It also won't come back from calendar sync or Drive sync: deletions now stick everywhere."
+                : " It also won't be restored by Drive sync: deletions now stick everywhere."}
             </div>
             <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
               <button className="apt-btn" style={{ background:"rgba(239,68,68,.12)", borderColor:"rgba(239,68,68,.3)", color:"#f87171" }} onClick={() => handleDelete(deleteConfirm)}>Delete</button>

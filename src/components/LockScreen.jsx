@@ -65,7 +65,7 @@ export default function LockScreen({ onUnlock }) {
         } catch (err) {
           setError(err?.code === "envelope-mismatch"
             ? "That backup belongs to a different vault (different password) than the one on this device."
-            : "Restore failed — " + (err?.message || "that doesn't look like an Insina backup file."));
+            : "Restore failed: " + (err?.message || "that doesn't look like an Insina backup file."));
         }
       };
       reader.readAsText(file);
@@ -94,7 +94,7 @@ export default function LockScreen({ onUnlock }) {
 
   async function handleSetupSubmit(e) {
     e.preventDefault();
-    if (passphrase.length < 12) { setError("Use at least 12 characters — this password is the actual encryption key, not just a screen lock."); return; }
+    if (passphrase.length < 12) { setError("Use at least 12 characters. This password is the actual encryption key, not just a screen lock."); return; }
     if (passphrase !== confirmPassphrase) { setError("Passwords don't match."); return; }
     setBusy(true); setError("");
     try {
@@ -196,7 +196,7 @@ export default function LockScreen({ onUnlock }) {
 
   function downloadRecoveryKey() {
     const blob = new Blob([
-      `Insina Health — Recovery Key\n\nGenerated: ${new Date().toLocaleString()}\n\n${recoveryKeyDisplay}\n\nThis is the ONLY way to recover your data if you forget your password.\nThere is no password reset — Insina Health has no server and no copy of\nyour password or this key. Store this somewhere safe and separate from\nyour password (a password manager, a safe, or printed and filed).\n`
+      `Insina Health: Recovery Key\n\nGenerated: ${new Date().toLocaleString()}\n\n${recoveryKeyDisplay}\n\nThis is the ONLY way to recover your data if you forget your password.\nThere is no password reset: Insina Health has no server and no copy of\nyour password or this key. Store this somewhere safe and separate from\nyour password (a password manager, a safe, or printed and filed).\n`
     ], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -224,7 +224,7 @@ export default function LockScreen({ onUnlock }) {
           <>
             <Title>Encrypt your health record</Title>
             <Subtitle>
-              Choose a password. It becomes the actual encryption key for your data —
+              Choose a password. It becomes the actual encryption key for your data: 
               not just a screen lock. There is no password reset: if you forget it,
               the recovery key shown after setup is the only way back in.
             </Subtitle>
@@ -258,7 +258,7 @@ export default function LockScreen({ onUnlock }) {
             <Title>Finish encrypting</Title>
             <Subtitle>
               A previous setup attempt didn't finish. Enter the exact password you
-              set then to resume — nothing was lost, and your plaintext data was not
+              set then to resume. Nothing was lost, and your plaintext data was not
               touched until every value is verified.
             </Subtitle>
             <form onSubmit={handleResumeSubmit} style={styles.form}>
@@ -277,7 +277,7 @@ export default function LockScreen({ onUnlock }) {
             <Title>Save your recovery key</Title>
             <Subtitle>
               Shown once. This is the only way to unlock your data if you forget your
-              password — Insina Health cannot reset it for you.
+              password: Insina Health cannot reset it for you.
             </Subtitle>
             <div style={styles.recoveryBox}>{recoveryKeyDisplay}</div>
             <button type="button" onClick={downloadRecoveryKey} style={styles.secondaryBtn}>Download as file</button>
@@ -325,7 +325,7 @@ export default function LockScreen({ onUnlock }) {
               <div style={styles.wipeBox}>
                 <div style={{ fontSize: 13, color: "#f87171", marginBottom: 12, lineHeight: 1.5 }}>
                   Without your password or recovery key, your encrypted data cannot be
-                  decrypted by anyone — including Insina Health. The only remaining option
+                  decrypted by anyone, including Insina Health. The only remaining option
                   is to <strong>erase it and start fresh</strong>. This cannot be undone.
                 </div>
                 <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>

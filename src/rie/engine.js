@@ -19,7 +19,7 @@ function dictionaryScan() {
   const out = [];
   const nameCheck = (term, module, fieldPath, fix) => {
     const s = suggest(term, CANON);
-    if (s) out.push(mkFinding({ severity: "warning", checkType: "medDictionary", module, fieldPath, original: term, suggestion: s, message: `"${term}" may be misspelled — did you mean "${s}"?`, fix: fix ? { ...fix, value: s } : null }));
+    if (s) out.push(mkFinding({ severity: "warning", checkType: "medDictionary", module, fieldPath, original: term, suggestion: s, message: `"${term}" may be misspelled: did you mean "${s}"?`, fix: fix ? { ...fix, value: s } : null }));
   };
 
   safe("mi_meds_full").filter(m => m.status !== "inactive").forEach((m, i) => {
@@ -38,7 +38,7 @@ function dictionaryScan() {
       const corrected = BASE_MISSPELLINGS[cleanTok(w)];
       if (corrected && corrected.toLowerCase() !== w.toLowerCase() && !flagged.has(w.toLowerCase())) {
         flagged.add(w.toLowerCase());
-        out.push(mkFinding({ severity: "info", checkType: "spell", module, fieldPath, original: w, suggestion: corrected, message: `${label}: "${w}" may be misspelled — did you mean "${corrected}"?` }));
+        out.push(mkFinding({ severity: "info", checkType: "spell", module, fieldPath, original: w, suggestion: corrected, message: `${label}: "${w}" may be misspelled: did you mean "${corrected}"?` }));
       }
     });
   };

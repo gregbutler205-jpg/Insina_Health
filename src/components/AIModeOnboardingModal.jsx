@@ -93,13 +93,13 @@ export default function AIModeOnboardingModal({ onConfirm }) {
           <p style={{ fontSize: 12, color: "#c4d8ee", lineHeight: 1.65, marginBottom: 10 }}>
             Your health record is stored on your device. When you use AI, information needed
             for your request is sent pseudonymously and securely through Insina to Anthropic
-            to generate the response. <strong>Pseudonymous is not the same as anonymous</strong> —
+            to generate the response. <strong>Pseudonymous is not the same as anonymous</strong>: 
             your data is identified by a random ID, never your name, but it is still your data.
           </p>
 
           <p style={{ fontSize: 12, color: "#c4d8ee", lineHeight: 1.65, marginBottom: 10 }}>
             Insina Health is an informational tool. It does not diagnose, treat, or direct
-            medical care — it helps you understand your own record and prepare questions for
+            medical care. It helps you understand your own record and prepare questions for
             your care team. Always verify anything the AI says with your care team, and in an
             emergency, call 911 rather than using this app.
           </p>
@@ -119,8 +119,8 @@ export default function AIModeOnboardingModal({ onConfirm }) {
               fontSize: 12, color: "#a8c4dc", lineHeight: 1.7, marginBottom: 12,
               background: "#0b1220", border: "1px solid #1c2a40", borderRadius: 8, padding: "12px 14px",
             }}>
-              Only the record fields your specific question needs — for example, relevant lab
-              values, active conditions, or current medications — are sent, under your
+              Only the record fields your specific question needs: for example, relevant lab
+              values, active conditions, or current medications: are sent, under your
               pseudonymous ID. Your legal name, date of birth, address, phone number, email,
               and insurance or ID numbers are never sent; the app is built so those fields are
               never read into an AI request in the first place, not filtered out afterward.

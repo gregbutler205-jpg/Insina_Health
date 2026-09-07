@@ -95,7 +95,7 @@ export function ensureAccessToken(requiredScope) {
   }
   return new Promise((resolve, reject) => {
     if (!_tokenClient) {
-      reject(new Error("Google sign-in is still loading — try again in a moment."));
+      reject(new Error("Google sign-in is still loading. Try again in a moment."));
       return;
     }
     _pendingResolvers.push({ resolve, reject });
@@ -110,7 +110,7 @@ export function ensureAccessToken(requiredScope) {
  */
 export function signIn() {
   if (!_tokenClient) {
-    console.warn("[GoogleAuth] not initialized yet — try again in a moment");
+    console.warn("[GoogleAuth] not initialized yet. Try again in a moment");
     return;
   }
   _tokenClient.requestAccessToken({ prompt: "" });

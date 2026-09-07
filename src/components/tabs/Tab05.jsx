@@ -232,17 +232,17 @@ const LAB_DICTIONARY = [
   { patterns: [/\bmcv\b/i], name:"MCV (Mean Corpuscular Volume)", description:"The average size of red blood cells. A low MCV (microcytic) suggests iron deficiency or thalassemia. A high MCV (macrocytic) suggests vitamin B12 or folate deficiency. Mycophenolate can cause macrocytosis (enlarged red blood cells), making MCV a useful monitoring tool in transplant patients.", normalRange:"80–100 fL", whyMatters:"Helps classify anemia type; mycophenolate-related macrocytosis (high MCV) is common in transplant patients." },
   { patterns: [/\bmch\b(?!c)/i], name:"MCH (Mean Corpuscular Hemoglobin)", description:"The average amount of hemoglobin inside each red blood cell. Low MCH (hypochromic cells) usually accompanies iron deficiency anemia. High MCH may indicate vitamin B12 or folate deficiency, which can occur with certain medications including mycophenolate.", normalRange:"27–33 pg", whyMatters:"Low MCH suggests iron deficiency; high MCH may indicate B12/folate deficiency common in patients on immunosuppressants." },
   { patterns: [/\bmchc\b/i], name:"MCHC (Mean Corpuscular Hemoglobin Concentration)", description:"The average concentration of hemoglobin packed into each red blood cell. Low MCHC occurs in iron deficiency or thalassemia. High MCHC may suggest hereditary spherocytosis. Used alongside MCV and MCH to characterize the type of anemia present.", normalRange:"32–36 g/dL", whyMatters:"Used alongside MCV and MCH to identify the specific type and likely cause of anemia post-transplant." },
-  { patterns: [/\brdw[- ]*sd\b/i], name:"RDW-SD (Red Cell Distribution Width — Standard Deviation)", description:"Measures the actual width of the red blood cell size distribution in femtoliters — a more absolute measure than the percentage-based RDW-CV. Elevated values indicate anisocytosis (variation in red blood cell size). Used alongside RDW-CV to fully characterize red blood cell size variation and anemia type.", normalRange:"39–46 fL", whyMatters:"Provides additional detail on red blood cell size variation; helps characterize anemia type alongside RDW-CV." },
-  { patterns: [/\brdw\b/i], name:"RDW (Red Cell Distribution Width)", description:"Measures the variation in size of red blood cells as a percentage (RDW-CV). A high RDW (anisocytosis) indicates that red blood cells vary widely in size, occurring in iron deficiency, B12/folate deficiency, and mixed anemias. Chronic disease and nutritional deficiencies common after transplant can elevate RDW.", normalRange:"11.5–14.5%", whyMatters:"An elevated RDW suggests mixed or nutritional anemia — common post-transplant; often rises before MCV changes are visible." },
+  { patterns: [/\brdw[- ]*sd\b/i], name:"RDW-SD (Red Cell Distribution Width: Standard Deviation)", description:"Measures the actual width of the red blood cell size distribution in femtoliters. A more absolute measure than the percentage-based RDW-CV. Elevated values indicate anisocytosis (variation in red blood cell size). Used alongside RDW-CV to fully characterize red blood cell size variation and anemia type.", normalRange:"39–46 fL", whyMatters:"Provides additional detail on red blood cell size variation; helps characterize anemia type alongside RDW-CV." },
+  { patterns: [/\brdw\b/i], name:"RDW (Red Cell Distribution Width)", description:"Measures the variation in size of red blood cells as a percentage (RDW-CV). A high RDW (anisocytosis) indicates that red blood cells vary widely in size, occurring in iron deficiency, B12/folate deficiency, and mixed anemias. Chronic disease and nutritional deficiencies common after transplant can elevate RDW.", normalRange:"11.5–14.5%", whyMatters:"An elevated RDW suggests mixed or nutritional anemia: common post-transplant; often rises before MCV changes are visible." },
   // ── White Blood Cell Differential ───────────────────────────────────────────
   { patterns: [/\bmonocyte/i], name:"Monocytes", description:"White blood cells that engulf and destroy pathogens and dead cells, playing a key role in immune surveillance. Elevated monocytes (monocytosis) may indicate chronic infection, inflammatory disease, or recovery from acute illness. Low counts are seen with severe immunosuppression. Reported as absolute count, percentage, or relative value.", normalRange:"0.2–0.8 ×10³/µL (Absolute); 2–8% (Differential)", whyMatters:"Monocyte counts reflect immune activity; significant changes may signal infection or altered immune status post-transplant." },
   { patterns: [/\beosino/i], name:"Eosinophils", description:"White blood cells involved in allergic reactions and fighting parasites. Mild elevations are common with allergies or asthma. After transplant, elevated eosinophils can indicate drug hypersensitivity reactions, atypical infections, or in rare cases, eosinophilic rejection. Very low counts are typical during acute steroid therapy.", normalRange:"0.05–0.5 ×10³/µL (Absolute); 1–4% (Differential)", whyMatters:"Elevated eosinophils post-transplant may signal drug hypersensitivity or atypical infection worth investigating." },
   { patterns: [/\bbasophil/i], name:"Basophils", description:"The rarest type of white blood cell, involved in allergic responses and inflammation. Basophils typically make up less than 1% of white blood cells. Low counts are common and rarely clinically significant. Very high counts (basophilia) may indicate allergic reactions, inflammatory conditions, or rarely blood disorders.", normalRange:"0–0.1 ×10³/µL (Absolute); 0–1% (Differential)", whyMatters:"Monitored as part of the CBC differential; significant elevations may indicate allergic or inflammatory conditions." },
   // ── Metabolic / Chemistry ────────────────────────────────────────────────────
   { patterns: [/\bbun\b|blood\s*urea\s*nitrogen|urea\s*nitrogen/i], name:"BUN (Blood Urea Nitrogen)", description:"A waste product from protein metabolism, filtered by the kidneys. Elevated BUN indicates impaired kidney function, dehydration, or high protein intake. In transplant patients on tacrolimus, rising BUN alongside creatinine suggests nephrotoxicity. The BUN-to-creatinine ratio helps distinguish kidney disease from dehydration.", normalRange:"7–20 mg/dL", whyMatters:"Monitors kidney filtration function alongside creatinine; tacrolimus nephrotoxicity is a key concern post-transplant." },
-  { patterns: [/\bco2\b|carbon\s*dioxide|bicarbonate/i], name:"CO2 (Carbon Dioxide / Bicarbonate)", description:"Reported as bicarbonate on a basic metabolic panel, CO2 reflects the body's acid-base balance. Low CO2 indicates metabolic acidosis, which can occur in kidney disease, diabetic ketoacidosis, or renal tubular acidosis — a known complication of tacrolimus. High CO2 suggests metabolic alkalosis from vomiting or diuretic use.", normalRange:"22–29 mEq/L", whyMatters:"Monitors acid-base status; declining CO2 in transplant patients may indicate worsening kidney function or tacrolimus-related renal tubular acidosis." },
+  { patterns: [/\bco2\b|carbon\s*dioxide|bicarbonate/i], name:"CO2 (Carbon Dioxide / Bicarbonate)", description:"Reported as bicarbonate on a basic metabolic panel, CO2 reflects the body's acid-base balance. Low CO2 indicates metabolic acidosis, which can occur in kidney disease, diabetic ketoacidosis, or renal tubular acidosis. A known complication of tacrolimus. High CO2 suggests metabolic alkalosis from vomiting or diuretic use.", normalRange:"22–29 mEq/L", whyMatters:"Monitors acid-base status; declining CO2 in transplant patients may indicate worsening kidney function or tacrolimus-related renal tubular acidosis." },
   { patterns: [/anion\s*gap/i], name:"Anion Gap", description:"The difference between measured positively and negatively charged ions in the blood. An elevated anion gap indicates that the body is producing or retaining excess acids (metabolic acidosis), occurring in sepsis, acute kidney injury, diabetic ketoacidosis, or toxic ingestions. In transplant patients, infections and kidney impairment are the most common causes.", normalRange:"3–11 mEq/L", whyMatters:"An elevated anion gap in transplant patients may signal acute kidney injury, sepsis, or metabolic complications requiring urgent evaluation." },
-  { patterns: [/\ba[\s/]?g\s*ratio|albumin.*globulin.*ratio/i], name:"A/G Ratio (Albumin/Globulin Ratio)", description:"The ratio of albumin to globulin proteins in the blood. A low A/G ratio (below 1.1) may indicate liver disease reducing albumin production, kidney disease causing protein loss, or immune activation increasing globulins. A high ratio may suggest hypogammaglobulinemia. In transplant patients, this ratio helps assess both liver synthetic function and immune status.", normalRange:"1.1–2.5", whyMatters:"Abnormal A/G ratio signals liver dysfunction or immune dysregulation — both critical to monitor after transplant." },
+  { patterns: [/\ba[\s/]?g\s*ratio|albumin.*globulin.*ratio/i], name:"A/G Ratio (Albumin/Globulin Ratio)", description:"The ratio of albumin to globulin proteins in the blood. A low A/G ratio (below 1.1) may indicate liver disease reducing albumin production, kidney disease causing protein loss, or immune activation increasing globulins. A high ratio may suggest hypogammaglobulinemia. In transplant patients, this ratio helps assess both liver synthetic function and immune status.", normalRange:"1.1–2.5", whyMatters:"Abnormal A/G ratio signals liver dysfunction or immune dysregulation. Both critical to monitor after transplant." },
   { patterns: [/osmolality/i], name:"Osmolality (Calculated / Serum)", description:"Measures the concentration of dissolved particles in the blood, reflecting hydration status and kidney concentrating ability. Elevated serum osmolality indicates dehydration or high sodium/glucose. A large difference between calculated and measured osmolality (osmol gap) can signal toxic alcohol ingestion or severe metabolic disturbance. Relevant in transplant patients with fluid management challenges.", normalRange:"275–295 mOsm/kg H₂O", whyMatters:"Monitors hydration status and fluid balance; helps detect dehydration and certain metabolic disturbances post-transplant." },
 ];
 
@@ -296,7 +296,7 @@ function printAIResponse(question, answer, logoUrl) {
   const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
   const win = window.open("", "_blank", "width=900,height=700");
   win.document.write(`<!DOCTYPE html><html><head>
-    <title>AI Analysis — Insina Health</title>
+    <title>AI Analysis: Insina Health</title>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: Georgia, serif; max-width: 760px; margin: 48px auto; color: #1a1a1a; font-size: 14px; line-height: 1.65; padding: 0 24px; }
@@ -318,7 +318,7 @@ function printAIResponse(question, answer, logoUrl) {
     <div class="a-label">Analysis</div>
     ${renderAiMarkdownToHtml(answer)}
     <div class="footer">
-      <span>Insina Health &mdash; Personal Health Intelligence</span>
+      <span>Insina Health: Personal Health Intelligence</span>
       <span>Generated ${date}</span>
     </div>
   </body></html>`);
@@ -354,13 +354,13 @@ function printLabReport(labs, logoUrl) {
       const oor = labOutOfRange(t, customRanges);
       const status = oor === true ? '<span style="color:#d97706;font-weight:700">⚠ Flagged</span>' : '<span style="color:#059669">✓ Normal</span>';
       const cr = customRanges[canonicalLabId(t.name)] || customRanges[(t.name || "").toLowerCase().trim()];
-      const rangeCell = (cr && cr.low != null && cr.high != null) ? `${cr.low}–${cr.high} <span style="color:#888">(your range)</span>` : (t.refRange || "—");
+      const rangeCell = (cr && cr.low != null && cr.high != null) ? `${cr.low}–${cr.high} <span style="color:#888">(your range)</span>` : (t.refRange || "–");
       return `<tr>
         <td>${(displayLabName(t.name)||"").replace(/</g,"&lt;")}</td>
-        <td style="text-align:center;font-weight:600">${t.value||"—"}</td>
-        <td style="text-align:center">${t.unit||"—"}</td>
+        <td style="text-align:center;font-weight:600">${t.value||"–"}</td>
+        <td style="text-align:center">${t.unit||"–"}</td>
         <td style="text-align:center">${rangeCell}</td>
-        <td style="text-align:center">${formatDateUS(t.date, "—")}</td>
+        <td style="text-align:center">${formatDateUS(t.date, "–")}</td>
         <td style="text-align:center">${status}</td>
       </tr>`;
     }).join("");
@@ -369,7 +369,7 @@ function printLabReport(labs, logoUrl) {
 
   const win = window.open("", "_blank", "width=1000,height=750");
   win.document.write(`<!DOCTYPE html><html><head>
-    <title>Lab Report — Insina Health</title>
+    <title>Lab Report: Insina Health</title>
     <style>
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:Arial,sans-serif; max-width:900px; margin:40px auto; color:#1a1a1a; font-size:13px; line-height:1.5; padding:0 24px; }
@@ -398,7 +398,7 @@ function printLabReport(labs, logoUrl) {
       <tbody>${tableRows}</tbody>
     </table>
     <div class="footer">
-      <span>Insina Health &mdash; Personal Health Intelligence</span>
+      <span>Insina Health: Personal Health Intelligence</span>
       <span>Printed ${date} &nbsp;·&nbsp; ${tests.length} tests</span>
     </div>
   </body></html>`);
@@ -423,7 +423,7 @@ function renderMarkdown(rawText) {
         <div key={i} style={{ display:"flex", gap:10, marginBottom:5, paddingLeft:4 }}>
           <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells[0], AI_BOLD_STYLE) }}
             style={{ fontWeight:700, color:"#c4d8ee", minWidth:140, flexShrink:0 }} />
-          <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells.slice(1).join(" — "), AI_BOLD_STYLE) }}
+          <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells.slice(1).join(": "), AI_BOLD_STYLE) }}
             style={{ color:"#a8c4dc" }} />
         </div>
       );
@@ -571,7 +571,7 @@ function detectDuplicates(labs) {
         dateRange: (() => {
           const dates = byName[name].dates.slice().sort();
           if (!dates.length) return null;
-          return dates.length === 1 ? dates[0] : `${dates[0]} – ${dates[dates.length - 1]}`;
+          return dates.length === 1 ? dates[0] : `${dates[0]}: ${dates[dates.length - 1]}`;
         })(),
       })).sort((a, b) => b.count - a.count), // most common first
     });
@@ -751,7 +751,7 @@ export default function App({ onNavChange }) {
     const n = removeDuplicateLabRows();
     try { setImportedLabs(JSON.parse(localStorage.getItem("mi_labs") || "[]")); } catch {}
     window.dispatchEvent(new Event("mi-data-synced"));
-    setDedupeNote(n > 0 ? `${n} duplicate row${n !== 1 ? "s" : ""} removed — one copy of each result kept.` : "No exact duplicates found.");
+    setDedupeNote(n > 0 ? `${n} duplicate row${n !== 1 ? "s" : ""} removed. One copy of each result kept.` : "No exact duplicates found.");
     setTimeout(() => setDedupeNote(""), 8000);
   }
 
@@ -1129,7 +1129,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 </div>
                 {urgentTripwireFlags.map(f => (
                   <div key={`${f.canonicalId}|${f.date}|${f.value}`} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6, fontSize: 12, color: "#f0c4c4", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>
-                    <span style={{ flex: 1 }}>{f.analyte}: {f.value}{f.unit ? ` ${f.unit}` : ""} ({formatDateUS(f.date, "unknown date")}) — {f.guidance}</span>
+                    <span style={{ flex: 1 }}>{f.analyte}: {f.value}{f.unit ? ` ${f.unit}` : ""} ({formatDateUS(f.date, "unknown date")}): {f.guidance}</span>
                     <button onClick={() => dismissTripwireFlag(f)} style={{ flexShrink: 0, background: "none", border: "1px solid rgba(239,68,68,.4)", borderRadius: 5, color: "#f87171", fontSize: 12, fontFamily: "'Sora',sans-serif", padding: "2px 6px", cursor: "pointer" }}>Dismiss</button>
                   </div>
                 ))}
@@ -1139,7 +1139,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
             {/* A-01: evaluation status — surfaced, not hidden, per spec (stale/unavailable is an app-state fact, not an alarm) */}
             <div style={{ marginBottom: 14, fontSize: 12, fontFamily: "'DM Mono',monospace", color: tripwireEnv.status === "stale" ? "#f59e0b" : "#6a8090" }}>
               {tripwireEnv.status === "current" && `Threshold check: current (as of ${new Date(tripwireEnv.evaluatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })})`}
-              {tripwireEnv.status === "stale" && "Threshold check: stale — new results have arrived since the last check ran"}
+              {tripwireEnv.status === "stale" && "Threshold check: stale. New results have arrived since the last check ran"}
               {tripwireEnv.status === "unavailable" && "Threshold check: not yet active (pending clinical review of the default threshold library)"}
             </div>
 
@@ -1164,7 +1164,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 <span style={{ fontSize:13 }}>⚡</span>
                 <span style={{ flex:1, textAlign:"left" }}>
                   {duplicateGroups.length > 0
-                    ? `${duplicateGroups.length} possible duplicate${duplicateGroups.length > 1 ? "s" : ""} — Group Tests`
+                    ? `${duplicateGroups.length} possible duplicate${duplicateGroups.length > 1 ? "s" : ""}: Group Tests`
                     : "Group Tests"}
                 </span>
                 <span style={{ fontSize:12, opacity:0.65 }}>Review →</span>
@@ -1322,7 +1322,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                                   {oor === true && <FlaggedBadge />}
                                 </div>
                                 <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", textAlign: "left" }}>
-                                  {formatDateUS(lab.date, "—")}{histCount > 1 ? ` · ${histCount} readings` : ""}
+                                  {formatDateUS(lab.date, "–")}{histCount > 1 ? ` · ${histCount} readings` : ""}
                                 </div>
                               </div>
                               <div style={{ fontSize: 12, fontWeight: 700, color: oor ? "#f59e0b" : "#2dd4a0", flexShrink: 0, textAlign: "right" }}>
@@ -1382,7 +1382,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
               const chartRangeSource = customRange ? "doctor" : "lab";
               const chartDates = history.map(h => h.date || "unknown date");
               const histLabels = history.map(h => {
-                if (!h.date) return "—";
+                if (!h.date) return "–";
                 const d = new Date(h.date + "T12:00:00");
                 return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
               });
@@ -1466,7 +1466,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                       {/* Display current custom range */}
                       {customRange && editingCustomRange !== labKey && (
                         <div style={{ fontSize: 12, color: "#2dd4a0", fontFamily: "'DM Mono',monospace" }}>
-                          {customRange.low} – {customRange.high} {selectedImportedLab.unit}
+                          {customRange.low}: {customRange.high} {selectedImportedLab.unit}
                         </div>
                       )}
                       {/* Inline edit form */}
@@ -1492,10 +1492,10 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                   {/* Details grid */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
                     {[
-                      ["Category", selectedImportedLab.category || "—"],
-                      ["Date", selectedImportedLab.date || "—"],
-                      ["Facility", selectedImportedLab.facility || "—"],
-                      ["Reference Range", selectedImportedLab.refRange ? `${selectedImportedLab.refRange} ${selectedImportedLab.unit}` : "—"],
+                      ["Category", selectedImportedLab.category || "–"],
+                      ["Date", selectedImportedLab.date || "–"],
+                      ["Facility", selectedImportedLab.facility || "–"],
+                      ["Reference Range", selectedImportedLab.refRange ? `${selectedImportedLab.refRange} ${selectedImportedLab.unit}` : "–"],
                     ].map(([k, v]) => (
                       <div key={k} style={{ background: "#0b1220", border: "1px solid #1c2a40", borderRadius: 10, padding: "12px 14px" }}>
                         <div style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 5 }}>{k}</div>
@@ -1515,7 +1515,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                   {hasHistory && (
                     <div style={{ background: "#0b1220", border: "1px solid #1c2a40", borderRadius: 14, padding: "18px 16px 12px", marginBottom: 16 }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                        <div className="section-label" style={{ marginBottom: 0 }}>Trend — {history.length} reading{history.length !== 1 ? "s" : ""}</div>
+                        <div className="section-label" style={{ marginBottom: 0 }}>Trend–{history.length} reading{history.length !== 1 ? "s" : ""}</div>
                         <div style={{ display: "flex", gap: 4 }}>
                           {[3, 6, 12].map(mo => (
                             <button key={mo} className="time-btn" onClick={() => setTrendRange(mo)}
@@ -1557,7 +1557,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                           const bad = low !== null && high !== null && !isNaN(hv) && (hv < low || hv > high);
                           return (
                             <div key={i} style={{ textAlign: "center", padding: "8px 4px", background: "#080c14", borderRadius: 6, border: bad ? "1px solid rgba(239,68,68,.3)" : "1px solid #1c2a40" }}>
-                              <div style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", marginBottom: 4 }}>{h.date || "—"}</div>
+                              <div style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", marginBottom: 4 }}>{h.date || "–"}</div>
                               <div style={{ fontSize: 12, fontWeight: 700, color: bad ? "#f87171" : "#a8c4dc" }}>{h.value}</div>
                             </div>
                           );
@@ -1682,7 +1682,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 <div style={{ fontSize:14, fontWeight:700, color:"#c4d8ee", marginBottom:3 }}>Group Tests</div>
                 <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", lineHeight:1.55 }}>
                   Group different names for the same test (e.g. FK506 and Tacrolimus) so trends and
-                  analysis treat them as one. Your original entries are never renamed or deleted —
+                  analysis treat them as one. Your original entries are never renamed or deleted: 
                   grouping is reversible.
                 </div>
               </div>
@@ -1879,7 +1879,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                     ))}
                   </div>
                 ) : (
-                  <div style={{ fontSize:12, color:"#98afc4", marginBottom:4 }}>No suggested correction — please edit the value manually.</div>
+                  <div style={{ fontSize:12, color:"#98afc4", marginBottom:4 }}>No suggested correction. Please edit the value manually.</div>
                 )
               )}
               <div style={{ display:"flex", gap:8, marginTop:16 }}>

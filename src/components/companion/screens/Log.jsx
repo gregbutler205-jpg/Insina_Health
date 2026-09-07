@@ -52,7 +52,7 @@ function PlausibilityGateCard({ pending, onConfirm, onSuggestion, onCancel }) {
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 12, color: C.ghost }}>No suggested correction — edit the value manually.</div>
+            <div style={{ fontSize: 12, color: C.ghost }}>No suggested correction. Edit the value manually.</div>
           )}
         </div>
       ))}
@@ -160,7 +160,7 @@ function Vitals({ queueSync }) {
 
   return (
     <div>
-      {saved && <Card style={{ marginBottom: 12, border: `1px solid ${C.green}40` }}><span style={{ fontSize: 12, color: C.green, fontFamily: mono }}>✓ Reading saved — will sync to Drive</span></Card>}
+      {saved && <Card style={{ marginBottom: 12, border: `1px solid ${C.green}40` }}><span style={{ fontSize: 12, color: C.green, fontFamily: mono }}>✓ Reading saved: will sync to Drive</span></Card>}
 
       {(prevBP || avgSys) && (
         <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, marginBottom: 10 }}>
@@ -258,7 +258,7 @@ function Symptoms({ queueSync, askAI }) {
       {savedEntry && (
         <Card style={{ marginBottom: 12, border: `1px solid ${C.green}40` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 12, color: C.green, fontFamily: mono, flex: 1, minWidth: 130 }}>✓ {savedEntry.name} saved — will sync to Drive</span>
+            <span style={{ fontSize: 12, color: C.green, fontFamily: mono, flex: 1, minWidth: 130 }}>✓ {savedEntry.name} saved: will sync to Drive</span>
             {askAI && <button onClick={() => askAI(symptomPrompt(savedEntry), "symptomPrep")} style={askBtn}>✦ Ask Insina about this</button>}
           </div>
         </Card>
@@ -338,7 +338,7 @@ Include only the sub-object matching "kind"; omit any numeric field you don't kn
       });
       setDraft(data);
       setDraftDate(toISO());
-    } catch (e) { setError(e.message || "Couldn’t interpret that — try the Vitals or Symptoms tab."); }
+    } catch (e) { setError(e.message || "Couldn’t interpret that. Try the Vitals or Symptoms tab."); }
     finally { setBusy(false); }
   }
 
@@ -383,7 +383,7 @@ Include only the sub-object matching "kind"; omit any numeric field you don't kn
   return (
     <div>
       <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6, marginBottom: 12 }}>
-        Say what happened in plain language — e.g. <span style={{ color: C.s }}>“skipped my evening dose, felt nauseous”</span> or <span style={{ color: C.s }}>“BP was 138 over 84 this morning.”</span> Insina drafts an entry; you confirm before it’s filed.
+        Say what happened in plain language, e.g. <span style={{ color: C.s }}>“skipped my evening dose, felt nauseous”</span> or <span style={{ color: C.s }}>“BP was 138 over 84 this morning.”</span> Insina drafts an entry; you confirm before it’s filed.
       </div>
       <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 10 }}>
         <textarea value={text} onChange={e => setText(e.target.value)} rows={3} placeholder="Tell or dictate to Insina what happened…"

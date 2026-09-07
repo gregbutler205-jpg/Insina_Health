@@ -99,7 +99,7 @@ export function installInterception() {
   };
   Storage.prototype.setItem = function (key, value) {
     if (this === localStorage && isManaged(key)) {
-      if (dek === null) { console.warn(`[secureStorage] setItem("${key}") while locked — ignored`); return; }
+      if (dek === null) { console.warn(`[secureStorage] setItem("${key}") while locked: ignored`); return; }
       plaintextCache.set(key, String(value));
       persistEncrypted(key, String(value));
       return;
@@ -268,10 +268,10 @@ export async function unlockWithPin(pin) {
     blob.attempts = (blob.attempts || 0) + 1;
     if (blob.attempts >= PIN_MAX_ATTEMPTS) {
       nativeRemove(PIN_WRAP_KEY);
-      throw new Error("Too many wrong PINs — PIN unlock is disabled. Unlock with your passphrase to set a new PIN.");
+      throw new Error("Too many wrong PINs: PIN unlock is disabled. Unlock with your passphrase to set a new PIN.");
     }
     nativeSet(PIN_WRAP_KEY, JSON.stringify(blob));
-    throw new Error(`Wrong PIN — ${PIN_MAX_ATTEMPTS - blob.attempts} attempt${PIN_MAX_ATTEMPTS - blob.attempts === 1 ? "" : "s"} left.`);
+    throw new Error(`Wrong PIN: ${PIN_MAX_ATTEMPTS - blob.attempts} attempt${PIN_MAX_ATTEMPTS - blob.attempts === 1 ? "" : "s"} left.`);
   }
   blob.attempts = 0;
   nativeSet(PIN_WRAP_KEY, JSON.stringify(blob));
@@ -322,7 +322,7 @@ async function doSetupVaultAndMigrate(passphrase) {
   const resuming = nativeGet(MIGRATION_INTERRUPTED_KEY) !== null;
 
   if (existingRaw && !resuming) {
-    throw new Error("A vault already exists — use unlock(), not setup, for an existing installation.");
+    throw new Error("A vault already exists. Use unlock(), not setup, for an existing installation.");
   }
 
   let recoveryKeyDisplay = null;
@@ -351,7 +351,7 @@ async function doSetupVaultAndMigrate(passphrase) {
     }
     const blob = await vault.encryptString(dek, raw);
     const verify = await vault.decryptString(dek, blob); // round-trip verify BEFORE overwriting plaintext
-    if (verify !== raw) throw new Error(`Round-trip verification failed for "${key}" — migration aborted, plaintext left untouched.`);
+    if (verify !== raw) throw new Error(`Round-trip verification failed for "${key}": migration aborted, plaintext left untouched.`);
     nativeSet(key, JSON.stringify({ v: 1, iv: blob.iv, data: blob.data }));
     plaintextCache.set(key, raw);
   }

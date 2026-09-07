@@ -73,7 +73,7 @@ export function saveSessionTranscriptToNotes(session) {
   if (!note) {
     note = {
       id: Date.now().toString(),
-      title: `AI Session — ${session.title}`,
+      title: `AI Session: ${session.title}`,
       pinned: false,
       tag: "General",
       date: today,
@@ -101,7 +101,7 @@ export function saveSessionTranscriptToNotes(session) {
     note.sections.push({
       id: "s-seg-" + seg.id,
       type: "text",
-      header: `Part ${absoluteIndex + 1} — ${new Date(seg.openedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`,
+      header: `Part ${absoluteIndex + 1}–${new Date(seg.openedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`,
       body: buildSegmentSectionText(seg, prev),
     });
   });
@@ -115,7 +115,7 @@ export function saveSessionTranscriptToNotes(session) {
 export function buildAnalysisMarkdown({ analysisType, content, mode }) {
   const date = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const modeLabel = mode === "advanced" ? "Advanced Mode" : "Standard Mode";
-  return `# ${analysisType} — Insina Health
+  return `# ${analysisType}: Insina Health
 
 *Generated ${date} · ${modeLabel} · Record last synced: ${getLastSyncStamp()}*
 

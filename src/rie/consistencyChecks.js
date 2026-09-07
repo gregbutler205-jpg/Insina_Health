@@ -23,10 +23,10 @@ export function checkMedications() {
   const out = [];
   meds.forEach((m, i) => {
     const name = m.name || `Medication ${i + 1}`;
-    if (!m.dose)      out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].dose`, original: name, message: `${name} — no dose recorded`, fix: null }));
-    if (!m.frequency) out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].frequency`, original: name, message: `${name} — frequency not set` }));
-    if (!m.prescriber) out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].prescriber`, original: name, message: `${name} — no prescribing provider recorded` }));
-    if (!m.refillDate) out.push(mkFinding({ severity: "info", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].refillDate`, original: name, message: `${name} — no refill date on file` }));
+    if (!m.dose)      out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].dose`, original: name, message: `${name}. No dose recorded`, fix: null }));
+    if (!m.frequency) out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].frequency`, original: name, message: `${name}: frequency not set` }));
+    if (!m.prescriber) out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].prescriber`, original: name, message: `${name}. No prescribing provider recorded` }));
+    if (!m.refillDate) out.push(mkFinding({ severity: "info", checkType: "consistency", module: "medications", fieldPath: `medications[${m.id ?? i}].refillDate`, original: name, message: `${name}. No refill date on file` }));
   });
   // duplicate active medication by generic
   const groups = {};
@@ -59,7 +59,7 @@ export function checkLabs() {
     const nm = l.name || `Lab ${i + 1}`;
     // A missing unit is NOT flagged: imported labs routinely omit units
     // (ratios, counts, qualitative results) and that is fine (Greg 2026-08-30).
-    if (!l.refRange) out.push(mkFinding({ severity: "info", checkType: "consistency", module: "labs", fieldPath: `labs[${i}].refRange`, original: nm, message: `${nm} — no reference range on file` }));
+    if (!l.refRange) out.push(mkFinding({ severity: "info", checkType: "consistency", module: "labs", fieldPath: `labs[${i}].refRange`, original: nm, message: `${nm}. No reference range on file` }));
     const d = parseDate(l.date);
     if (d && d > today) out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "labs", fieldPath: `labs[${i}].date`, original: `${nm} ${l.date}`, message: `${nm} has a draw date in the future (${l.date})` }));
     if (d && dob && d < dob) out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "labs", fieldPath: `labs[${i}].date`, original: `${nm} ${l.date}`, message: `${nm} has a draw date before your date of birth (${l.date})` }));
@@ -105,7 +105,7 @@ export function checkProviders() {
     else if (teamNames.length) {
       const { best, bestSim } = matchTeam(a.provider);
       if (best && bestSim >= 0.85 && best.toLowerCase().trim() !== a.provider.toLowerCase().trim()) {
-        out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "appointments", fieldPath: `appointments[${a.id ?? i}].provider`, original: a.provider, suggestion: best, message: `"${a.provider}" in Appointments may be "${best}" from your Care Team — same provider?` }));
+        out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "appointments", fieldPath: `appointments[${a.id ?? i}].provider`, original: a.provider, suggestion: best, message: `"${a.provider}" in Appointments may be "${best}" from your Care Team: same provider?` }));
       }
     }
     if (!a.facility) out.push(mkFinding({ severity: "info", checkType: "consistency", module: "appointments", fieldPath: `appointments[${a.id ?? i}].facility`, original: a.title || a.date, message: `Appointment "${a.title || a.date}" has no location/facility` }));
@@ -117,7 +117,7 @@ export function checkProviders() {
   const ecs = safe("mi_emergency_contacts");
   const byPhone = {}, byName = {};
   ecs.forEach(c => { const ph = normPhone(c.phone); if (ph) (byPhone[ph] = byPhone[ph] || []).push(c); const nm = (c.name || "").toLowerCase().trim(); if (nm) (byName[nm] = byName[nm] || []).push(c); });
-  Object.entries(byPhone).forEach(([ph, list]) => { if (list.length > 1) out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "profile", fieldPath: `emergencyContacts.dupphone.${ph}`, original: list[0].name, message: `${list.map(c => c.name).join(" and ")} share the same phone number — duplicate contact?` })); });
+  Object.entries(byPhone).forEach(([ph, list]) => { if (list.length > 1) out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "profile", fieldPath: `emergencyContacts.dupphone.${ph}`, original: list[0].name, message: `${list.map(c => c.name).join(" and ")} share the same phone number: duplicate contact?` })); });
   Object.entries(byName).forEach(([nm, list]) => { if (list.length > 1) out.push(mkFinding({ severity: "warning", checkType: "consistency", module: "profile", fieldPath: `emergencyContacts.dupname.${nm}`, original: list[0].name, message: `"${list[0].name}" is listed as an emergency contact more than once` })); });
   return out;
 }
@@ -147,7 +147,7 @@ export function checkConditionsAllergies() {
     meds.forEach(m => {
       const mn = (m.name || "").toLowerCase(), bn = (m.brand || "").toLowerCase(), g = genericOf(m.name);
       if (conflicts.some(c => mn.includes(c) || bn.includes(c) || g.includes(c))) {
-        out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "profile", fieldPath: `allergyConflict.${key}.${m.id}`, original: `${a.name} / ${m.name}`, message: `Allergy to ${a.name} but active medication ${m.name} may contain it — confirm with your care team` }));
+        out.push(mkFinding({ severity: "critical", checkType: "consistency", module: "profile", fieldPath: `allergyConflict.${key}.${m.id}`, original: `${a.name} / ${m.name}`, message: `Allergy to ${a.name} but active medication ${m.name} may contain it. Confirm with your care team` }));
       }
     });
   });
@@ -226,7 +226,7 @@ export function checkTransplantTerminology() {
       fieldPath: `surgeries[${s.id ?? i}].procedure`,
       original: text,
       suggestion,
-      message: `"${text}" mentions a ${surgTerm.organ} transplant, but your condition list shows a ${conditionTerm.organ} transplant — same procedure, different terminology?`,
+      message: `"${text}" mentions a ${surgTerm.organ} transplant, but your condition list shows a ${conditionTerm.organ} transplant: same procedure, different terminology?`,
       fix: { store: "mi_surgeries", id: s.id, field: "procedure", value: suggestion, safeBatch: false },
     }));
   });
@@ -252,7 +252,7 @@ export function checkVitalPlausibility() {
         module: "vitals",
         fieldPath: `readings[${r.id ?? i}].${field}`,
         original: `${issue.label}: ${r[field]} ${issue.unit}`,
-        message: `${issue.label} of ${r[field]} ${issue.unit} on ${r.date || "an unknown date"} is ${issue.band === "hard" ? "outside a plausible range" : "far from a typical range"} — check for a data-entry error.`,
+        message: `${issue.label} of ${r[field]} ${issue.unit} on ${r.date || "an unknown date"} is ${issue.band === "hard" ? "outside a plausible range" : "far from a typical range"}. Check for a data-entry error.`,
       }));
     });
     checkVitalCrossFields(r).forEach(issue => {
@@ -281,7 +281,7 @@ export function checkLabPlausibility() {
       module: "labs",
       fieldPath: `labs[${i}].value`,
       original: `${l.name}: ${l.value} ${issue.unit}`,
-      message: `${l.name} of ${l.value} ${issue.unit}${l.date ? ` on ${l.date}` : ""} is ${issue.band === "hard" ? "outside a plausible range" : "far from a typical range"} — check for a data-entry error.`,
+      message: `${l.name} of ${l.value} ${issue.unit}${l.date ? ` on ${l.date}` : ""} is ${issue.band === "hard" ? "outside a plausible range" : "far from a typical range"}. Check for a data-entry error.`,
     }));
   });
   return out;

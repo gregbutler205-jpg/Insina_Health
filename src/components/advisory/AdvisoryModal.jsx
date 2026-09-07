@@ -62,7 +62,7 @@ export default function AdvisoryModal() {
   const accent = isEmergency ? "var(--red)" : mode === "today" ? "var(--amber)" : "var(--red)";
   const label = needsVerify
     ? "VERIFY IMPORTED VALUE"
-    : isEmergency ? "EMERGENCY" : mode === "today" ? "URGENT — CONTACT TODAY" : "EMERGENCY INFO";
+    : isEmergency ? "EMERGENCY" : mode === "today" ? "URGENT: CONTACT TODAY" : "EMERGENCY INFO";
 
   const confirmVerify = () => { if (p.eventId) markAdvisoryVerified(p.eventId); setVerified(true); };
   const rejectVerify = () => { if (p.eventId) markAdvisoryRejected(p.eventId); setP(null); };
@@ -102,7 +102,7 @@ export default function AdvisoryModal() {
             <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--text-bright)" }}>{p.verifyText}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <button onClick={confirmVerify} style={btnPrimary}>The value is correct</button>
-              <button onClick={rejectVerify} style={btnSecondary}>The value is wrong — I'll fix it in Import Review</button>
+              <button onClick={rejectVerify} style={btnSecondary}>The value is wrong: I'll fix it in Import Review</button>
             </div>
             <p style={{ fontSize: 12.5, color: "var(--text-secondary)", lineHeight: 1.6 }}>
               Confirming opens the full alert with emergency contacts and next steps.
@@ -162,7 +162,7 @@ export default function AdvisoryModal() {
               </p>
             ) : (
               <button onClick={reportContacted} style={{ alignSelf: "center", background: "none", border: "1px solid var(--border-strong)", borderRadius: 8, color: "var(--text-secondary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-sans)", padding: "7px 14px", minHeight: 36 }}>
-                Mark care team contacted — self-reported
+                Mark care team contacted: self-reported
               </button>
             )
           )}

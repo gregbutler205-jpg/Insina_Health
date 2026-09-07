@@ -39,7 +39,7 @@ const UNIT_ALT = FORM_TO_CANON.map(([f]) => escapeRe(f)).join("|");
 // number (+ optional range tail), then a listed unit form. Word boundary on
 // the trailing edge except for symbol units (%, °F) which end non-word.
 const NUM = "\\d+(?:\\.\\d+)?";
-const RANGE = `(?:\\s*(?:-|–|—|to|or)\\s*(${NUM}))?`;
+const RANGE = `(?:\\s*(?:-|–|–|to|or)\\s*(${NUM}))?`;
 const DETECT_RE = new RegExp(
   `(${NUM})${RANGE}\\s*(${UNIT_ALT})(?![\\p{L}\\p{N}])`,
   "giu"

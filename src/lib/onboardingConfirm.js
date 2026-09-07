@@ -111,7 +111,7 @@ export function confirmItemToRecord(item, opts = {}) {
   // single-item confirmation (no opts.bulk) is the per-item confirmation itself
   // and is allowed for every category.
   if (opts.bulk && PER_ITEM_ONLY.has(item.category)) {
-    console.warn(`[onboardingConfirm] refused bulk write of "${item.category}" — requires per-item confirmation (§5.2 C3).`);
+    console.warn(`[onboardingConfirm] refused bulk write of "${item.category}": requires per-item confirmation (§5.2 C3).`);
     return null;
   }
   const effective = opts.fieldsOverride ? { ...item, fields: { ...item.fields, ...opts.fieldsOverride } } : item;
@@ -146,7 +146,7 @@ export function bulkConfirmItems(items = []) {
   for (const item of items) {
     if (PER_ITEM_ONLY.has(item.category)) {
       refused.push(item);
-      console.warn(`[onboardingConfirm] refused bulk-accept of "${item.category}" — requires per-item confirmation (§5.2 C3).`);
+      console.warn(`[onboardingConfirm] refused bulk-accept of "${item.category}": requires per-item confirmation (§5.2 C3).`);
       continue;
     }
     const entry = confirmItemToRecord(item, { bulk: true });

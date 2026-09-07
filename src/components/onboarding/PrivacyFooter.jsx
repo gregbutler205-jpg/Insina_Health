@@ -6,7 +6,7 @@ export default function PrivacyFooter() {
   return (
     <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "var(--text-secondary)", maxWidth: 640, margin: "0 auto" }}>
       <strong style={{ color: "var(--text-primary)" }}>Your data. Your control.</strong>{" "}
-      Your records are stored on your device or in your own Google Drive — never on Insina
+      Your records are stored on your device or in your own Google Drive: never on Insina
       servers. When you use AI features like document reading or analysis, only the information
       needed for that request is sent securely to our AI processor to generate your result;
       it isn&apos;t stored there.

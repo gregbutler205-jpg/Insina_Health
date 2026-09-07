@@ -159,7 +159,7 @@ function LogPanel({ onClose, onSave }) {
                   style={{ width: "100%", accentColor: severityColor(severity), cursor: "pointer" }} />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace" }}>
-                <span>1 — Minimal</span><span>10 — Severe</span>
+                <span>1: Minimal</span><span>10: Severe</span>
               </div>
               {/* Color bar */}
               <div style={{ height: 4, borderRadius: 4, marginTop: 10, background: "linear-gradient(to right, #10b981, #f59e0b, #f97316, #ef4444)", position: "relative" }}>
@@ -184,7 +184,7 @@ function LogPanel({ onClose, onSave }) {
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 8 }}>Notes <span style={{ color: "#a0b4c8" }}>· optional</span></div>
               <textarea
-                placeholder="Any context — when it started, what makes it better or worse..."
+                placeholder="Any context. When it started, what makes it better or worse..."
                 value={note} onChange={e => setNote(e.target.value)} rows={4}
                 style={{ width: "100%", padding: "9px 12px", background: "#0b1220", border: "1px solid #1c2a40", borderRadius: 8, color: "#c4d8ee", fontSize: 12, fontFamily: "'Sora',sans-serif", outline: "none", resize: "none", lineHeight: 1.6 }}
               />
@@ -277,15 +277,15 @@ function DetailPanel({ entry, onClose, onResolve, onNavToAI }) {
         <div style={{ background: "linear-gradient(135deg,rgba(79,142,247,.08),rgba(167,139,250,.06))", border: "1px solid rgba(79,142,247,.2)", borderRadius: 12, padding: "14px" }}>
           <div style={{ fontSize: 12, color: "#6ea3ff", fontFamily: "'DM Mono',monospace", letterSpacing: "1.2px", marginBottom: 8 }}>✦ AI CONTEXT</div>
           <div style={{ fontSize: 12, color: "#7eb8d8", lineHeight: 1.7, marginBottom: 12 }}>
-            {entry.symptom === "Hand Tremor" && "Tacrolimus-induced tremor is common — worth noting if severity increases or correlates with trough levels."}
+            {entry.symptom === "Hand Tremor" && "Tacrolimus-induced tremor is common: worth noting if severity increases or correlates with trough levels."}
             {entry.symptom === "Fatigue" && "Fatigue in transplant patients can reflect anemia, tacrolimus levels, poor sleep, or early rejection. Correlates with your recent Hemoglobin and eGFR trends."}
-            {entry.symptom === "Swelling / Edema" && "Ankle edema may reflect fluid retention — relevant alongside furosemide dosing and your BP readings."}
-            {entry.symptom === "Nausea" && "Nausea is a common mycophenolate and tacrolimus side effect — timing relative to medication doses is useful context."}
+            {entry.symptom === "Swelling / Edema" && "Ankle edema may reflect fluid retention: relevant alongside furosemide dosing and your BP readings."}
+            {entry.symptom === "Nausea" && "Nausea is a common mycophenolate and tacrolimus side effect: timing relative to medication doses is useful context."}
             {entry.symptom === "Joint Pain / Gout" && "Uric acid is 5.8 and trending up. Tacrolimus and furosemide both raise uric acid risk. Worth flagging to Dr. Cohen."}
             {entry.symptom === "Decreased Urine Output" && "Decreased output alongside rising creatinine (now 1.42) and falling eGFR (58) is a key concern for the nephrology appointment."}
             {entry.symptom === "Dizziness" && "Orthostatic dizziness correlates with your Mar 3 BP reading of 164/88. May indicate medication timing or volume status."}
             {entry.symptom === "Brain Fog / Confusion" && "Tacrolimus neurotoxicity can present as brain fog. Worth noting if severity increases or correlates with high trough levels."}
-            {entry.symptom === "Headache" && "Hypertension is a common cause of headache in transplant patients — correlates with BP readings above 140."}
+            {entry.symptom === "Headache" && "Hypertension is a common cause of headache in transplant patients: correlates with BP readings above 140."}
             {!["Hand Tremor","Fatigue","Swelling / Edema","Nausea","Joint Pain / Gout","Decreased Urine Output","Dizziness","Brain Fog / Confusion","Headache"].includes(entry.symptom) && "This symptom has been logged. The AI Analysis tab can cross-reference it against your labs, vitals, and medications for deeper insights."}
           </div>
           <button
@@ -473,7 +473,7 @@ export default function App({ onNavChange }) {
                 { label:"Active", value: active.length, color: active.length > 0 ? "#ef4444" : "#10b981" },
                 { label:"Total Logged", value: entries.length, color:"#4f8ef7" },
                 { label:"Avg Severity", value: avgSeverity, color: safeNumber(avgSeverity) == null ? "#98afc4" : safeNumber(avgSeverity) >= 6 ? "#ef4444" : safeNumber(avgSeverity) >= 4 ? "#f59e0b" : "#10b981" },
-                { label:"Peak Severity", value: maxSeverity ?? "—", color: severityColor(maxSeverity ?? 5) },
+                { label:"Peak Severity", value: maxSeverity ?? "–", color: severityColor(maxSeverity ?? 5) },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{ background:"#0b1220", border:"1px solid #1c2a40", borderRadius:12, padding:"14px 16px", animation:"fadeUp .3s ease both" }}>
                   <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", letterSpacing:"1px", textTransform:"uppercase", marginBottom:6 }}>{label}</div>

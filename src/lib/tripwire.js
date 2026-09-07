@@ -181,7 +181,7 @@ export function formatTripwireEnvelope(envelope) {
 Envelope status: ${envelope.status}. Evaluated at: ${envelope.evaluatedAt || "n/a"}. Newest lab date: ${envelope.newestLabDate || "n/a"}.`;
   if (envelope.status !== "current") {
     return `${header}
-The app's threshold check has not run against the latest data, or is unavailable. Per CSC rule 4: treat flag status as unknown for every value discussed below — do not state or imply that any value is unflagged, and direct concerns about a specific value to the patient's care team.`;
+The app's threshold check has not run against the latest data, or is unavailable. Per CSC rule 4: treat flag status as unknown for every value discussed below. Do not state or imply that any value is unflagged, and direct concerns about a specific value to the patient's care team.`;
   }
   if (!envelope.flags.length) {
     return `${header}

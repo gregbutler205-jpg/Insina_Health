@@ -228,16 +228,16 @@ export const SESSION_COPY = {
   warnOnCloseBody:
     "This session hasn't been saved to Notes. If you close it now, the " +
     "conversation is discarded and can't be recovered. Only the fact that a " +
-    "session happened is kept — none of its content.",
+    "session happened is kept. None of its content.",
   warnOnCloseKeep: "Keep session open",
   warnOnCloseDiscard: "Discard session",
   dividerRecordChanged: (dateStr) =>
-    `Continued ${dateStr} — your record has changed since the previous part of this conversation. Earlier answers reflect the record as it was then.`,
+    `Continued ${dateStr}. Your record has changed since the previous part of this conversation. Earlier answers reflect the record as it was then.`,
   dividerCorpusChanged: (dateStr) =>
-    `Continued ${dateStr} — Insina's reference information has been updated since the previous part of this conversation.`,
+    `Continued ${dateStr}: Insina's reference information has been updated since the previous part of this conversation.`,
   headerFooter: "Informational only. This is not medical advice. Always consult your physician before making any health decisions.",
   staleReopenNotice:
     "Your record has changed since this conversation's last part. Earlier answers reflect the record as it was then; your next question starts a new, freshly-stamped part.",
   warnUnsavedTurnsBody:
-    "This conversation was saved to Notes earlier, but the turns you've added since haven't been. Closing now discards only those newest turns — the saved part stays in Notes.",
+    "This conversation was saved to Notes earlier, but the turns you've added since haven't been. Closing now discards only those newest turns. The saved part stays in Notes.",
 };

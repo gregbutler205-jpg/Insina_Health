@@ -76,7 +76,7 @@ export default function OnboardingFlow({ onExit }) {
       {resumeOffer && (
         <div role="status" style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
           <span style={{ fontSize: 13, color: "var(--text-primary)" }}>
-            Pick up where you left off — Step {railStep} of 5
+            Pick up where you left off: Step {railStep} of 5
           </span>
           <button
             onClick={() => { setResumeOffer(false); setEntered(true); }}
@@ -239,8 +239,8 @@ function Phase5({ onManualEntry, onReview, onBasics, onFinish }) {
           <>
             <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7 }}>
               {gen.goal === "patient_profile"
-                ? "Everything it needs is confirmed — your profile screen builds and prints it."
-                : "Everything it needs is confirmed — the appointment screen builds your brief."}
+                ? "Everything it needs is confirmed. Your profile screen builds and prints it."
+                : "Everything it needs is confirmed. The appointment screen builds your brief."}
             </p>
             <button onClick={() => routeTo(gen.goal === "patient_profile" ? "profile" : "appointments")} style={btn}>
               {gen.goal === "patient_profile" ? "Open my Health Profile" : "Open Appointments"}
@@ -250,7 +250,7 @@ function Phase5({ onManualEntry, onReview, onBasics, onFinish }) {
         {staged.length > 0 && (
           <p style={{ fontSize: 12.5, color: "var(--text-secondary)", lineHeight: 1.7 }}>
             {stagedLabs > 0
-              ? `${stagedLabs} lab result${stagedLabs !== 1 ? "s are" : " is"} still waiting for your review — they'll improve your trends.`
+              ? `${stagedLabs} lab result${stagedLabs !== 1 ? "s are" : " is"} still waiting for your review: they'll improve your trends.`
               : `${staged.length} item${staged.length !== 1 ? "s are" : " is"} still waiting for your review.`}
             {" "}
             <button onClick={onReview} style={linkStyle}>Review now</button>

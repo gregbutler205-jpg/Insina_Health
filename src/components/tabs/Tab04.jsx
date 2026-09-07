@@ -37,7 +37,7 @@ function printRefillReport(meds) {
 
   const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const fmtD = str => {
-    if (!str) return "—";
+    if (!str) return "–";
     if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return formatDateUS(str);
     return str;
   };
@@ -52,9 +52,9 @@ function printRefillReport(meds) {
           const urgent = dl <= 3;
           return `<tr class="${urgent ? "urgent" : ""}">
             <td><strong>${esc(m.name)}</strong>${m.brand ? `<br><span class="brand">${esc(m.brand)}</span>` : ""}</td>
-            <td>${esc(m.dose||"—")} · ${esc(m.frequency||"—")}</td>
-            <td>${esc(m.rxNumber||"—")}</td>
-            <td>${esc(m.prescriber||"—")}</td>
+            <td>${esc(m.dose||"–")} · ${esc(m.frequency||"–")}</td>
+            <td>${esc(m.rxNumber||"–")}</td>
+            <td>${esc(m.prescriber||"–")}</td>
             <td>${esc(fmtD(m.refillDate))}</td>
             <td class="${urgent ? "urgent-cell" : "days-cell"}">${dl === 0 ? "OVERDUE" : `${dl}d`}</td>
           </tr>`;
@@ -66,7 +66,7 @@ function printRefillReport(meds) {
   const win = window.open("", "_blank", "width=920,height=680");
   if (!win) return;
   win.document.write(`<!DOCTYPE html><html><head>
-    <title>Refill Report — Insina Health</title>
+    <title>Refill Report: Insina Health</title>
     <style>
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:Georgia,serif; max-width:880px; margin:36px auto; color:#1a1a1a; font-size:13px; line-height:1.6; padding:0 24px; }
@@ -92,14 +92,14 @@ function printRefillReport(meds) {
   </head><body>
     <img src="${PRINT_LOGO}" class="logo" />
     <h1>Medication Refill Report</h1>
-    <div class="subtitle">${patientName ? patientName + " &mdash; " : ""}Insina Health</div>
+    <div class="subtitle">${patientName ? patientName + ": " : ""}Insina Health</div>
     <div class="meta">${due.length} medication${due.length !== 1 ? "s" : ""} due within 7 days &nbsp;·&nbsp; ${date}</div>
     <hr class="rule" />
     <div class="notice">⚠ These medications are due for refill within 7 days. Contact your pharmacy or prescriber promptly.</div>
     ${bodyHTML}
     <div class="disclaimer">This report is for reference only. Always verify refill status with your pharmacy.</div>
     <div class="footer">
-      <span>Insina Health — Personal Health Intelligence</span>
+      <span>Insina Health: Personal Health Intelligence</span>
       <span>Printed ${date}</span>
     </div>
   </body></html>`);
@@ -153,7 +153,7 @@ function toIsoDate(str) {
 }
 
 function fmtRefillDate(str) {
-  if (!str) return "—";
+  if (!str) return "–";
   if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
     return formatDateUS(str);
   }
@@ -174,7 +174,7 @@ const MEDS_SEED = [
     lastTaken: "Today 8:14 AM",
     status: "ok",
     flag: true,
-    flagNote: "Trough level borderline — recheck at next labs",
+    flagNote: "Trough level borderline: recheck at next labs",
     prescriber: "Dr. Ari Cohen",
     pharmacy: "CVS #5777",
     color: "#a78bfa",
@@ -209,7 +209,7 @@ const MEDS_SEED = [
     lastTaken: "Today 8:14 AM",
     status: "refill",
     flag: true,
-    flagNote: "Refill due in 4 days — contact pharmacy",
+    flagNote: "Refill due in 4 days. Contact pharmacy",
     prescriber: "Dr. Ari Cohen",
     pharmacy: "CVS #5777",
     color: "#f59e0b",
@@ -312,7 +312,7 @@ const MEDS_SEED = [
     lastTaken: "Today 8:14 AM",
     status: "ok",
     flag: true,
-    flagNote: "Interaction risk with mycophenolate — monitor CBC",
+    flagNote: "Interaction risk with mycophenolate: monitor CBC",
     prescriber: "Dr. Ari Cohen",
     pharmacy: "CVS #5777",
     color: "#ef4444",
@@ -467,7 +467,7 @@ export default function App({ onNavChange }) {
         `DTSTART:${dtStart}`,
         rrule,
         `SUMMARY:💊 Take ${label}`,
-        `DESCRIPTION:Insina Health reminder — time to take your ${label}`,
+        `DESCRIPTION:Insina Health reminder: time to take your ${label}`,
         "BEGIN:VALARM",
         "TRIGGER:PT0S",
         "ACTION:DISPLAY",
@@ -735,7 +735,7 @@ export default function App({ onNavChange }) {
               { label: "Active Medications", value: String(meds.length), sub: "across categories", color: "#4f8ef7" },
               { label: "Flagged for Review", value: String(flaggedCount), sub: "requires attention", color: "#ef4444", clickable: true },
               { label: "Refills Due Soon", value: String(refillSoon), sub: "within 10 days", color: "#f59e0b" },
-              { label: "Next Refill", value: nextRefill ? nextRefill.name.split(" ")[0] : "—", sub: nextRefill ? `Due ${fmtRefillDate(nextRefill.refillDate)} · ${calcDaysLeft(nextRefill.refillDate)}d` : "No meds added yet", color: "#f59e0b" },
+              { label: "Next Refill", value: nextRefill ? nextRefill.name.split(" ")[0] : "–", sub: nextRefill ? `Due ${fmtRefillDate(nextRefill.refillDate)} · ${calcDaysLeft(nextRefill.refillDate)}d` : "No meds added yet", color: "#f59e0b" },
             ].map(({ label, value, sub, color, clickable }, i) => (
               <div className="stat-card" key={label} style={{ animationDelay: `${i * 55}ms`, cursor: clickable ? "pointer" : "default" }} onClick={clickable ? () => setShowFlagged(f => !f) : undefined}>
                 <div style={{ width: 28, height: 3, background: color, borderRadius: 2, marginBottom: 14, boxShadow: `0 0 10px ${color}60` }} />
@@ -791,7 +791,7 @@ export default function App({ onNavChange }) {
               {/* Pending meds section */}
               {pendingMeds.length > 0 && (
                 <div style={{ marginBottom:16, padding:"14px", background:"rgba(245,158,11,.05)", border:"1px solid rgba(245,158,11,.2)", borderRadius:10 }}>
-                  <div style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", letterSpacing:"1.5px", marginBottom:10 }}>IMPORTED — PENDING APPROVAL ({pendingMeds.length})</div>
+                  <div style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", letterSpacing:"1.5px", marginBottom:10 }}>IMPORTED: PENDING APPROVAL ({pendingMeds.length})</div>
                   {pendingMeds.map((m, i) => (
                     <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 12px", background:"#080c14", borderRadius:8, border:"1px solid #1a2f4a", marginBottom:6 }}>
                       <div style={{ flex:1 }}>
@@ -852,7 +852,7 @@ export default function App({ onNavChange }) {
                     {med.refillDate && (
                       <button
                         onClick={(e) => markRefilled(med, e)}
-                        title="Mark refilled — advances the refill date by the days supply"
+                        title="Mark refilled: advances the refill date by the days supply"
                         style={{ flexShrink: 0, padding: "5px 11px", borderRadius: 7, border: `1px solid rgba(16,185,129,${refilledFlash === med.id ? ".55" : ".3"})`, background: `rgba(16,185,129,${refilledFlash === med.id ? ".20" : ".08"})`, color: "#2dd4a0", fontFamily: "'Sora',sans-serif", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
                       >
                         {refilledFlash === med.id ? "✓ Refilled" : "Refilled"}
@@ -897,7 +897,7 @@ export default function App({ onNavChange }) {
                 {editingMed ? (
                   <div style={{ background: "#0b1220", border: "1px solid #4f8ef7", borderRadius: 14, padding: "20px", marginBottom: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, paddingBottom: 14, borderBottom: "1px solid #1c2a40" }}>
-                      <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, color: "#dde8f5" }}>Edit — {editingMed.name}</div>
+                      <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, color: "#dde8f5" }}>Edit–{editingMed.name}</div>
                       <button onClick={() => { setEditingMed(null); setDeleteConfirm(false); }}
                         style={{ background: "#0b1220", border: "1px solid #1c2a40", borderRadius: 6, color: "#b0c4d8", fontSize: 13, cursor: "pointer", padding: "4px 8px" }}>✕</button>
                     </div>
@@ -1068,9 +1068,9 @@ export default function App({ onNavChange }) {
 
                   <div className="section-label" style={{ marginTop: 18 }}>Refill & Pharmacy</div>
                   {[
-                    ["Rx Number",     selectedMed.rxNumber || "—"],
-                    ["Pharmacy",      selectedMed.pharmacy  || "—"],
-                    ["Prescriber",    selectedMed.prescriber || "—"],
+                    ["Rx Number",     selectedMed.rxNumber || "–"],
+                    ["Pharmacy",      selectedMed.pharmacy  || "–"],
+                    ["Prescriber",    selectedMed.prescriber || "–"],
                     ["Days Supply",   `${selectedMed.daysSupply ?? 30} days`],
                     ["Refill Date",   fmtRefillDate(selectedMed.refillDate)],
                     ["Days Remaining", `${calcDaysLeft(selectedMed.refillDate)} days`],
@@ -1256,7 +1256,7 @@ export default function App({ onNavChange }) {
                           }
 
                           <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginBottom: 10, padding: "7px 10px", background: "rgba(79,142,247,.05)", borderRadius: 6, border: "1px solid rgba(79,142,247,.1)", lineHeight: 1.6 }}>
-                            📅 Saving downloads a calendar file. Open it on your phone to add the reminder to Apple Calendar, Google Calendar, or Outlook — your device will handle all alerts.
+                            📅 Saving downloads a calendar file. Open it on your phone to add the reminder to Apple Calendar, Google Calendar, or Outlook. Your device will handle all alerts.
                           </div>
 
                           <div style={{ display: "flex", gap: 6 }}>

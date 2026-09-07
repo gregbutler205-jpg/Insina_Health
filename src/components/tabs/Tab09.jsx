@@ -147,7 +147,7 @@ function UploadModal({ onSave, onClose }) {
       sourceColor:       SOURCE_COLORS[source] || "#98afc4",
       provider:          source,
       type:              file?.type || "Document",
-      pages:             "—",
+      pages:             "–",
       tags:              tags.split(",").map(t => t.trim()).filter(Boolean),
       flagged:           false,
       isRef,
@@ -158,7 +158,7 @@ function UploadModal({ onSave, onClose }) {
       preview: file
         ? `File: ${file.name}\nType: ${file.type || "unknown"}\nSize: ${(file.size / 1024).toFixed(1)} KB\n\n[Document queued for processing…]`
         : "[No file attached]",
-      fileSize:          file ? `${(file.size / 1024).toFixed(1)} KB` : "—",
+      fileSize:          file ? `${(file.size / 1024).toFixed(1)} KB` : "–",
       uploadedAt:        new Date().toISOString(),
       dateISO:           date || "", // v1.48.0: kept for the Drive archive filename
     };
@@ -212,7 +212,7 @@ function UploadModal({ onSave, onClose }) {
         <div style={{ marginBottom: 12 }}>
           <label style={lbl}>DOCUMENT TITLE *</label>
           <input value={title} onChange={e => setTitle(e.target.value)}
-            placeholder="e.g. Discharge Summary — May 2025" style={inp} />
+            placeholder="e.g. Discharge Summary: May 2025" style={inp} />
         </div>
 
         {/* Category + Date */}
@@ -457,8 +457,8 @@ export default function DocumentsTab() {
         updateDoc(docId, {
           isScanned: true,
           extracted: false,
-          pages: numPages || "—",
-          preview: `File attached${numPages ? ` (${numPages} pages)` : ""}\n\n[Scanned document — click Extract with AI to extract text using Claude Vision]`,
+          pages: numPages || "–",
+          preview: `File attached${numPages ? ` (${numPages} pages)` : ""}\n\n[Scanned document. Click Extract with AI to extract text using Claude Vision]`,
         });
         setExtraction(null);
       }
@@ -467,7 +467,7 @@ export default function DocumentsTab() {
       updateDoc(docId, {
         isScanned: true,
         extracted: false,
-        preview: `File attached\n\n[Scanned document — click Extract with AI to extract text using Claude Vision]`,
+        preview: `File attached\n\n[Scanned document. Click Extract with AI to extract text using Claude Vision]`,
       });
       setExtraction(null);
     }
@@ -823,8 +823,8 @@ export default function DocumentsTab() {
                     { label: "Source",   value: selectedDoc.source,                  color: selectedDoc.sourceColor },
                     { label: "Date",     value: selectedDoc.date },
                     { label: "Type",     value: selectedDoc.type === "application/pdf" ? "PDF" : (selectedDoc.type || "Document") },
-                    ...(selectedDoc.pages && selectedDoc.pages !== "—" ? [{ label: "Pages", value: selectedDoc.pages }] : []),
-                    ...(selectedDoc.fileSize && selectedDoc.fileSize !== "—" ? [{ label: "Size",  value: selectedDoc.fileSize }] : []),
+                    ...(selectedDoc.pages && selectedDoc.pages !== "–" ? [{ label: "Pages", value: selectedDoc.pages }] : []),
+                    ...(selectedDoc.fileSize && selectedDoc.fileSize !== "–" ? [{ label: "Size",  value: selectedDoc.fileSize }] : []),
                   ].map(m => (
                     <div key={m.label} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       <span style={{ fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", letterSpacing: "1px", textTransform: "uppercase" }}>{m.label}</span>
@@ -848,7 +848,7 @@ export default function DocumentsTab() {
                         : <span style={{ color: "#4a5c6a" }}>not linked</span>}
                       <button
                         onClick={() => {
-                          const entered = window.prompt("Paste the report's link (https… — Google Drive “Copy link” works; empty clears):", selectedDoc.driveLink || "");
+                          const entered = window.prompt("Paste the report's link (https…: Google Drive “Copy link” works; empty clears):", selectedDoc.driveLink || "");
                           if (entered === null) return;
                           const clean = sanitizeReportUrl(entered);
                           if (entered.trim() && !clean) { alert("Only https:// links can be saved."); return; }
@@ -903,7 +903,7 @@ export default function DocumentsTab() {
                   <div style={{ padding: "10px 14px", background: "rgba(245,158,11,.06)", border: "1px solid rgba(245,158,11,.2)", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
                     <span style={{ color: "#f59e0b", fontSize: 14 }}>⚡</span>
                     <span style={{ fontSize: 12, color: "#f59e0b", fontFamily: "'DM Mono',monospace" }}>
-                      Scanned document — click <strong>Extract with AI</strong> to read the text using Claude Vision and automatically extract clinical findings.
+                      Scanned document. Click <strong>Extract with AI</strong> to read the text using Claude Vision and automatically extract clinical findings.
                     </span>
                   </div>
                 )}

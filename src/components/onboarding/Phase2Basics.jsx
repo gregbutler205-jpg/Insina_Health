@@ -140,7 +140,7 @@ export default function Phase2Basics({ initialTier0, onContinue, onSkip }) {
             onChange={e => { set("center", e.target.value); setCenterOpen(true); }}
             onFocus={() => setCenterOpen(true)}
             onBlur={() => setTimeout(() => setCenterOpen(false), 150)}
-            placeholder="Start typing — or enter any name"
+            placeholder="Start typing. Or enter any name"
             role="combobox" aria-expanded={centerOpen && centerMatches.length > 0} aria-autocomplete="list"
           />
           {centerOpen && centerMatches.length > 0 && (

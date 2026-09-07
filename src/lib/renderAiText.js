@@ -61,7 +61,7 @@ export function renderAiMarkdownToHtml(rawText) {
       if (cells.length >= 2)
         return `<div style="display:flex;gap:16px;margin-bottom:6px;padding-left:8px">
           <span style="font-weight:700;min-width:160px;flex-shrink:0">${applyBoldSafe(cells[0])}</span>
-          <span>${applyBoldSafe(cells.slice(1).join(" — "))}</span></div>`;
+          <span>${applyBoldSafe(cells.slice(1).join(": "))}</span></div>`;
     }
     const hm = t.match(/^\*\*([^*]+?)\*\*:?\s*$/);
     if (hm) {

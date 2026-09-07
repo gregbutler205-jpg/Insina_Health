@@ -90,11 +90,11 @@ export function buildSessionPrintHtml(session, { logoUrl } = {}) {
 
   const now = fmtTs(new Date().toISOString());
   return `<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>AI Session — Insina Health</title><style>${STYLE}</style>
+    <title>AI Session: Insina Health</title><style>${STYLE}</style>
   </head><body>
     <img src="${logoUrl}" class="logo" alt="Insina Health" />
     <h1>AI Session</h1>
-    <div class="identity"><b>${esc(profile.name || "Patient")}</b>${identityBits ? ` &mdash; ${identityBits}` : ""}</div>
+    <div class="identity"><b>${esc(profile.name || "Patient")}</b>${identityBits ? `: ${identityBits}` : ""}</div>
     <div class="meta">${esc(session.title)} · started ${esc(fmtDay(session.createdAt))} · printed ${esc(now)} · reference set ${esc(CORPUS_VERSION)}</div>
     <hr class="rule" />
     ${segmentsHtml || "<p style='color:#777;font-style:italic'>No conversation content.</p>"}

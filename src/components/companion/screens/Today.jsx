@@ -65,7 +65,7 @@ export default function Today({ goTab, openLog, openEmergency, openSettings, ope
 
       {/* At-a-glance row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
-        <Glance label="Next visit" value={appt ? relDate(appt.date) : "None"} sub={appt ? (appt.provider || appt.title) : "—"} color={apptSoon ? C.amber : C.blue} onClick={() => goTab("care")} />
+        <Glance label="Next visit" value={appt ? relDate(appt.date) : "None"} sub={appt ? (appt.provider || appt.title) : "–"} color={apptSoon ? C.amber : C.blue} onClick={() => goTab("care")} />
         <Glance label="Labs" value={nextLab ? relDate(nextLab.date) : flagged.length ? `${flagged.length} flagged` : "OK"} sub={nextLab ? "lab draw" : flagged.length ? "review" : "up to date"} color={flagged.length && !nextLab ? C.amber : C.green} onClick={() => goTab("care")} />
         <Glance label="Refills" value={refills.length ? `${refills.length} due` : "OK"} sub={refills.length ? relDate(refills[0].refillDate) : "none soon"} color={refills.length ? C.amber : C.green} onClick={() => goTab("meds")} />
       </div>
@@ -113,9 +113,9 @@ export default function Today({ goTab, openLog, openEmergency, openSettings, ope
           <button onClick={() => openLog("vitals")} style={{ marginLeft: "auto", fontSize: 12, color: C.blue, fontFamily: mono, background: "none", border: "none", cursor: "pointer", padding: 0 }}>+ Log</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
-          <Vital label="Blood Pressure" unit="mmHg" val={bp ? `${bp.bp_s}/${bp.bp_d}` : "—"} color={C.blue} />
-          <Vital label="Weight" unit="lbs" val={wt ? `${wt.weight}` : "—"} color={C.green} />
-          <Vital label="Oxygen" unit="SpO₂" val={spo ? `${spo.spo2}%` : "—"} color={C.purple} />
+          <Vital label="Blood Pressure" unit="mmHg" val={bp ? `${bp.bp_s}/${bp.bp_d}` : "–"} color={C.blue} />
+          <Vital label="Weight" unit="lbs" val={wt ? `${wt.weight}` : "–"} color={C.green} />
+          <Vital label="Oxygen" unit="SpO₂" val={spo ? `${spo.spo2}%` : "–"} color={C.purple} />
         </div>
         {bp && <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, marginTop: 8, textAlign: "center" }}>Last recorded {fmtShort(bp.date)}</div>}
       </Card>

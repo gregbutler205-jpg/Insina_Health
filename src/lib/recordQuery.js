@@ -157,7 +157,7 @@ export function buildDirectAnswer(query, results) {
     if (!field) return null;
     const when = DATE_OF(cand);
     return {
-      text: `${cand.record[field]}${when ? ` — ${cand.title}, ${fmtDate(when)}` : ` — ${cand.title}`}`,
+      text: `${cand.record[field]}${when ? `: ${cand.title}, ${fmtDate(when)}` : `: ${cand.title}`}`,
       sourceLabel: "From your record",
       result: cand,
     };
@@ -168,7 +168,7 @@ export function buildDirectAnswer(query, results) {
     if (!cand) return null;
     const who = PROVIDER_FIELDS.map(f => cand.record?.[f]).find(Boolean);
     return {
-      text: `${fmtDate(DATE_OF(cand))} — ${cand.title}${who ? ` (${who})` : ""}`,
+      text: `${fmtDate(DATE_OF(cand))}: ${cand.title}${who ? ` (${who})` : ""}`,
       sourceLabel: intent.wantsFirst ? "Earliest in your record" : "Most recent in your record",
       result: cand,
     };
@@ -179,7 +179,7 @@ export function buildDirectAnswer(query, results) {
     const dose = cand?.record?.dose || cand?.record?.strength;
     if (!cand || !dose) return null;
     const freq = cand.record.frequency ? `, ${cand.record.frequency}` : "";
-    const inactive = cand.record.status && cand.record.status !== "active" ? ` — marked ${cand.record.status}` : "";
+    const inactive = cand.record.status && cand.record.status !== "active" ? `: marked ${cand.record.status}` : "";
     return { text: `${cand.title}: ${dose}${freq}${inactive}`, sourceLabel: "From your medication list", result: cand };
   }
 

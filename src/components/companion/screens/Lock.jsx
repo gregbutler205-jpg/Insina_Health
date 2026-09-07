@@ -150,7 +150,7 @@ function VaultSetup({ onUnlocked }) {
     try {
       const { recoveryKeyDisplay } = await secureStorage.setupVaultAndMigrate(pass);
       setRecoveryKey(recoveryKeyDisplay);
-    } catch (e) { setError(e.message || "Setup failed — try again."); }
+    } catch (e) { setError(e.message || "Setup failed. Try again."); }
     finally { setBusy(false); }
   }
 
@@ -159,7 +159,7 @@ function VaultSetup({ onUnlocked }) {
       <Card>
         <SL>Save your recovery key</SL>
         <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6, marginBottom: 10 }}>
-          If you ever forget your password, this key is the ONLY way back into your record. Save it somewhere safe — it will not be shown again.
+          If you ever forget your password, this key is the ONLY way back into your record. Save it somewhere safe. It will not be shown again.
         </div>
         <div style={{ background: C.bg, border: `1px solid ${C.b1}`, borderRadius: 8, padding: "12px", fontFamily: mono, fontSize: 12, color: C.p, wordBreak: "break-all", lineHeight: 1.7 }}>
           {recoveryKey}
@@ -177,7 +177,7 @@ function VaultSetup({ onUnlocked }) {
     <Card>
       <SL>Create a password</SL>
       <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6, marginBottom: 10 }}>
-        Your health record is encrypted on this device. Pick a password (8+ characters) — you'll get a recovery key next, and can set a short PIN for everyday unlocks after that.
+        Your health record is encrypted on this device. Pick a password (8+ characters). You'll get a recovery key next, and can set a short PIN for everyday unlocks after that.
       </div>
       <input type="password" placeholder="Password" value={pass} onChange={e => setPass(e.target.value)}
         style={{ ...inputStyle, letterSpacing: "1px", textAlign: "left", fontSize: 14, marginBottom: 8 }} />
@@ -198,7 +198,7 @@ function VaultSetup({ onUnlocked }) {
         Already use Insina? Restore from Google Drive
       </button>
       <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, lineHeight: 1.6, marginTop: 8 }}>
-        Pulls your record from Drive and shares the web app's vault — then unlock with your existing password.
+        Pulls your record from Drive and shares the web app's vault. Then unlock with your existing password.
       </div>
     </Card>
   );
@@ -217,7 +217,7 @@ function PinSetup({ onDone }) {
     if (pin !== confirm) { setError("The two PINs don't match."); return; }
     setBusy(true); setError("");
     try { await secureStorage.setupPinQuickUnlock(pin); onDone(); }
-    catch (e) { setError(e.message || "Couldn't set the PIN — try again."); }
+    catch (e) { setError(e.message || "Couldn't set the PIN. Try again."); }
     finally { setBusy(false); }
   }
 
@@ -240,7 +240,7 @@ function PinSetup({ onDone }) {
       </div>
       <button onClick={onDone}
         style={{ width: "100%", marginTop: 12, background: "none", border: "none", color: C.ghost, fontSize: 12, fontFamily: mono, cursor: "pointer", padding: 6 }}>
-        Skip — ask for my password each time
+        Skip. Ask for my password each time
       </button>
     </Card>
   );

@@ -26,7 +26,7 @@ export default function MedList({ onBack }) {
               {m.brand && <span style={{ fontSize: 12, color: C.ghost, fontFamily: mono }}>({m.brand})</span>}
               {m.category && <Pill color={C.dim}>{m.category}</Pill>}
             </div>
-            <div style={{ fontSize: 12, color: C.dim, fontFamily: mono, marginTop: 4, lineHeight: 1.5 }}>{line(m) || "—"}</div>
+            <div style={{ fontSize: 12, color: C.dim, fontFamily: mono, marginTop: 4, lineHeight: 1.5 }}>{line(m) || "–"}</div>
           </Card>
         ))}
 
@@ -36,7 +36,7 @@ export default function MedList({ onBack }) {
             {inactive.map(m => (
               <div key={medId(m)} style={{ border: `1px solid ${C.b2}`, borderRadius: 10, padding: "10px 14px", marginBottom: 6, opacity: 0.55 }}>
                 <div style={{ fontSize: 12, color: C.dim }}>{m.name}{m.brand ? ` (${m.brand})` : ""}</div>
-                <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono }}>{line(m) || "—"}</div>
+                <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono }}>{line(m) || "–"}</div>
               </div>
             ))}
           </>

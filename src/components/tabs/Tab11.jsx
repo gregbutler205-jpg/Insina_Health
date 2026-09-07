@@ -384,7 +384,7 @@ function renderMarkdown(rawText) {
           <div key={i} style={{ display: "flex", gap: 10, marginBottom: 5, paddingLeft: 4 }}>
             <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells[0], AI_BOLD_STYLE) }}
               style={{ fontWeight: 700, color: "#c4d8ee", minWidth: 140, flexShrink: 0 }} />
-            <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells.slice(1).join(" — "), AI_BOLD_STYLE) }}
+            <span dangerouslySetInnerHTML={{ __html: applyBoldSafe(cells.slice(1).join(": "), AI_BOLD_STYLE) }}
               style={{ color: "#a8c4dc" }} />
           </div>
         );
@@ -481,7 +481,7 @@ function Message({ role, text, streaming, mode, ts, isAdvancedUi }) {
               {/* Footer disclaimer — all responses */}
               {!streaming && text && (
                 <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>
-                  {isAdvancedUi ? "Advanced Mode" : "Standard Mode"} — Informational only. This is not medical advice. Always consult your physician before making any health decisions.
+                  {isAdvancedUi ? "Advanced Mode" : "Standard Mode"}: Informational only. This is not medical advice. Always consult your physician before making any health decisions.
                 </div>
               )}
             </div>
@@ -615,7 +615,7 @@ export default function AIAnalysis({ onNavChange }) {
     if (staleConsent) return;
     // OPEN-17a: the daily limit is the cap — enforced per conversation turn.
     if (dailyLimitReached()) {
-      setError(`Daily question limit reached — ${DAILY_QUESTION_LIMIT} conversation questions per day. The counter resets at midnight.`);
+      setError(`Daily question limit reached: ${DAILY_QUESTION_LIMIT} conversation questions per day. The counter resets at midnight.`);
       setQuestionsLeft(0);
       return;
     }
@@ -675,7 +675,7 @@ export default function AIAnalysis({ onNavChange }) {
       });
 
       if (!res.ok) {
-        if (res.status === 413) throw new Error("Your record context is too large to send in one request — this usually means several large uploaded reference documents. Remove some from AI context (Reference Docs panel) and try again.");
+        if (res.status === 413) throw new Error("Your record context is too large to send in one request. This usually means several large uploaded reference documents. Remove some from AI context (Reference Docs panel) and try again.");
         const err = await res.json().catch(() => ({}));
         // Demo origin: AI is deliberately switched off (aiClient short-circuits
         // before any network call). Render it as an explanation, not an error —
@@ -684,7 +684,7 @@ export default function AIAnalysis({ onNavChange }) {
         if (err?.demo) {
           appendTurn(s, {
             role: "assistant", mode,
-            text: "**AI is turned off in this demo**\n\nThis public demo runs on its own domain, kept off the AI service on purpose so a public page can't run up an API bill. Everything else here is fully interactive — your record, labs, medications, search, reports and the Emergency Card all work.\n\nTo see what the analysis actually produces, open **My Notes**. A saved example is pinned at the top, showing the full format: what your data shows, what may need attention, the questions it drafts for your care team, and why you're asking each one.",
+            text: "**AI is turned off in this demo**\n\nThis public demo runs on its own domain, kept off the AI service on purpose so a public page can't run up an API bill. Everything else here is fully interactive. Your record, labs, medications, search, reports and the Emergency Card all work.\n\nTo see what the analysis actually produces, open **My Notes**. A saved example is pinned at the top, showing the full format: what your data shows, what may need attention, the questions it drafts for your care team, and why you're asking each one.",
           });
           saveSession(s);
           mirror();
@@ -838,11 +838,11 @@ export default function AIAnalysis({ onNavChange }) {
     const s = sessionRef.current;
     if (!s || streaming || totalMessages(s) === 0) return;
     saveToNotes();
-    const how = openPrintable(buildSessionPrintHtml(s, { logoUrl: PRINT_LOGO }), "Insina Health — AI Session");
+    const how = openPrintable(buildSessionPrintHtml(s, { logoUrl: PRINT_LOGO }), "Insina Health: AI Session");
     if (how === "downloaded") {
-      setSummaryNote("Your browser blocked the print pop-up, so the session was saved to your Downloads folder instead. Open it there to print — or allow pop-ups for this site. It is also saved in Notes.");
+      setSummaryNote("Your browser blocked the print pop-up, so the session was saved to your Downloads folder instead. Open it there to print. Or allow pop-ups for this site. It is also saved in Notes.");
     } else if (how === "failed") {
-      setSummaryNote("Couldn't open or save the print view. The session IS saved to Notes — check that pop-ups and downloads are allowed for this site, then try Save & Print again.");
+      setSummaryNote("Couldn't open or save the print view. The session IS saved to Notes. Check that pop-ups and downloads are allowed for this site, then try Save & Print again.");
     }
   };
 
@@ -951,11 +951,11 @@ export default function AIAnalysis({ onNavChange }) {
     const prompt =
 `I have just uploaded a medical report titled "${doc.name}". Please analyze it and provide:
 
-**Plain English Explanation** — Explain what this report is saying in clear, simple language a non-medical person can understand. When medical terms are necessary, explain what they mean.
+**Plain English Explanation**: Explain what this report is saying in clear, simple language a non-medical person can understand. When medical terms are necessary, explain what they mean.
 
-**Key Findings** — Identify and explain the most important findings, both normal and abnormal. Cross-reference with my existing medical history, conditions, and medications where relevant.
+**Key Findings**: Identify and explain the most important findings, both normal and abnormal. Cross-reference with my existing medical history, conditions, and medications where relevant.
 
-**Questions to Ask My Doctor** — Provide 6-8 specific questions I should ask my doctor when they contact me about this report, based on the specific findings in this document.
+**Questions to Ask My Doctor**: Provide 6-8 specific questions I should ask my doctor when they contact me about this report, based on the specific findings in this document.
 
 Important: Do NOT make any diagnosis. Your role is to help me understand what this report says and prepare me for a productive conversation with my physician.`;
     sendMessage(prompt);
@@ -1260,7 +1260,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
             ) : (
               <>
                 <div style={{ fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#a0b4c8", fontFamily: "'DM Mono',monospace", marginBottom: 12 }}>
-                  Your sessions — newest first
+                  Your sessions: newest first
                 </div>
                 {[...sessionsList]
                   .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
@@ -1310,7 +1310,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               </span>
               <div style={{ flex: 1 }} />
               <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
-                record {headerStamp?.recordHash || "—"} · reference set {headerStamp?.corpusVersion || CORPUS_VERSION}
+                record {headerStamp?.recordHash || "–"} · reference set {headerStamp?.corpusVersion || CORPUS_VERSION}
               </span>
             </div>
             <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginTop: 3 }}>
@@ -1377,7 +1377,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
 
             {coldStartRetry && !streaming && (
               <div style={{ background:"rgba(245,158,11,.08)", border:"1px solid rgba(245,158,11,.25)", borderRadius:8, padding:"10px 14px", fontSize:12, color:"#c4a060", fontFamily:"'DM Mono',monospace", marginBottom:16, display:"flex", alignItems:"center", gap:12 }}>
-                <span style={{ flex:1 }}>⚠ Server cold start — the proxy is waking up (Render free tier). Wait ~30–60 seconds then click Retry.</span>
+                <span style={{ flex:1 }}>⚠ Server cold start. The proxy is waking up (Render free tier). Wait ~30–60 seconds then click Retry.</span>
                 <button onClick={() => {
                   const text = coldStartRetry;
                   setColdStartRetry(null);
@@ -1412,12 +1412,12 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               Save to Notes{activeSession?.state === "saved" && !unsaved ? " ✓" : ""}
             </button>
             <button className="end-btn" onClick={saveAndPrint} disabled={!canAct}
-              title="Save to Notes, then print — every printout has a stored counterpart"
+              title="Save to Notes, then print. Every printout has a stored counterpart"
               style={{ background: "rgba(79,142,247,.1)", border: "1px solid rgba(79,142,247,.3)", color: "#7eb8d8" }}>
               Save &amp; Print
             </button>
             <button className="end-btn" onClick={previewReport} disabled={!canAct}
-              title="See the full session report exactly as it prints — the whole conversation, view-only"
+              title="See the full session report exactly as it prints. The whole conversation, view-only"
               style={{ background: "rgba(167,139,250,.1)", border: "1px solid rgba(167,139,250,.3)", color: "#a78bfa" }}>
               Preview Report
             </button>
@@ -1460,7 +1460,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
                 ref={textareaRef}
                 className="chat-input"
                 rows={1}
-                placeholder={staleConsent ? "Re-consent to Advanced Mode required — switch to Standard in Settings & Backup" : "Ask anything about your health data…"}
+                placeholder={staleConsent ? "Re-consent to Advanced Mode required. Switch to Standard in Settings & Backup" : "Ask anything about your health data…"}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onInput={e => {
@@ -1473,7 +1473,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               {streaming
                 ? <button className="stop-btn" onClick={() => abortRef.current?.abort()}>Stop ◼</button>
                 : <button className="send-btn" onClick={() => sendMessage(input)} disabled={!input.trim() || staleConsent || questionsLeft === 0}
-                    title={questionsLeft === 0 ? `Daily limit reached — ${DAILY_QUESTION_LIMIT} questions per day, resets at midnight` : undefined}>Send ↑</button>
+                    title={questionsLeft === 0 ? `Daily limit reached: ${DAILY_QUESTION_LIMIT} questions per day, resets at midnight` : undefined}>Send ↑</button>
               }
             </div>
             <div style={{ marginTop: 8, fontSize: 12, color: "#a0b4c8", fontFamily: "'DM Mono',monospace", display: "flex", justifyContent: "space-between", paddingRight: 64 }}>

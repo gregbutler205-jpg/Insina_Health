@@ -17,7 +17,7 @@ export default function VisitSummary({ visit: initial, onClose }) {
   async function generate() {
     setBusy(true); setErr("");
     try { setVisit(await summarizeVisit(visit)); }
-    catch (e) { setErr(e.message || "Couldn’t generate the summary — try again when you’re online."); }
+    catch (e) { setErr(e.message || "Couldn’t generate the summary. Try again when you’re online."); }
     finally { setBusy(false); }
   }
   function toggle(id) { setVisit(toggleActionItem(visit.id, id)); }
@@ -48,7 +48,7 @@ export default function VisitSummary({ visit: initial, onClose }) {
           <Btn onClick={generate} disabled={busy}>{busy ? "Summarizing…" : "✦ Generate AI Summary"}</Btn>
           {err && <div style={{ fontSize: 12, color: C.red, fontFamily: mono, marginTop: 10 }}>{err}</div>}
           <div style={{ fontSize: 12, color: C.ghost, fontFamily: mono, marginTop: 10, lineHeight: 1.5 }}>
-            You can do this later — the visit is already saved. Summarizing needs a connection.
+            You can do this later. The visit is already saved. Summarizing needs a connection.
           </div>
         </>
       ) : (
@@ -69,7 +69,7 @@ export default function VisitSummary({ visit: initial, onClose }) {
           )}
 
           {s.stillOpen?.length > 0 && (
-            <Section title="Still Open — Carried Forward">
+            <Section title="Still Open: Carried Forward">
               {s.stillOpen.map((q, i) => <Bullet key={i} text={q} color={C.amber} />)}
             </Section>
           )}
@@ -87,7 +87,7 @@ export default function VisitSummary({ visit: initial, onClose }) {
                     <div style={{ fontSize: 13, color: C.p, fontWeight: 600 }}>{it.text}</div>
                     {it.med?.detail && <div style={{ fontSize: 12, color: C.dim, marginTop: 2 }}>{it.med.detail}</div>}
                     {it.confirmed
-                      ? <div style={{ fontSize: 12, color: C.green, fontFamily: mono, marginTop: 6 }}>✓ Confirmed — medication list updated</div>
+                      ? <div style={{ fontSize: 12, color: C.green, fontFamily: mono, marginTop: 6 }}>✓ Confirmed: medication list updated</div>
                       : <button onClick={() => confirmMed(it.id)} style={{ marginTop: 8, background: "rgba(167,139,250,.14)", border: `1px solid ${C.purple}55`, borderRadius: 8, padding: "8px 14px", color: C.purple, fontSize: 12, fontFamily: mono, fontWeight: 600, cursor: "pointer" }}>
                           Confirm this change
                         </button>}

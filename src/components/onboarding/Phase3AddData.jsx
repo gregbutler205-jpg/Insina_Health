@@ -83,7 +83,7 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
     // comes back as Failed-resumable (file bytes can't survive a reload).
     const prior = loadState()?.add_data_files || [];
     return prior.map(f => ["queued", "reading", "extracting"].includes(f.status)
-      ? { ...f, status: "failed", reason: "Interrupted when the tab closed — add this file again to retry." }
+      ? { ...f, status: "failed", reason: "Interrupted when the tab closed. Add this file again to retry." }
       : f);
   });
   const [counts, setCounts] = useState(() => stagedCounts());
@@ -112,7 +112,7 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
   async function processFile(id) {
     const entry = fileObjects.current.get(id);
     const meta = files.find(f => f.id === id) || { name: entry?.name };
-    if (!entry) { patchFile(id, { status: "failed", reason: "File is no longer available — add it again." }); return; }
+    if (!entry) { patchFile(id, { status: "failed", reason: "File is no longer available. Add it again." }); return; }
     try {
       patchFile(id, { status: "reading", reason: "" });
       const ext = fileExtension(entry.name);
@@ -137,10 +137,10 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
           let pages = Array.from({ length: pageCount }, (_, i) => i + 1);
           if (scannedPageCapExceeded(pageCount)) {
             const chosen = await askRange(entry.name, pageCount);
-            if (!chosen) { patchFile(id, { status: "failed", reason: "No pages chosen — retry to pick pages." }); return; }
+            if (!chosen) { patchFile(id, { status: "failed", reason: "No pages chosen. Retry to pick pages." }); return; }
             pages = chosen.slice(0, SCANNED_PDF_FALLBACK_PAGE_CAP);
           }
-          patchFile(id, { status: "extracting", reason: "Scanned document — reading pages as images" });
+          patchFile(id, { status: "extracting", reason: "Scanned document: reading pages as images" });
           const images = await renderPdfPagesToImages(doc, pages);
           const result = await extractVision({ sourceName: entry.name, images });
           const links = upsertDocEntries(result, { pageImages: images, source: "Onboarding import", uploadTitle: entry.name });
@@ -162,7 +162,7 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
       refreshCounts();
     } catch (e) {
       const reason = e instanceof PdfPasswordError
-        ? "Password didn't work — you can retry or skip this file."
+        ? "Password didn't work. You can retry or skip this file."
         : (e?.message || "Something went wrong reading this file.");
       patchFile(id, { status: "failed", reason });
     }
@@ -234,7 +234,7 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
           Add your information
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>
-          Documents, photos, or portal text — everything is staged for your review before it touches your record.
+          Documents, photos, or portal text. Everything is staged for your review before it touches your record.
         </p>
       </div>
 
@@ -322,7 +322,7 @@ export default function Phase3AddData({ onContinue, onManualEntry, onSkipEveryth
             <div style={{ fontSize: 16, color: "var(--text-bright)", fontWeight: 600, marginBottom: 8 }}>Paste from your portal</div>
             <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 12 }}>
               In MyChart, open your visit summary, medication list, or test results and copy the text.
-              Paste it below — formatting doesn't matter.
+              Paste it below: formatting doesn't matter.
             </p>
             <textarea value={pasteText} onChange={e => setPasteText(e.target.value.slice(0, PASTE_CHAR_CAP))}
               style={{ ...inp, height: 180, resize: "vertical", fontFamily: "var(--font-mono)", fontSize: 12 }} />
@@ -398,7 +398,7 @@ function PasswordPrompt({ req, onClose }) {
         <div style={{ fontSize: 15, color: "var(--text-bright)", fontWeight: 600, marginBottom: 8 }}>
           “{req.fileName}” is password-protected
         </div>
-        {req.isRetry && <div style={{ fontSize: 12, color: "var(--red)", marginBottom: 8 }}>That password didn't work — one more try.</div>}
+        {req.isRetry && <div style={{ fontSize: 12, color: "var(--red)", marginBottom: 8 }}>That password didn't work. One more try.</div>}
         <input type="password" autoFocus value={pw} onChange={e => setPw(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") submit(); }}
           placeholder="PDF password" style={inp} />
@@ -423,7 +423,7 @@ function RangePrompt({ req, onClose }) {
     <div style={modalWrap}>
       <div role="dialog" aria-modal="true" aria-label="Choose pages" style={modalCard}>
         <div style={{ fontSize: 15, color: "var(--text-bright)", fontWeight: 600, marginBottom: 8 }}>
-          This looks like a scanned document — choose the pages that matter most
+          This looks like a scanned document. Choose the pages that matter most
         </div>
         <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 12 }}>
           “{req.fileName}” has {req.pageCount} pages; scanned documents are read up to {SCANNED_PDF_FALLBACK_PAGE_CAP} pages at a time.

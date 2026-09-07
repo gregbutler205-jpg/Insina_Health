@@ -33,7 +33,7 @@ function save(list) {
   localStorage.setItem("mi_conditions_summary", JSON.stringify(summary));
 }
 function fmtDate(iso) {
-  return formatDateUS(iso, "—"); // v1.56.2: date fields read mm/dd/yyyy
+  return formatDateUS(iso, "–"); // v1.56.2: date fields read mm/dd/yyyy
 }
 
 // ── ICD-10 Lookup ──────────────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ function Icd10Lookup({ value, onChange, inp }) {
   }
 
   function pick(item) {
-    const combined = `${item.code} — ${item.name}`;
+    const combined = `${item.code}: ${item.name}`;
     setQuery(combined);
     onChange(combined);
     setResults([]);
@@ -146,7 +146,7 @@ function ConditionModal({ condition, onSave, onClose }) {
           </div>
           {/* ICD-10 */}
           <div style={{ gridColumn:"1/-1" }}>
-            <label style={lbl}>ICD-10 Code — type code or diagnosis name to search</label>
+            <label style={lbl}>ICD-10 Code: type code or diagnosis name to search</label>
             <Icd10Lookup value={form.icd10} onChange={v => set("icd10", v)} inp={inp} />
           </div>
           {/* Diagnosed */}
@@ -232,7 +232,7 @@ export default function ConditionsTab() {
     if (added > 0) {
       setScanNotice({ count: added });
     } else if (!auto) {
-      setScanMsg("No new condition mentions found in your records — you're up to date.");
+      setScanMsg("No new condition mentions found in your records. You're up to date.");
     }
   };
 
@@ -382,7 +382,7 @@ export default function ConditionsTab() {
               </span>
             </div>
             <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'Sora',sans-serif", marginBottom:14, lineHeight:1.5 }}>
-              These condition names appear in your records but aren't on your Conditions list. Nothing is added until you review it —
+              These condition names appear in your records but aren't on your Conditions list. Nothing is added until you review it: 
               Confirm to add one (you can edit details first), or Dismiss it and it won't be suggested again.
             </div>
             {suggestions.map(sug => (
@@ -396,7 +396,7 @@ export default function ConditionsTab() {
                   {sug.sources.slice(0, 3).map((s, i) => (
                     <div key={i} style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", lineHeight:1.6, marginBottom:2 }}>
                       <span style={{ color:"#f59e0b" }}>{s.store}</span>
-                      {" — "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
+                      {": "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
                       {s.snippet ? <span style={{ color:"#6a8090" }}>{" · “"}{s.snippet}{"”"}</span> : null}
                     </div>
                   ))}
@@ -454,7 +454,7 @@ export default function ConditionsTab() {
         {/* List */}
         {filtered.length === 0 ? (
           <div style={{ textAlign:"center", padding:"48px 0", color:"#a0b4c8", fontFamily:"'DM Mono',monospace", fontSize:12 }}>
-            {conditions.length === 0 ? "No conditions added yet — click Add Condition to get started." : `No ${filter} conditions.`}
+            {conditions.length === 0 ? "No conditions added yet. Click Add Condition to get started." : `No ${filter} conditions.`}
           </div>
         ) : (
           filtered.map(c => {
@@ -513,7 +513,7 @@ export default function ConditionsTab() {
               {scanNotice.count} possible condition{scanNotice.count !== 1 ? "s" : ""} found in your records
             </h2>
             <div style={{ fontSize:13, color:"#b0c4d8", fontFamily:"'Sora',sans-serif", lineHeight:1.6, marginBottom:20 }}>
-              They're listed under <b style={{ color:"#f59e0b" }}>Suggested from your records</b> at the top of this page —
+              They're listed under <b style={{ color:"#f59e0b" }}>Suggested from your records</b> at the top of this page: 
               nothing goes on your Conditions list until you review each one.
               <b style={{ color:"#7eb8d8" }}> Confirm</b> to add it, or <b style={{ color:"#7eb8d8" }}>Dismiss</b> it.
             </div>

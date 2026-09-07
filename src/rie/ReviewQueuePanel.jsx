@@ -44,7 +44,7 @@ export default function RIEWidget({ onNavChange }) {
   return (
     <>
       {/* Floating trigger */}
-      <button onClick={() => setOpen(o => !o)} title="Record Integrity — Review Queue"
+      <button onClick={() => setOpen(o => !o)} title="Record Integrity: Review Queue"
         style={{ position: "fixed", right: 18, bottom: 18, zIndex: 1400, width: 48, height: 48, borderRadius: "50%",
           background: "#0b1220", border: `1px solid ${dotColor}`, color: dotColor, cursor: "pointer",
           boxShadow: `0 0 14px ${dotColor}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19 }}>

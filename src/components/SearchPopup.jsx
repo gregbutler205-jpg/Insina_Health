@@ -320,7 +320,7 @@ export default function SearchPopup({ onClose, onNavChange }) {
               <div style={{ fontSize: 12, color: C.ghost, fontFamily: "'DM Mono',monospace", lineHeight: 2 }}>
                 Search labs, medications, conditions, appointments,<br />
                 symptoms, procedures, diagnostics, documents and more.<br />
-                <span style={{ color: C.green }}>Ask in plain words — answered from your record.</span>
+                <span style={{ color: C.green }}>Ask in plain words: answered from your record.</span>
               </div>
             </div>
           )}

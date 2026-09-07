@@ -64,13 +64,13 @@ const MIGRATIONS = [
   {
     version: 1,
     major: false,
-    description: "Baseline: stamp existing installs with schema version 1. No data changed — establishes the starting point for every future migration.",
+    description: "Baseline: stamp existing installs with schema version 1. No data changed: establishes the starting point for every future migration.",
     run() { /* no-op: version stamp only */ },
   },
   {
     version: 2,
     major: false, // additive only: adds fields, never removes or restructures existing ones
-    description: "UI-4 / A-12: normalize mi_readings onto the shared vital schema (id, canonical date, enteredAt, optional time). Fixes four independently-written vital-save paths disagreeing on shape — one used a locale display string for `date` and a separate `ts` for the real date, another used an epoch-millisecond `ts` with no `date` at all.",
+    description: "UI-4 / A-12: normalize mi_readings onto the shared vital schema (id, canonical date, enteredAt, optional time). Fixes four independently-written vital-save paths disagreeing on shape. One used a locale display string for `date` and a separate `ts` for the real date, another used an epoch-millisecond `ts` with no `date` at all.",
     run() {
       let readings;
       try { readings = JSON.parse(localStorage.getItem("mi_readings") || "[]"); } catch { readings = []; }
@@ -112,7 +112,7 @@ const MIGRATIONS = [
   {
     version: 3,
     major: true, // moves data between stores (mi_imaging → mi_diagnostics), then removes the old key
-    description: "Diagnostics tab: migrate mi_imaging entries into mi_diagnostics. Each imaging study becomes a diagnostic study (name from type + body part, e.g. \"MRI — Liver\"); ordered-by / reading-provider / impression / related-condition start blank for the patient to fill in. mi_imaging is removed after a verified copy.",
+    description: "Diagnostics tab: migrate mi_imaging entries into mi_diagnostics. Each imaging study becomes a diagnostic study (name from type + body part, e.g. \"MRI: Liver\"); ordered-by / reading-provider / impression / related-condition start blank for the patient to fill in. mi_imaging is removed after a verified copy.",
     run() {
       let imaging;
       try { imaging = JSON.parse(localStorage.getItem("mi_imaging") || "[]"); } catch { imaging = []; }
@@ -130,7 +130,7 @@ const MIGRATIONS = [
           .filter(e => !existingIds.has(e.id)) // re-entrant safe: a retried run never duplicates
           .map(e => ({
             id: e.id || genId(),
-            name: [e.type, e.bodyPart].filter(Boolean).join(" — ") || "Imaging study",
+            name: [e.type, e.bodyPart].filter(Boolean).join(": ") || "Imaging study",
             date: e.date || "",
             orderedBy: "",
             readingProvider: "",
@@ -144,7 +144,7 @@ const MIGRATIONS = [
         // Verify the write landed before deleting the source store.
         const verify = JSON.parse(localStorage.getItem("mi_diagnostics") || "[]");
         if (!Array.isArray(verify) || verify.length < merged.length) {
-          throw new Error("mi_diagnostics write verification failed — mi_imaging left untouched");
+          throw new Error("mi_diagnostics write verification failed: mi_imaging left untouched");
         }
       }
       localStorage.removeItem("mi_imaging");

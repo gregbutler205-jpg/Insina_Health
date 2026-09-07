@@ -50,7 +50,7 @@ export default function Settings({ onBack }) {
 
         {perm === "denied" && (
           <div style={{ background: "#1c1200", border: `1px solid ${C.amber}40`, borderRadius: 10, padding: "10px 12px", marginBottom: 12, fontSize: 12, color: "#fcd34d", fontFamily: mono, lineHeight: 1.5 }}>
-            Notifications are blocked in your browser settings — enable them there to use these.
+            Notifications are blocked in your browser settings: enable them there to use these.
           </div>
         )}
         {perm === "unsupported" && (

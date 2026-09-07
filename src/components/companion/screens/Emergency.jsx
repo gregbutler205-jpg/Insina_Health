@@ -21,7 +21,7 @@ export default function Emergency({ onBack }) {
       <div style={{ overflowY: "auto", padding: 16 }}>
         {/* Identity */}
         <Card style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 18, color: C.p, fontWeight: 700 }}>{p.name || "—"}</div>
+          <div style={{ fontSize: 18, color: C.p, fontWeight: 700 }}>{p.name || "–"}</div>
           <div style={{ fontSize: 12, color: C.dim, fontFamily: mono, marginTop: 3, lineHeight: 1.6 }}>
             {[p.dob && `DOB ${formatDateUS(p.dob)}`, p.gender, p.blood && `Blood ${p.blood}`].filter(Boolean).join("  ·  ")}
           </div>
