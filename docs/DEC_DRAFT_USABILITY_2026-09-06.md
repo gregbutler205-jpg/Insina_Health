@@ -2,7 +2,7 @@
 
 Session date: September 5 and 6, 2026
 Status: DRAFT. IDs are TBD until merged into DECISIONS.md. Nothing below is settled until merged.
-Update 2026-09-06: DEC-TBD-01 and DEC-TBD-02 were accepted by Greg as written and merged into DECISIONS.md as DEC-049 and DEC-050. The remaining ten entries and the deferred list are still drafts.
+Update 2026-09-06: DEC-TBD-01 and DEC-TBD-02 were accepted by Greg as written and merged into DECISIONS.md as DEC-049 and DEC-050. Update 2026-09-07: DEC-TBD-05 through DEC-TBD-11 were accepted by Greg as written and merged as DEC-051 through DEC-057. DEC-TBD-03 (theme policy), DEC-TBD-04 (text size control), DEC-TBD-12 (usability testing gate), and the deferred list are still drafts.
 Source: usability review and dashboard redesign session; mockups `insina_tier0_today.jsx` and `insina_dashboard_feed.jsx`.
 
 Ordering note: DEC-TBD-01 through DEC-TBD-03 are prerequisites for the others and for WO_ACCESSIBLE_TOKENS_01. DEC-TBD-04 onward describe the dashboard and can merge together.
@@ -69,6 +69,8 @@ text-primary, text-secondary, text-muted, warning, and the background tokens are
 
 ## DEC-TBD-05: Dashboard structure
 
+Merged as DEC-051 on 2026-09-07, accepted as written.
+
 **Decision.** The dashboard follows a feed structure rather than a status snapshot. Top to bottom:
 1. Greeting, with an attention count on the left and "Last updated" on the right.
 2. Emergency strip (conditional, see DEC-TBD-08).
@@ -84,6 +86,8 @@ Removed from the dashboard: the nine-card vitals row, the full care team, lab fl
 ---
 
 ## DEC-TBD-06: Feed eligibility and ordering
+
+Merged as DEC-052 on 2026-09-07, accepted as written.
 
 **Decision.** "Your updates" contains only:
 - Tripwire flags (advisory tier; emergency tier also triggers DEC-TBD-08).
@@ -101,6 +105,8 @@ Ordering is fixed: flags, then pending reviews, then out-of-range results, then 
 
 ## DEC-TBD-07: Acknowledge versus dismiss
 
+Merged as DEC-053 on 2026-09-07, accepted as written.
+
 **Decision.**
 - Tripwire flags cannot be dismissed. They offer one action and an Acknowledge button. Acknowledging records the timestamp in the patient's record and removes the card from the feed. The underlying condition is re-evaluated by the tripwire engine on its own schedule and may re-flag.
 - Pending reviews and out-of-range results can be dismissed from the feed; the underlying item remains in its tab unchanged. Dismissing is not confirming.
@@ -113,6 +119,8 @@ Ordering is fixed: flags, then pending reviews, then out-of-range results, then 
 
 ## DEC-TBD-08: Emergency tier escalation on the dashboard
 
+Merged as DEC-054 on 2026-09-07, accepted as written.
+
 **Decision.** When the tripwire engine emits an emergency-tier flag, a red strip renders above the quick actions on every dashboard load, leading unconditionally with 911 and nearest ED, with the flag text below. The strip cannot be dismissed; it clears only when the engine clears the condition or the patient acknowledges from within the flag itself. This is the only element that appears outside the feed column.
 
 **Open item.** Exact strip copy is authored by the tripwire spec, not the dashboard. Mockup does not include an example on purpose.
@@ -120,6 +128,8 @@ Ordering is fixed: flags, then pending reviews, then out-of-range results, then 
 ---
 
 ## DEC-TBD-09: Who to call roster
+
+Merged as DEC-055 on 2026-09-07, accepted as written.
 
 **Decision.** The dashboard shows a "Who to call" card with three to four entries, each a role, a name, and a tap-to-call number. Default roster for a transplant recipient: transplant coordinator, after-hours transplant line, primary care. The patient edits the roster from Care team. The full directory is not on the dashboard. Tripwire advisory actions may reference a roster entry by role.
 
@@ -129,6 +139,8 @@ Ordering is fixed: flags, then pending reviews, then out-of-range results, then 
 
 ## DEC-TBD-10: Navigation structure
 
+Merged as DEC-056 on 2026-09-07, accepted as written.
+
 **Decision.** Sidebar has four groups. Today (Dashboard, Appointments) and My health (Labs and trends, Medications, Vitals, Symptoms, Health profile, Care team) are always expanded. Records (Conditions, Procedures, Diagnostics, Documents, Notes) and Tools (Import records, Reports, Insina AI) are collapsible; Records defaults closed, Tools defaults open; state persists. Emergency information is pinned at the bottom of the sidebar. The sidebar collapses to a 96px icon rail with the Insina Health wordmark visible; on narrow viewports it is replaced by a bottom tab bar. Profile, Settings, Backup, and Log out live in the avatar menu.
 
 Top bar, left to right: menu toggle, Emergency, search (icon), date and time, text size (icon), Import records, bell, Insina AI, avatar. No sync indicator in the top bar.
@@ -136,6 +148,8 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 ---
 
 ## DEC-TBD-11: Reports is the print center
+
+Merged as DEC-057 on 2026-09-07, accepted as written.
 
 **Decision.** All printable outputs (ED Prep Packet, Consultation Prep, Medication Report, Patient Profile) are reached through one Reports destination, present as a quick action tile and under Tools. This resolves the ED Prep Packet no-print-path issue from the clinical review packet.
 

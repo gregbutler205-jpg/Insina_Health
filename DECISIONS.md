@@ -1853,3 +1853,113 @@ literals to the amended values and record that mapping; the light theme (`.theme
 outside this entry and waits on DEC-TBD-03.
 
 **Related:** DEC-049, UI-8, DEC-TBD-03 (draft), WO_ACCESSIBLE_TOKENS_01.
+
+## DEC-051: Dashboard structure
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-05. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** The dashboard follows a feed structure rather than a status snapshot. Top to bottom:
+1. Greeting, with an attention count on the left and "Last updated" on the right.
+2. Emergency strip (conditional, see DEC-054).
+3. Five quick action tiles: Log vitals, Medications (refill count badge), Appointments (count badge, next 14 days), Symptoms, Reports.
+4. One column, "Your updates" (DEC-052), capped at 720px wide.
+5. Current vitals: blood pressure, weight, temperature only, with a link to all vitals and trends.
+6. Right rail: Who to call (DEC-055), Insina AI panel with preset questions.
+
+Removed from the dashboard: the nine-card vitals row, the full care team, lab flags with no attached action, the Emergency card tile (reachable via the top-bar Emergency button, the sidebar, and Reports).
+
+**Rationale.** MyChart's home page pattern: things that happened or need a response, each with one button. Reduces the page from roughly 40 competing elements to under 20.
+
+**Related:** DEC-052 to DEC-057, DEC-049, WO_DASHBOARD_FEED_01 (`docs/WO_DASHBOARD_FEED_01.md`).
+
+## DEC-052: Feed eligibility and ordering
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-06. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** "Your updates" contains only:
+- Tripwire flags (advisory tier; emergency tier also triggers DEC-054).
+- Imports waiting for review in the archive tier.
+- Results with at least one out-of-range value.
+- Appointments and refills with a date within the display window.
+
+It does not contain passive events (backups, in-range results, vitals logged); those go to the bell (DEC-053).
+
+Ordering is fixed: flags, then pending reviews, then out-of-range results, then dated items by date. Five items show, then "View all." Needs-attention items are visually distinct (amber) and the header badge counts only those.
+
+**Rationale.** A flag must never sit visually equal to "backed up to Google Drive." One rule, applied everywhere, is easier to test with patients than three columns.
+
+**Implementation note (added at merge, 2026-09-07; measured from the code).** Two deterministic layers exist. `src/lib/tripwire.js` evaluates labs against the threshold library and emits flags with `level` "urgent" or "abnormal" and a stable id embedding analyte, date, and value; its urgent tier is gated off until the default library is clinically reviewed (DEC-026). `src/lib/advisoryEngine.js` evaluates entered or extracted values against the advisory table and emits `tier` EMERGENCY or TODAY, gated by `TRIPWIRE_ADVISORY_ENABLED = false` (DEC-039, DEC-043). "Advisory tier" here maps to TODAY and "emergency tier" to EMERGENCY; in production neither emits today, so the feed's flag section is exercised by fixtures until the clinical review lands.
+
+**Related:** DEC-051, DEC-053, DEC-054, DEC-026, DEC-039, DEC-043.
+
+## DEC-053: Acknowledge versus dismiss
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-07. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.**
+- Tripwire flags cannot be dismissed. They offer one action and an Acknowledge button. Acknowledging records the timestamp in the patient's record and removes the card from the feed. The underlying condition is re-evaluated by the tripwire engine on its own schedule and may re-flag.
+- Pending reviews and out-of-range results can be dismissed from the feed; the underlying item remains in its tab unchanged. Dismissing is not confirming.
+- Dated items can be dismissed from the feed; the appointment or refill itself is unaffected.
+- Passive events live behind a bell icon with a count and never appear in the feed.
+
+**Rationale.** Deterministic layer owns urgency. Dismissal is a display preference; acknowledgment is a record event.
+
+**Related:** DEC-052, DEC-002 (the deterministic layer owns urgency), DEC-012 (flag, do not fix).
+
+## DEC-054: Emergency tier escalation on the dashboard
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-08. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** When the tripwire engine emits an emergency-tier flag, a red strip renders above the quick actions on every dashboard load, leading unconditionally with 911 and nearest ED, with the flag text below. The strip cannot be dismissed; it clears only when the engine clears the condition or the patient acknowledges from within the flag itself. This is the only element that appears outside the feed column.
+
+**Open item.** Exact strip copy is authored by the tripwire spec, not the dashboard. Mockup does not include an example on purpose.
+
+**Related:** DEC-052, DEC-039 (advisory copy, provisional pending clinical review), DEC-024 (CSC v1.1 envelope).
+
+## DEC-055: Who to call roster
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-09. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** The dashboard shows a "Who to call" card with three to four entries, each a role, a name, and a tap-to-call number. Default roster for a transplant recipient: transplant coordinator, after-hours transplant line, primary care. The patient edits the roster from Care team. The full directory is not on the dashboard. Tripwire advisory actions may reference a roster entry by role.
+
+**Rationale.** A 19-provider directory is reference material; a three-line card is a tool.
+
+**Implementation note (added at merge, 2026-09-07; measured from the code).** The care team record (`mi_care_team`, Tab08) has no role tags. It carries a free-text `role`, a `pcp` boolean, a `phone`, and an optional `phone24` (24-hour line). The roster therefore derives from those fields: coordinator by role text, after-hours from any member's `phone24`, primary care from `pcp`. Editable role tags are a follow-up.
+
+**Related:** DEC-051, UI-9.
+
+## DEC-056: Navigation structure
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-10. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** Sidebar has four groups. Today (Dashboard, Appointments) and My health (Labs and trends, Medications, Vitals, Symptoms, Health profile, Care team) are always expanded. Records (Conditions, Procedures, Diagnostics, Documents, Notes) and Tools (Import records, Reports, Insina AI) are collapsible; Records defaults closed, Tools defaults open; state persists. Emergency information is pinned at the bottom of the sidebar. The sidebar collapses to a 96px icon rail with the Insina Health wordmark visible; on narrow viewports it is replaced by a bottom tab bar. Profile, Settings, Backup, and Log out live in the avatar menu.
+
+Top bar, left to right: menu toggle, Emergency, search (icon), date and time, text size (icon), Import records, bell, Insina AI, avatar. No sync indicator in the top bar.
+
+**Implementation note (added at merge, 2026-09-07; measured from the code).** The live app has two record modules the draft's Records group names as one: Medical Records (Tab03, id `records`) and Source Documents (Tab09, id `documents`). UI-9 keeps every module reachable, so both stay in the Records group. The AI Analysis row keeps the Insina AI mark (DEC-P47) whatever its label. Text size is a placeholder until DEC-TBD-04 merges.
+
+**Related:** DEC-051, DEC-049, DEC-P47, UI-9, UI-11.
+
+## DEC-057: Reports is the print center
+
+**Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-11. Merged verbatim; cross-references to other drafts are renumbered to their merged IDs.
+
+**Decision.** All printable outputs (ED Prep Packet, Consultation Prep, Medication Report, Patient Profile) are reached through one Reports destination, present as a quick action tile and under Tools. This resolves the ED Prep Packet no-print-path issue from the clinical review packet.
+
+**Implementation note (added at merge, 2026-09-07; measured from the code).** The printable ED artifact that exists is the Emergency Card (`src/lib/printEmergency.js`); the "ED Prep Packet" report id appears only in the RIE preflight checklist with no print path. Reports links to what exists and names it accurately.
+
+**Related:** DEC-051, DEC-023 (emergency access as an exportable packet).
