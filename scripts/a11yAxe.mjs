@@ -41,14 +41,75 @@ const OUT = resolve(ROOT, opt("--out", "a11y-report"), opt("--label", "after"));
 const PORT = Number(opt("--port", "4180"));
 const BASELINE = opt("--baseline", null);
 
-const ROUTES = [
-  { id: "dashboard",   nav: null,             title: "Dashboard" },
-  { id: "medications", nav: "Medications",    title: "Medications" },
-  { id: "labs",        nav: "Labs & Trends",  title: "Labs and trends" },
-  { id: "vitals",      nav: "Vitals",         title: "Vitals" },
-  { id: "profile",     nav: "Health Profile", title: "Profile" },
+const FIXTURE = opt("--fixture", null); // WO_DASHBOARD_FEED_01 section 6: "feed-empty" | "feed-flag"
+const ALL_ROUTES = [
+  { id: "dashboard",   nav: null,              title: "Dashboard" },
+  { id: "medications", nav: "Medications",     title: "Medications" },
+  { id: "labs",        nav: "Labs and trends", title: "Labs and trends" },
+  { id: "vitals",      nav: "Vitals",          title: "Vitals" },
+  { id: "profile",     nav: "Health profile",  title: "Profile" },
 ];
-const VIEWPORTS = [{ width: 1280, height: 900 }, { width: 390, height: 844 }];
+// A fixture run screenshots and checks the dashboard only, under the fixture's name.
+const ROUTES = FIXTURE ? [{ id: `dashboard-${FIXTURE}`, nav: null, title: `Dashboard (${FIXTURE})` }] : ALL_ROUTES;
+
+/**
+ * Dashboard fixtures (WO_DASHBOARD_FEED_01 section 6), applied on top of the fictional
+ * demo record inside the page. "feed-empty": no flags, no pending reviews, no
+ * out-of-range results, nothing dated. "feed-flag": one advisory (TODAY) flag, one
+ * emergency flag, one pending review, one out-of-range result set, three
+ * appointments, one refill. Demo persona only, never real data.
+ */
+function applyFixture(name) {
+  const get = (k, d) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : d; } catch { return d; } };
+  const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const plus = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
+  set("mi_dashboard_dismissals", []);
+  set("mi_flag_acknowledgments", []);
+  if (name === "feed-empty") {
+    set("mi_appointments", []);
+    set("mi_meds_full", get("mi_meds_full", []).map(m => ({ ...m, refillDate: "" })));
+    set("mi_labs", get("mi_labs", []).map(l => ({ ...l, flag: false })));
+    set("mi_advisory_events", []);
+    set("mi_lab_archive", []);
+    set("mi_onboarding_staged", { documents: [], items: [] });
+    return "feed-empty applied";
+  }
+  if (name === "feed-flag") {
+    const now = new Date().toISOString();
+    set("mi_advisory_events", [
+      { id: "fx_today", ts: now, metric: "bp_s", value: 172, unit: "mmHg", tier: "TODAY", source: "manual", resultDate: null, readingId: null, verification: "patient-entered", tableVersion: "1.1.0-draft", templateVersion: "1.1.0", dismissedAt: null, verifiedAt: null, rejectedAt: null, careTeamContactedAt: null },
+      { id: "fx_emergency", ts: now, metric: "potassium", value: 6.4, unit: "mmol/L", tier: "EMERGENCY", source: "manual", resultDate: null, readingId: null, verification: "patient-entered", tableVersion: "1.1.0-draft", templateVersion: "1.1.0", dismissedAt: null, verifiedAt: null, rejectedAt: null, careTeamContactedAt: null },
+    ]);
+    set("mi_lab_archive", [{ id: "fx-doc", title: "MyChart labs", fileName: "labs.pdf", importedAt: now, updatedAt: Date.now(), rows: [
+      { id: "fx-r1", name: "Potassium", value: "6.1", unit: "mmol/L", refRange: "3.5-5.1", date: plus(-1), category: "Chemistry", state: "pending", flags: ["out_of_range"] },
+      { id: "fx-r2", name: "Sodium", value: "139", unit: "mmol/L", refRange: "135-145", date: plus(-1), category: "Chemistry", state: "pending", flags: [] },
+    ] }]);
+    set("mi_onboarding_staged", { documents: [], items: [{ id: "fx-s1", category: "medication", status: "staged", name: "Amlodipine 10 mg" }] });
+    const labs = get("mi_labs", []).filter(l => l.date !== plus(-5));
+    labs.push({ id: "fx-l1", name: "Platelets", value: "142", unit: "K/uL", refRange: "150-450", flag: true, date: plus(-5), category: "CBC / Hematology" });
+    labs.push({ id: "fx-l2", name: "Hemoglobin", value: "14.1", unit: "g/dL", refRange: "13.5-17.5", flag: false, date: plus(-5), category: "CBC / Hematology" });
+    set("mi_labs", labs);
+    set("mi_appointments", [
+      { id: "fx-a1", title: "Transplant clinic", provider: "Dr. Alvarez", specialty: "Transplant hepatology", facility: "Transplant clinic", date: plus(8), time: "10:00 AM", status: "upcoming", urgency: "med" },
+      { id: "fx-a2", title: "Bone density test", provider: "", specialty: "Imaging", facility: "Hancock imaging", date: plus(12), time: "2:00 PM", status: "upcoming", urgency: "low" },
+      { id: "fx-a3", title: "Physical therapy", provider: "Valerie Sullivan", specialty: "Physical therapy", facility: "", date: plus(14), time: "9:00 AM", status: "upcoming", urgency: "low" },
+    ]);
+    const meds = get("mi_meds_full", []);
+    let first = true;
+    set("mi_meds_full", meds.map(m => {
+      if (m.status === "inactive") return m;
+      if (first) { first = false; return { ...m, refillDate: plus(3), daysSupply: 30, pharmacy: "Walgreens" }; }
+      return { ...m, refillDate: plus(40) };
+    }));
+    return "feed-flag applied";
+  }
+  return `unknown fixture ${name}`;
+}
+// Tall viewports on purpose: the app scrolls inside a flex container, so a
+// "full page" screenshot is the viewport; height here decides how much of the
+// feed a screenshot shows. Width is what the work order specifies.
+const VIEWPORTS = [{ width: 1280, height: 1500 }, { width: 390, height: 1400 }];
 const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css",
@@ -85,9 +146,10 @@ function findChrome() {
 async function clickNav(page, label) {
   const ok = await page.evaluate((label) => {
     const items = [...document.querySelectorAll(".nav-item")];
-    // Match the label span, not the whole row: before this work order the row's
-    // text also carried a unicode glyph icon.
-    const hit = items.find(el => [...el.querySelectorAll("span")].some(s => s.textContent.trim() === label));
+    // Match the label span (expanded sidebar) or the accessible name (icon rail at
+    // narrow widths, where the label is title/aria-label only).
+    const hit = items.find(el => [...el.querySelectorAll("span")].some(s => s.textContent.trim() === label)
+      || el.getAttribute("aria-label") === label || el.getAttribute("title") === label);
     if (!hit) return false;
     hit.click();
     return true;
@@ -128,8 +190,13 @@ async function main() {
   const server = await serve(DIST, PORT);
   const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: ["--no-sandbox", "--disable-gpu"] });
   const results = [];
+  const pageErrors = [], consoleErrors = [];
   try {
     const page = await browser.newPage();
+    // Runtime errors in the app are a failure of the run, not something to screenshot around.
+    page.on("pageerror", (e) => { pageErrors.push(String(e && e.message || e)); });
+    page.on("console", (m) => { if (m.type() === "error") consoleErrors.push(m.text()); });
+    page.on("response", (r) => { if (r.status() >= 400) consoleErrors.push(`${r.status()} ${r.url()}`); });
     // The app ships a strict CSP meta tag (script-src 'self'); the injected axe
     // script would be blocked without this. The bypass applies to this
     // automation tab only, never to the shipped page.
@@ -137,9 +204,16 @@ async function main() {
     // Seed the fictional record through the demo page, which hands off to /app/.
     await page.goto(`http://127.0.0.1:${PORT}/app/demo/`, { waitUntil: "domcontentloaded" });
     await page.waitForFunction(() => location.pathname === "/app/" && document.querySelector(".nav-item"), { timeout: 30000 });
+    if (FIXTURE) {
+      const msg = await page.evaluate(applyFixture, FIXTURE);
+      console.log(msg);
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForFunction(() => document.querySelector(".nav-item"), { timeout: 30000 });
+    }
     await new Promise(r => setTimeout(r, 1200)); // fonts + dashboard data
     for (const vp of VIEWPORTS) {
       await page.setViewport({ width: vp.width, height: vp.height, deviceScaleFactor: 1, isMobile: vp.width < 768, hasTouch: vp.width < 768 });
+      await new Promise(r => setTimeout(r, 400)); // let the sidebar's narrow-width query settle
       for (const route of ROUTES) {
         await clickNav(page, "Dashboard");
         if (route.nav) await clickNav(page, route.nav);
@@ -151,6 +225,24 @@ async function main() {
         const inc = incomplete.reduce((a, v) => a + v.nodes, 0);
         console.log(`${route.title.padEnd(16)} @${String(vp.width).padEnd(4)} ${violations.length} rule(s), ${n} node(s); ${inc} undecided`);
       }
+    }
+    // WO_DASHBOARD_FEED_01 5: with the flag fixture, press Acknowledge on the first
+    // flag card and inspect the stored record event (DEC-053), then confirm the
+    // card left the feed. Printed for the session report.
+    if (FIXTURE === "feed-flag") {
+      const countFlags = () => page.evaluate(() => [...document.querySelectorAll("article")].filter(a => [...a.querySelectorAll("button")].some(b => b.textContent.trim() === "Acknowledge")).length);
+      const before = await countFlags();
+      const clicked = await page.evaluate(() => {
+        const b = [...document.querySelectorAll("button")].find(x => x.textContent.trim() === "Acknowledge");
+        if (!b) return false; b.click(); return true;
+      });
+      await new Promise(r => setTimeout(r, 400));
+      const stored = await page.evaluate(() => localStorage.getItem("mi_flag_acknowledgments"));
+      const after = await countFlags();
+      const events = await page.evaluate(() => localStorage.getItem("mi_advisory_events"));
+      const engineUntouched = /"dismissedAt":null/.test(events || "");
+      console.log(`Acknowledge pressed: ${clicked}; flag cards ${before} -> ${after}; mi_flag_acknowledgments = ${stored}; engine event untouched: ${engineUntouched}`);
+      writeFileSync(join(OUT, "acknowledgment.json"), JSON.stringify({ clicked, flagCardsBefore: before, flagCardsAfter: after, stored: JSON.parse(stored || "null"), engineUntouched }, null, 1));
     }
   } finally {
     await browser.close();
@@ -203,6 +295,8 @@ async function main() {
   writeFileSync(join(OUT, "summary.md"), md.join("\n"));
   console.log(`\nTotal failing nodes: ${total}. Report: ${join(OUT, "summary.md")}`);
   if (BASELINE) console.log(`New or grown violations vs baseline: ${newViolations.length}`);
+  if (consoleErrors.length) console.log(`Console errors (${consoleErrors.length}): ${consoleErrors.slice(0, 5).join(" | ")}`);
+  if (pageErrors.length) { console.error(`Page errors (${pageErrors.length}): ${pageErrors.slice(0, 5).join(" | ")}`); process.exit(3); }
   if (flag("--fail-on-new") && newViolations.length) process.exit(1);
   if (flag("--fail-on-any") && total) process.exit(1);
 }
