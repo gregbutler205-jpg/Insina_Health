@@ -12,6 +12,34 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.61.0 (2026-09-07)
+
+WO_DASHBOARD_FEED_01, the dashboard restructure under DEC-051 to DEC-057.
+Unmerged on `feat/dashboard-feed-01` pending review.
+
+### Changed
+- **The dashboard is a feed.** Greeting with an attention count and "Last
+  updated", a conditional emergency strip (engine text, no dismiss), five
+  quick actions (Log vitals, Medications, Appointments, Symptoms, Reports)
+  with badges that hide at zero, one "Your updates" column (flags, then
+  pending review, then out-of-range results, then appointments and refills by
+  date; five shown, then View all), three vitals, and a right rail with Who
+  to call and the Insina AI panel. Flags are acknowledged, never dismissed;
+  every other card can be dismissed until the item changes.
+- **Top bar and sidebar.** Menu toggle, Emergency, search icon, date, Import
+  records, bell (passive events), Insina AI mark, avatar menu (Profile,
+  Settings, Backup, Log out). Sidebar in four groups (Today, My health,
+  Records, Tools), a 96px icon rail, sentence-case labels, Reports row.
+- **Reports** is the print center: Emergency Card, Consultation Prep,
+  Medication Report, Patient Profile.
+- **Em dash cleanup** across product copy (567 rewrites); prompts, tripwire
+  text, comments, and spec-pinned strings untouched.
+
+### Added
+- Record keys `mi_dashboard_dismissals` and `mi_flag_acknowledgments`
+  (vault-managed, synced). `npm run test:dashboard-feed`. Dashboard fixtures
+  for `npm run test:a11y` (`--fixture feed-empty|feed-flag`).
+
 ## v1.60.0 (2026-09-06)
 
 WO_ACCESSIBLE_TOKENS_01, the mechanical accessibility pass under DEC-049
