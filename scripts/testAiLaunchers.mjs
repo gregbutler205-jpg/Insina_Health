@@ -157,13 +157,16 @@ const html = (el) => renderToStaticMarkup(el);
     ok(count(f, /AILauncher|AIEntryButton/g) === 0, `${f}: no launcher (Import, confirmation, archive zones)`);
   }
   const app = read("App.jsx");
-  ok((app.match(/<AIEntryButton iconSize=\{32\}/g) || []).length === 2 && (app.match(/activeNav !== "import" && <AIEntryButton/g) || []).length === 2,
-    "Topbar: entry button in both auth branches, hidden on Import Records");
-  ok((app.match(/<AIEntryButton iconSize=\{44\} source="dashboard"/g) || []).length === 1, "Dashboard panel: one full-cut entry button");
-  ok(app.includes("Insina <span") && app.includes(">AI</span>"), "Dashboard panel: Insina AI wordmark lockup");
-  ok(app.includes("{AI_FEATURES_ENABLED && (") , "Dashboard quick-launch panel is behind the flag");
-  ok(!app.includes('localStorage.setItem("mi_ai_pending", q)'), "Dashboard question buttons no longer hand off through localStorage");
-  ok((app.match(/question=\{q\}/g) || []).length === 1 && app.includes('label="Custom query..."'), "the three question launchers carry their question; Custom query carries none");
+  // WO_DASHBOARD_FEED_01: one top bar (the auth branches are gone) and the
+  // quick-launch panel lives in the dashboard component's right rail.
+  ok((app.match(/<AIEntryButton iconSize=\{32\}/g) || []).length === 1 && (app.match(/activeNav !== "import" && <AIEntryButton/g) || []).length === 1,
+    "Topbar: one entry button, hidden on Import Records");
+  const dash = read("components/dashboard/Dashboard.jsx");
+  ok((dash.match(/<AIEntryButton iconSize=\{44\} source="dashboard"/g) || []).length === 1, "Dashboard panel: one full-cut entry button");
+  ok(dash.includes("Insina <span") && dash.includes(">AI</span>"), "Dashboard panel: Insina AI wordmark lockup");
+  ok(dash.includes("{AI_FEATURES_ENABLED && (") , "Dashboard quick-launch panel is behind the flag");
+  ok(!dash.includes('localStorage.setItem("mi_ai_pending", q)') && !app.includes('localStorage.setItem("mi_ai_pending", q)'), "Dashboard question buttons no longer hand off through localStorage");
+  ok((dash.match(/question=\{q\}/g) || []).length === 1 && dash.includes('label="Custom query..."'), "the three question launchers carry their question; Custom query carries none");
   const side = read("components/AppSidebar.jsx");
   ok(side.includes('<AIMark variant="simple" size={14} />') && !side.includes(">AI</span>"), "Nav row: mark at 14, AI pill removed");
   ok(!side.includes("AI_FEATURES_ENABLED"), "Nav row mark is not flag-gated (stays visible when AI is off)");

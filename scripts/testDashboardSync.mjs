@@ -52,12 +52,12 @@ ok(/addEventListener\("mi-data-synced"/.test(APP),
   const m = APP.match(/const refreshDashboardData = useCallback\(\(\) => \{[\s\S]*?\n  \}, \[\]\);/);
   ok(!!m, "refreshDashboardData exists as a single named refresh path");
   const body = m ? m[0] : "";
+  // WO_DASHBOARD_FEED_01: appointments, alerts, and conditions no longer live in
+  // App state; the feed dashboard re-reads them from storage when this counter moves.
   for (const [setter, what] of [
-    ["setReadings",         "vitals — the reported bug"],
-    ["setMeds",             "medications"],
-    ["setAlerts",           "alerts"],
-    ["setUpcoming",         "appointments"],
-    ["setActiveConditions", "active conditions (never re-read after mount before this)"],
+    ["setReadings",   "vitals — the reported bug"],
+    ["setMeds",       "medications"],
+    ["setDashRefresh", "the feed (appointments, flags, reviews, results, refills)"],
   ]) {
     ok(body.includes(setter), `refreshDashboardData re-reads ${what}`);
   }
@@ -65,13 +65,13 @@ ok(/addEventListener\("mi-data-synced"/.test(APP),
 
 // ── Red is reserved for urgent ───────────────────────────────────────────────
 // A flagged reading must still render red; the resting colour must not.
+// (The vitals cards moved to src/components/dashboard/Dashboard.jsx with
+// WO_DASHBOARD_FEED_01; the rule is unchanged.)
 {
-  const bpLine = APP.split("\n").find(l => l.includes('label:"Blood Pressure"')) || "";
-  ok(!/color:"#f87171"/.test(bpLine),
-     "resting Blood Pressure is not alert-red (#f87171)");
-  ok(/color:"#ea580c"/.test(bpLine),
+  const DASH = readFileSync(new URL("../src/components/dashboard/Dashboard.jsx", import.meta.url), "utf-8");
+  ok(/bp: "#ea580c"/.test(DASH),
      "resting Blood Pressure is dark orange (#ea580c)");
-  ok(/flag \? "#f87171"/.test(APP),
+  ok(/danger: "#f87171"/.test(DASH) && /v\.flagged \? T\.danger : VITAL_COLOR\[v\.id\]/.test(DASH),
      "a FLAGGED vital still renders red — red still means urgent");
 }
 

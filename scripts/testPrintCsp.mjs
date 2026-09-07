@@ -86,7 +86,9 @@ const ok = (c, m) => { if (c) { pass++; console.log("PASS — " + m); } else { f
 
 // ── 2. No popup print generator ships inline print triggers ──────────────────
 const POPUP_SITES = [
-  ["App.jsx",                 SRC("App.jsx")],
+  // App.jsx left this list with WO_DASHBOARD_FEED_01: the Upcoming Refills
+  // printout went with the hot-button row (DEC-051), and Reports (DEC-057) lists
+  // the four remaining outputs; the Medication Report carries refill dates.
   ["PrintableConsent.jsx",    SRC("components/PrintableConsent.jsx")],
   ["Tab02.jsx",               SRC("components/tabs/Tab02.jsx")],
   ["Tab04.jsx",               SRC("components/tabs/Tab04.jsx")],
