@@ -208,5 +208,25 @@ function seedBusy() {
   ok(side.includes('<AIMark variant="simple" size={14} />'), "the AI row still carries the Insina AI mark (DEC-P47)");
 }
 
+// ── WO_DASHBOARD_POLISH_02 pins (DEC-058, DEC-059, DEC-062) ───────────────────
+{
+  const side = readFileSync(SRC("components/AppSidebar.jsx"), "utf8");
+  ok(side.includes('"shield_logo.png"') && side.includes("<img src={SHIELD}"), "rail shows the shield mark, not the wordmark (DEC-058)");
+  ok(side.includes("function RailGroup") && side.includes("if (rail && !group.fixed)") && /GROUP_ICONS = \{ records: \w+, tools: \w+ \}/.test(side),
+     "rail: one icon each for Records and Tools, opening a flyout (DEC-058)");
+  ok(side.includes('aria-haspopup="true"') && side.includes('className="nav-flyout"'), "rail flyout is announced and closable");
+  const top = readFileSync(SRC("components/TopBar.jsx"), "utf8");
+  ok(top.includes("{!onDashboard && (") && top.includes('aria-label="Home"') && top.includes("onClick={toggleNavRail}"), "top bar: collapse toggle everywhere, Home on every screen except the dashboard (DEC-059)");
+  for (const f of ["Tab04.jsx", "Tab05.jsx", "Tab06.jsx", "Tab07.jsx"]) {
+    const src = readFileSync(SRC("components/tabs/" + f), "utf8");
+    ok(src.includes("<TopBar activeNav={activeNav} onNav={handleNav} />") && !src.includes('title="Home"'), `${f}: renders the shared top bar instead of its own header`);
+  }
+  ok((readFileSync(SRC("App.jsx"), "utf8").match(/<TopBar /g) || []).length === 2, "App.jsx renders the shared top bar for the shell and for Insina AI");
+  const care = readFileSync(SRC("components/tabs/Tab08.jsx"), "utf8");
+  const refBlock = care.slice(care.indexOf("const REFERENCE = ["), care.indexOf("function SL("));
+  ok((refBlock.match(/disclaimer:"This list may not include every /g) || []).length === 6 && care.includes("{sec.disclaimer && ("),
+     "Reference: every section opens with a 'may not include every ...' line (DEC-062)");
+}
+
 console.log(`\n${pass} passed, ${fail} failed (dashboard-feed)`);
 assert.equal(fail, 0);

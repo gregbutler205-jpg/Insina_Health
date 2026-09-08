@@ -86,6 +86,7 @@ const REFERENCE = [
   {
     title:"Safe OTC Medications",
     color:"#10b981",
+    disclaimer:"This list may not include every safe over-the-counter medicine. Ask your transplant team before taking anything new.",
     items:[
       "Pain: Tylenol / Acetaminophen Regular Strength (325mg): MAX 2,000mg/day total",
       "Allergy: Benadryl (diphenhydramine), Claritin (loratadine), Zyrtec (cetirizine), Allegra max 60mg/day",
@@ -107,6 +108,7 @@ const REFERENCE = [
   {
     title:"Unsafe OTC: Call Before Using",
     color:"#ef4444",
+    disclaimer:"This list may not include every unsafe over-the-counter medicine. Ask your transplant team before taking anything new.",
     items:[
       "ALL NSAIDs: cause kidney damage in transplant patients:",
       "  • Ibuprofen (Advil, Motrin)",
@@ -124,6 +126,7 @@ const REFERENCE = [
   {
     title:"Food & Drink: Always Avoid",
     color:"#ef4444",
+    disclaimer:"This list may not include every food or drink to avoid. Ask your transplant team when you are not sure.",
     items:[
       "Grapefruit (any form, juice, fruit, supplements), alters Tacrolimus levels unpredictably",
       "Pomegranate (juice or fruit): same CYP3A4 interaction as grapefruit",
@@ -140,6 +143,7 @@ const REFERENCE = [
   {
     title:"Food: Eat with Caution",
     color:"#f59e0b",
+    disclaimer:"This list may not include every food that calls for caution. Ask your transplant team when you are not sure.",
     items:[
       "High-potassium foods (watch with Lisinopril + CKD): bananas, oranges, potatoes, tomatoes, spinach, avocado, prunes, nuts, bran, dried fruit, milk, chocolate",
       "High-phosphorus foods: dairy, nuts, cola drinks: CKD phosphorus management",
@@ -152,6 +156,7 @@ const REFERENCE = [
   {
     title:"Infection Prevention Rules",
     color:"#a78bfa",
+    disclaimer:"This list may not include every precaution. Your transplant team's instructions come first.",
     items:[
       "Hand washing is the most important habit: 20 seconds, every time, especially before eating",
       "Wear sunscreen SPF 30+ daily: anti-rejection meds significantly raise skin cancer risk",
@@ -170,6 +175,7 @@ const REFERENCE = [
   {
     title:"Anti-Rejection Medicine Rules",
     color:"#4f8ef7",
+    disclaimer:"This list may not include every rule for your anti-rejection medicines. Your transplant team's instructions come first.",
     items:[
       "Never miss a dose, even one missed dose raises rejection risk",
       "Never change doses on your own. Only transplant team adjusts",
@@ -720,6 +726,10 @@ function Reference() {
           </div>
           {open === sec.title && (
             <div style={{ background:"#0b1220", border:`1px solid ${sec.color}28`, borderLeft:`3px solid ${sec.color}`, borderTop:"none", borderRadius:"0 0 12px 12px", padding:"12px 16px 14px" }}>
+              {/* WO_DASHBOARD_POLISH_02 item 6 (DEC-062): the booklet lists are not exhaustive; say so where they are read */}
+              {sec.disclaimer && (
+                <div style={{ fontSize:13, color:"var(--text-secondary)", fontStyle:"italic", lineHeight:1.5, marginBottom:10 }}>{sec.disclaimer}</div>
+              )}
               {sec.items.map((item, i) => (
                 <div key={i} style={{ display:"flex", gap:8, fontSize:12, color: item.startsWith("  •") ? "#98afc4" : "#7eb8d8", fontFamily:mono, marginBottom:5, alignItems:"flex-start", lineHeight:1.6 }}>
                   {!item.startsWith("  •") && <span style={{ color:sec.color, flexShrink:0, marginTop:1 }}>▸</span>}
