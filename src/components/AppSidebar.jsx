@@ -86,6 +86,8 @@ export function useNavRail() {
 }
 
 const LOGO = import.meta.env.BASE_URL + "logo-white.png";
+// WO_DASHBOARD_POLISH_02 item 1 (DEC-058): the rail shows the shield mark alone.
+const SHIELD = import.meta.env.BASE_URL + "shield_logo.png";
 
 function PatientBlock() {
   let name = "", condition = "";
@@ -167,13 +169,10 @@ export default function AppSidebar({ activeNav, onNav }) {
       display: "flex", flexDirection: "column",
       flexShrink: 0, transition: "width .2s, min-width .2s",
     }}>
-      {/* Wordmark: the logo lockup when expanded, the text wordmark on the rail (brand accent, DEC-050) */}
-      <div style={{ padding: rail ? "14px 8px 12px" : "10px 20px", borderBottom: "1px solid var(--divider)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      {/* Brand: the logo lockup when expanded, the shield mark alone on the rail (DEC-058) */}
+      <div style={{ padding: rail ? "12px 8px 10px" : "10px 20px", borderBottom: "1px solid var(--divider)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         {rail ? (
-          <>
-            <div style={{ fontFamily: "var(--font-serif)", fontSize: 22, color: "#4f8ef7", lineHeight: 1, whiteSpace: "nowrap" }}>Insina</div>
-            <div style={{ fontSize: 12, color: "var(--text-label)", marginTop: 4 }}>Health</div>
-          </>
+          <img src={SHIELD} alt="Insina Health" style={{ width: 48, height: "auto", display: "block" }} />
         ) : (
           <img src={LOGO} alt="Insina Health" style={{ width: "100%", height: "auto", display: "block" }} />
         )}
