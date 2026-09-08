@@ -7,9 +7,10 @@
 // step with every stored card, and every print here runs the RIE preflight
 // first. The Emergency Card runs the ED Prep checklist (diagnoses, medications,
 // allergies present), the report id that had no print path before.
-import { ShieldAlert, Calendar, Pill, User, Printer } from "lucide-react";
+import { ShieldAlert, Calendar, Pill, FlaskConical, User, Printer } from "lucide-react";
 import { printEmergency } from "../../lib/printEmergency.js";
 import { printMedicationList } from "../../lib/printMedicationList.js";
+import { printLabReport, readLabs } from "../../lib/labReport.js";
 import { printProfile } from "../../lib/printProfile.js";
 import { requestReport } from "../../rie/preflightChecks.js";
 import { getStore } from "../../store.js";
@@ -19,6 +20,8 @@ export default function ReportsPage({ onNavChange }) {
     { icon: ShieldAlert, title: "Emergency Card", body: "What ER teams need first: transplant status, medications, allergies, care team, and recent labs.", action: "Print Emergency Card", onClick: () => requestReport("edPrep", () => printEmergency()) },
     { icon: Calendar, title: "Consultation Prep", body: "A visit-specific brief. Open an upcoming appointment and choose Prepare for this visit or AI Prep Analysis.", action: "Open Appointments", onClick: () => onNavChange?.("appointments") },
     { icon: Pill, title: "Medication Report", body: "Your current medication list with doses, schedules, prescribers, and refill dates.", action: "Print Medication Report", onClick: () => requestReport("medications", () => printMedicationList(getStore("meds_full") || [])) },
+    // Greg, 2026-09-07: Lab Report added to Reports (same report as the Labs screen's Print).
+    { icon: FlaskConical, title: "Lab Report", body: "Your most recent value for every test, grouped by category, with reference ranges and flags.", action: "Print Lab Report", onClick: () => requestReport("labs", () => printLabReport(readLabs())) },
     { icon: User, title: "Patient Profile", body: "Demographics, insurance, conditions, and history as one printable profile, with every stored insurance and ID card.", action: "Print Patient Profile", onClick: () => requestReport("profile", () => printProfile()) },
   ];
   return (

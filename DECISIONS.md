@@ -1998,6 +1998,8 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 
 **Rationale.** Reports is the print center; opening another screen to print defeats it. The preflight gate existed on the screens but not on Reports, which was an inconsistency introduced with DEC-057.
 
+**Amendment (Greg, in chat, 2026-09-07).** Reports also lists the Lab Report (the Labs screen's Lab Results Report, most recent value per test), printed from the record through the same gate. The builder lives in `src/lib/labReport.js` and both paths share it.
+
 **Related:** DEC-057, DEC-061, RIE preflight (UI-23).
 
 ## DEC-061: Print consistency: one button, one shell, one gate

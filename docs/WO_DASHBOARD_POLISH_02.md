@@ -49,6 +49,16 @@ shared top bar, one printout on the shared shell, and the Reference screen).
    OTC medicines, etc." Each Reference section opens with one line in that
    pattern, worded per section.
 
+## Follow-ups (Greg, in chat, 2026-09-07 evening)
+
+7. "On Reports add Lab Report." Reports gains a Lab Report row that prints the
+   same Lab Results Report as the Labs screen (most recent value per test).
+   The builder and the range helpers move to `src/lib/labReport.js` so both
+   paths share one copy (DEC-060 amendment).
+8. "Use the attached shield logo." `public/shield_logo.png` is replaced with
+   the new art (trimmed, transparent, 256px), used by the rail and the
+   onboarding welcome screen. The favicon and PWA icon are unchanged.
+
 ## Out of scope
 
 Text size and theme (DEC-TBD-03/04), a bottom tab bar, roster role tags, and

@@ -26,8 +26,10 @@ DEC-062). Unmerged on `feat/dashboard-polish-02` pending review.
   the dashboard, Emergency, search, date, Import records, bell, Insina AI,
   avatar). Their own actions sit in a slim bar under it.
 - **Reports** prints the Patient Profile in one step with every stored card,
-  and every print from Reports runs the record preflight first (the Emergency
-  Card runs the ED Prep checklist).
+  lists the Lab Report, and every print from Reports runs the record preflight
+  first (the Emergency Card runs the ED Prep checklist).
+- **Shield mark.** The rail and the onboarding welcome screen use the new
+  shield art.
 - **Print consistency.** One Print button on every screen, one report shell
   for every printout (the Emergency Card, the consent record, and the AI
   session document keep their layouts), and the preflight check before every

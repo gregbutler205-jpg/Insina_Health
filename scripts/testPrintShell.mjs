@@ -157,8 +157,30 @@ const { reportDocument, tableHtml, rowsHtml, fmtD } = await import("../src/lib/p
   const labels = labelsSrc.slice(labelsSrc.indexOf("export const REPORT_LABELS"), labelsSrc.indexOf("};", labelsSrc.indexOf("export const REPORT_LABELS")));
   const missing = [...types].filter(t => !new RegExp(`\\b${t}:`).test(labels));
   ok(types.size >= 10 && missing.length === 0, `every report type has a preflight label (${[...types].sort().join(", ")}${missing.length ? "; missing " + missing.join(", ") : ""})`);
-  ok((reports.match(/requestReport\(/g) || []).length === 3 && reports.includes('requestReport("profile", () => printProfile())') && reports.includes('requestReport("edPrep", () => printEmergency())'),
-     "Reports: the three prints are gated; the profile prints in one step with every card (DEC-060); the Emergency Card runs the ED Prep checklist");
+  ok((reports.match(/requestReport\(/g) || []).length === 4 && reports.includes('requestReport("profile", () => printProfile())') && reports.includes('requestReport("edPrep", () => printEmergency())') && reports.includes('requestReport("labs", () => printLabReport(readLabs()))'),
+     "Reports: the four prints are gated; the profile prints in one step with every card (DEC-060); the Emergency Card runs the ED Prep checklist; the Lab Report prints from the record");
+}
+
+// ── 6. The Lab Results Report from the library (Reports and the Labs screen share it) ──
+{
+  const { buildLabReport, labOutOfRange, parseRefRange } = await import("../src/lib/labReport.js");
+  localStorage.setItem("mi_lab_custom_ranges", JSON.stringify({ creatinine: { low: 0.8, high: 1.2 } }));
+  localStorage.setItem("mi_lab_category_order", JSON.stringify(["Chemistry", "CBC / Hematology"]));
+  const html = reportDocument(buildLabReport([
+    { name: "Creatinine", value: "1.4", unit: "mg/dL", refRange: "0.7-1.3", date: "2026-08-01", category: "Chemistry" },
+    { name: "Creatinine", value: "1.1", unit: "mg/dL", refRange: "0.7-1.3", date: "2026-05-01", category: "Chemistry" },
+    { name: "Platelets", value: "180", unit: "K/uL", refRange: "150-400", date: "2026-08-01", category: "CBC / Hematology" },
+    { name: "<b>ALT</b>", value: "40", unit: "U/L", refRange: "7-56", date: "2026-08-01", category: "Liver Panel" },
+  ]));
+  ok(html.includes("Lab Results Report") && html.includes("3 tests") && (html.match(/<td>1\.4<\/td>|>1\.4</g) || []).length >= 1 && !html.includes(">1.1<"), "one row per test, the most recent value (A-04)");
+  ok(html.includes("Flagged") && html.includes("(your range)") && html.includes("0.8–1.2"), "the doctor's range wins and flags the value");
+  ok((html.match(/class="cat-hdr"/g) || []).length === 3, "one category header per category present");
+  ok(html.indexOf("Chemistry") < html.indexOf("CBC / Hematology") && html.indexOf("CBC / Hematology") < html.indexOf("Liver Panel"), "categories follow the patient's saved order, then the rest");
+  ok(html.includes("&lt;b&gt;ALT&lt;/b&gt;") && clean(html), "lab names are escaped; the document is script-free");
+  ok(reportDocument(buildLabReport([])).includes("No lab results recorded yet"), "an empty record prints an honest empty state");
+  ok(labOutOfRange({ name: "Sodium", value: "150", refRange: "135-145" }, {}) === true && parseRefRange("< 10.0").high === 10, "range helpers moved intact");
+  const tab05 = readFileSync(SRC("components/tabs/Tab05.jsx"), "utf8");
+  ok(tab05.includes('from "../../lib/labReport.js"') && !tab05.includes("function printLabReport(") && !tab05.includes("function labOutOfRange("), "the Labs screen imports the shared helpers instead of carrying its own copy");
 }
 
 console.log(`\n${pass} passed, ${fail} failed (print-shell)`);
