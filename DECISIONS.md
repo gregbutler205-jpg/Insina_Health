@@ -1963,3 +1963,63 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 **Implementation note (added at merge, 2026-09-07; measured from the code).** The printable ED artifact that exists is the Emergency Card (`src/lib/printEmergency.js`); the "ED Prep Packet" report id appears only in the RIE preflight checklist with no print path. Reports links to what exists and names it accurately.
 
 **Related:** DEC-051, DEC-023 (emergency access as an exportable packet).
+
+## DEC-058: Icon rail shows the shield and one icon per collapsible group
+
+**Status:** Settled (Greg, in chat, 2026-09-07; amends DEC-056)
+
+**Source.** Greg's items 1 and 3 after the v1.61.0 deploy; flyout behavior chosen from two options in chat.
+
+**Decision.** When the sidebar is collapsed to the 96px rail it shows the shield mark, not the wordmark. The rail lists only the Today and My health screens as icons, then one Records icon and one Tools icon. Tapping a group icon opens a flyout menu beside the rail listing that group's screens; the rail stays collapsed. Emergency Information stays pinned at the bottom.
+
+**Rationale.** A collapsed rail that lists every screen is not collapsed. One icon per group keeps the rail short and the groups discoverable.
+
+**Related:** DEC-056, DEC-049 (targets and focus order apply to the flyout).
+
+## DEC-059: One top bar on every screen, with collapse and Home
+
+**Status:** Settled (Greg, in chat, 2026-09-07; amends DEC-056)
+
+**Source.** Greg's item 4 after the v1.61.0 deploy; shared top bar chosen over a minimal change in chat.
+
+**Decision.** Every screen renders the same top bar: menu toggle, Home (hidden on the dashboard), Emergency, search, date and time, Import records, bell, Insina AI mark, avatar menu. The four standalone screens (Medications, Labs, Vitals, Symptoms) and Insina AI drop their own headers and render the shared component; their screen-specific actions sit in a slim bar under it.
+
+**Rationale.** Greg asked for collapse and Home everywhere. Five different headers cannot stay consistent; one component can.
+
+**Related:** DEC-056, UI-10 (one shared sidebar), UI-26 (search reachable from the standalone screens).
+
+## DEC-060: Reports prints the Patient Profile directly, and every Reports print is gated
+
+**Status:** Settled (Greg, in chat, 2026-09-07; amends DEC-057)
+
+**Source.** Greg's item 2 after the v1.61.0 deploy; "print with all cards, no picker" chosen in chat.
+
+**Decision.** The Reports page prints the Patient Profile in one step with every stored card included, after the RIE preflight check. The Health profile screen keeps its card picker. Both paths use one store-based builder so the two printouts cannot drift. Every print started from Reports runs through `requestReport`.
+
+**Rationale.** Reports is the print center; opening another screen to print defeats it. The preflight gate existed on the screens but not on Reports, which was an inconsistency introduced with DEC-057.
+
+**Related:** DEC-057, DEC-061, RIE preflight (UI-23).
+
+## DEC-061: Print consistency: one button, one shell, one gate
+
+**Status:** Settled (Greg, in chat, 2026-09-07)
+
+**Source.** Greg's item 5 after the v1.61.0 deploy; "all three now" chosen from three options in chat.
+
+**Decision.** (A) One shared Print button: same icon, label, size, and position on every screen; a small menu where a screen offers two reports. (B) One shared report shell for every printout: logo, title, patient line, printed date, one table style, one footer, one disclaimer slot. Screens that printed themselves now print a report on the shell. The Emergency Card, the consent record, and the AI session document keep their reviewed layouts. (C) Every print runs through the RIE preflight check.
+
+**Rationale.** Three mechanisms, four labels, and two gates had accumulated. A printout that a clinic receives should look like it came from one product.
+
+**Related:** DEC-060, S-02/PG-02 (every interpolated value in generated HTML is escaped), v1.49.1 print CSP rule (no inline scripts in popups).
+
+## DEC-062: Reference sections carry a completeness disclaimer
+
+**Status:** Settled (Greg, in chat, 2026-09-07)
+
+**Source.** Greg's item 6 after the v1.61.0 deploy.
+
+**Decision.** Each section of the Care team Reference screen opens with one line stating that the list may not include every item of its kind and pointing to the transplant team. The wording is per section (medicines, foods, precautions, medicine rules).
+
+**Rationale.** The lists come from a transplant booklet and are not exhaustive. Saying so at the point of use is safer than silence.
+
+**Related:** DEC-039 (patient-facing safety copy is provisional pending clinical review), CSC rule set.
