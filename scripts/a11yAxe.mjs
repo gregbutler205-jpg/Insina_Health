@@ -144,16 +144,27 @@ function findChrome() {
 }
 
 async function clickNav(page, label) {
-  const ok = await page.evaluate((label) => {
+  const tryClick = (target) => page.evaluate((label) => {
     const items = [...document.querySelectorAll(".nav-item")];
-    // Match the label span (expanded sidebar) or the accessible name (icon rail at
-    // narrow widths, where the label is title/aria-label only).
+    // Match the label span (expanded sidebar or flyout) or the accessible name
+    // (icon rail at narrow widths, where the label is title/aria-label only).
     const hit = items.find(el => [...el.querySelectorAll("span")].some(s => s.textContent.trim() === label)
       || el.getAttribute("aria-label") === label || el.getAttribute("title") === label);
     if (!hit) return false;
     hit.click();
     return true;
-  }, label);
+  }, target);
+  let ok = await tryClick(label);
+  if (!ok) {
+    // DEC-058: on the rail, Records and Tools screens sit behind a group flyout.
+    for (const group of ["Records", "Tools"]) {
+      if (await tryClick(group)) {
+        await new Promise(r => setTimeout(r, 250));
+        if (await tryClick(label)) { ok = true; break; }
+        await page.keyboard.press("Escape");
+      }
+    }
+  }
   if (!ok) throw new Error(`nav item not found: ${label}`);
   await new Promise(r => setTimeout(r, 700));
 }

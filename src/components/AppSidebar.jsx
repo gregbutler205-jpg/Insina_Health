@@ -12,11 +12,11 @@ import AIMark from "./ai/AIMark.jsx";
 // 96px icon rail (top bar toggle, persisted) and does so on its own below
 // 900px wide. Icons are lucide-react per WO_ACCESSIBLE_TOKENS_01 4.6; the AI
 // row keeps the Insina AI mark (DEC-P47).
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard, Calendar, FlaskConical, Pill, HeartPulse, ClipboardList, User, Users,
   Stethoscope, Scissors, ScanLine, FolderOpen, FileText, NotebookPen, Upload, Printer,
-  ShieldAlert, ChevronDown, ChevronRight,
+  ShieldAlert, ChevronDown, ChevronRight, Folders, Wrench,
 } from "lucide-react";
 import { openEmergencyInfo } from "../lib/advisoryRuntime.js";
 
@@ -47,6 +47,11 @@ export const NAV_GROUPS = [
   { key: "records", label: "Records",   defaultCollapsed: true, ids: ["conditions", "surgeries", "diagnostics", "records", "documents", "notes"] },
   { key: "tools",   label: "Tools",     defaultCollapsed: false, ids: ["import", "reports", "ai"] },
 ];
+
+// WO_DASHBOARD_POLISH_02 item 3 (DEC-058): on the rail each collapsible group
+// is one icon that opens a flyout beside the rail.
+const GROUP_ICONS = { records: Folders, tools: Wrench };
+const RAIL_WIDTH = 96;
 
 // Plain keys on purpose: mi_* keys are vault-managed (encrypted, unreadable
 // while locked); a UI preference must survive lock state.
@@ -134,6 +139,78 @@ function NavItem({ id, icon, label, active, onNav, rail }) {
 }
 
 /**
+ * One collapsible group on the rail: a single icon (active when the current
+ * screen belongs to the group) that opens a flyout listing the group's screens.
+ * The rail stays collapsed (DEC-058). Closes on selection, outside click, and
+ * Escape; the first row takes focus when the flyout opens.
+ */
+function RailGroup({ group, items, activeNav, onNav }) {
+  const [open, setOpen] = useState(false);
+  const [top, setTop] = useState(0);
+  const btnRef = useRef(null);
+  const menuRef = useRef(null);
+  const Icon = GROUP_ICONS[group.key] || FolderOpen;
+  const active = group.ids.includes(activeNav);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e) => {
+      if (menuRef.current?.contains(e.target) || btnRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
+    const onKey = (e) => { if (e.key === "Escape") { setOpen(false); btnRef.current?.focus(); } };
+    document.addEventListener("mousedown", onDoc);
+    window.addEventListener("keydown", onKey);
+    menuRef.current?.querySelector(".nav-item")?.focus();
+    return () => { document.removeEventListener("mousedown", onDoc); window.removeEventListener("keydown", onKey); };
+  }, [open]);
+
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      // Keep the flyout on screen: about 44px per row plus the heading.
+      const est = 44 * items.length + 40;
+      setTop(Math.max(8, Math.min(r.top, (window.innerHeight || 800) - est - 8)));
+    }
+    setOpen(o => !o);
+  };
+
+  return (
+    <div>
+      <div
+        ref={btnRef}
+        className={`nav-item ${active ? "active" : ""}`}
+        role="button"
+        tabIndex={0}
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-label={group.label}
+        title={group.label}
+        onClick={toggle}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } }}
+        style={{ justifyContent: "center", padding: "11px 0" }}
+      >
+        <span className="nav-icon" aria-hidden="true"><Icon size={16} strokeWidth={2} /></span>
+      </div>
+      {open && (
+        <div
+          ref={menuRef}
+          role="group"
+          aria-label={group.label}
+          className="nav-flyout"
+          style={{ position: "fixed", left: RAIL_WIDTH, top, minWidth: 220, background: "var(--bg-deep)", border: "1px solid var(--border-strong)", borderRadius: 12, padding: "4px 0 6px", boxShadow: "0 12px 32px rgba(0,0,0,.45)", zIndex: 60 }}
+        >
+          <div className="nav-group-header" style={{ cursor: "default" }}><span>{group.label}</span></div>
+          {items.map(item => (
+            <NavItem key={item.id} {...item} active={activeNav === item.id} onNav={(id) => { setOpen(false); onNav(id); }} rail={false} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  * @param {string}   activeNav - nav id of the screen being shown
  * @param {function} onNav     - called with the target nav id
  */
@@ -183,6 +260,10 @@ export default function AppSidebar({ activeNav, onNav }) {
       <nav aria-label="Main" style={{ flex: 1, overflowY: "auto", padding: "10px 0" }}>
         {NAV_GROUPS.map(group => {
           const closed = isCollapsed(group);
+          if (rail && !group.fixed) {
+            // DEC-058: Records and Tools are one icon each on the rail.
+            return <RailGroup key={group.key} group={group} items={group.ids.map(id => byId[id]).filter(Boolean)} activeNav={activeNav} onNav={onNav} />;
+          }
           return (
             <div key={group.key}>
               {!rail && (group.fixed ? (
