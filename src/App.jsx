@@ -8,16 +8,11 @@ import { shouldOnboard } from './lib/onboardingState.js';
 import { recordAppOpen } from './lib/taskEngine.js';
 import AppSidebar from './components/AppSidebar.jsx';
 import AdvisoryModal from './components/advisory/AdvisoryModal.jsx';
-import EmergencyInfoButton from './components/advisory/EmergencyInfoButton.jsx';
 import { SaveIcon } from './components/icons.jsx';
 import { daysAgoLabel } from './lib/displaySafe.js';
-import AIEntryButton from './components/ai/AIEntryButton.jsx';
 import Dashboard from './components/dashboard/Dashboard.jsx';
-import Bell from './components/dashboard/Bell.jsx';
-import AvatarMenu from './components/dashboard/AvatarMenu.jsx';
 import ReportsPage from './components/dashboard/ReportsPage.jsx';
-import { toggleNavRail, useNavRail } from './components/AppSidebar.jsx';
-import { PanelLeftClose, PanelLeftOpen, Search, Upload } from 'lucide-react';
+import TopBar from './components/TopBar.jsx';
 import * as secureStorage from './lib/secureStorage.js';
 import RIEWidget from './rie/ReviewQueuePanel.jsx';
 import PreflightHost from './rie/PreflightHost.jsx';
@@ -186,7 +181,6 @@ function AppShell() {
   // WO_DASHBOARD_FEED_01: the feed reads appointments, flags, reviews, results,
   // and refills from storage itself; this counter tells it when to rebuild.
   const [dashRefresh, setDashRefresh] = useState(0);
-  const rail = useNavRail();
   const [showVitalsModal, setShowVitalsModal] = useState(false);
   const [quickReading, setQuickReading] = useState({ date:"", time:"", bp_s:"", bp_d:"", hr:"", resting_hr:"", o2:"", weight:"", temp:"", glucose:"", sleep:"" });
   // A-12: pending plausibility gate for the Dashboard's Quick Vitals modal —
@@ -430,8 +424,6 @@ function AppShell() {
   };
 
 
-  const fmt     = (d) => d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  const fmtDate = (d) => d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
   const isStandalone     = STANDALONE_TABS.has(activeNav);
   const ActiveTabComponent = TAB_COMPONENTS[activeNav] ?? null;
@@ -444,12 +436,8 @@ function AppShell() {
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
         .section-label { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#a0b4c8; font-family:'DM Mono', monospace; margin-bottom:12px; }
-        .topbar-icon { width:44px; min-width:44px; min-height:44px; border-radius:10px; border:1.5px solid transparent; background:transparent; color:var(--text-dim); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
-        .topbar-icon:hover { background:#101a2c; color:var(--text-bright); }
-        .topbar-btn { min-height:44px; border-radius:10px; border:1.5px solid #1c2a40; background:#101a2c; color:var(--text-bright); font-size:14px; font-weight:600; font-family:'Sora',sans-serif; padding:0 14px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; cursor:pointer; }
-        .topbar-btn:hover { border-color:var(--accent-blue); }
         .dash-scroll { padding: 28px; }
-        @media (max-width: 900px) { .topbar { flex-wrap: wrap; gap: 6px; padding: 6px 10px; } .topbar-date, .topbar-label { display:none; } .topbar-btn { padding:0 12px; } .dash-scroll { padding: 16px 12px; } }
+        @media (max-width: 900px) { .dash-scroll { padding: 16px 12px; } }
         .ai-btn { width:100%; padding:12px; background:linear-gradient(135deg, rgba(79,142,247,.15), rgba(167,139,250,.1)); border:1px solid rgba(79,142,247,.3); border-radius:10px; color:#7eb8d8; font-family:'Sora',sans-serif; font-size:12px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
         .ai-btn:hover { background:linear-gradient(135deg, rgba(79,142,247,.25), rgba(167,139,250,.18)); border-color:rgba(79,142,247,.5); color:#b8d4f0; }
       `}</style>
@@ -479,10 +467,13 @@ function AppShell() {
       {!isStandalone && (
         <>
 
-          {/* AI Analysis: has own topbar + height:100vh — give it the full remaining area */}
+          {/* AI Analysis: keeps its own screen header under the shared top bar (DEC-059) */}
           {activeNav === "ai" && (
-            <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
-              <ActiveTabComponent onNavChange={setActiveNav} />
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <TopBar activeNav={activeNav} onNav={setActiveNav} readings={readings} refreshKey={dashRefresh} picture={googleUser?.picture} />
+              <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
+                <ActiveTabComponent onNavChange={setActiveNav} />
+              </div>
             </div>
           )}
 
@@ -490,26 +481,8 @@ function AppShell() {
           {activeNav !== "ai" && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-              {/* Topbar (WO_DASHBOARD_FEED_01 4.2 / DEC-056): menu toggle, Emergency,
-                  search as an icon, date and time, Import records, bell, Insina AI
-                  mark, avatar. No sync indicator here: the greeting row carries
-                  "Last updated". Text size is a later work order (DEC-TBD-04). */}
-              <div className="topbar" style={{ minHeight: 64, background: "#080c14", borderBottom: "1px solid #1c2a40", display: "flex", alignItems: "center", padding: "0 16px", gap: 10, flexShrink: 0 }}>
-                <button className="topbar-icon" aria-label={rail ? "Show menu" : "Hide menu"} title={rail ? "Show menu" : "Hide menu"} onClick={toggleNavRail}>
-                  {rail ? <PanelLeftOpen size={20} aria-hidden="true" /> : <PanelLeftClose size={20} aria-hidden="true" />}
-                </button>
-                {/* tripwire advisory section 5: persistent Emergency Info (topbar), unchanged */}
-                <EmergencyInfoButton variant="topbar" />
-                <button className="topbar-icon" onClick={() => setShowSearch(true)} title="Search" aria-label="Search"><Search size={20} aria-hidden="true" /></button>
-                <span className="topbar-date" style={{ flex: 1, minWidth: 0, fontSize: 13, color: "#98afc4", fontFamily: "'DM Mono',monospace", paddingLeft: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{fmtDate(time)} · {fmt(time)}</span>
-                {activeNav !== "import" && (
-                  <button className="topbar-btn" aria-label="Import records" title="Import records" onClick={() => setActiveNav("import")}><Upload size={18} aria-hidden="true" /><span className="topbar-label">Import records</span></button>
-                )}
-                <Bell readings={readings} refreshKey={dashRefresh} />
-                {/* DEC-P49: persistent entry button, left of the avatar, hidden on Import Records */}
-                {activeNav !== "import" && <AIEntryButton iconSize={32} source="nav" onNavigate={() => setActiveNav("ai")} />}
-                <AvatarMenu onNav={setActiveNav} picture={googleUser?.picture} />
-              </div>
+              {/* Top bar (DEC-056, shared per DEC-059): src/components/TopBar.jsx */}
+              <TopBar activeNav={activeNav} onNav={setActiveNav} readings={readings} refreshKey={dashRefresh} picture={googleUser?.picture} />
 
               {/* Content */}
               <div className={activeNav === "dashboard" ? "dash-scroll" : undefined} style={{ flex: 1, overflowY: "auto", padding: activeNav === "dashboard" ? undefined : "0" }}>

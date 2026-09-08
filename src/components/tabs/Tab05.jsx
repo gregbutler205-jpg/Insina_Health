@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import AppSidebar from "../AppSidebar.jsx";
+import TopBar from "../TopBar.jsx";
 import { requestReport } from "../../rie/preflightChecks.js";
 import { renderAiMarkdownToHtml, applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText.js";
 import { wirePrintWindow } from "../../lib/printWindow.js";
@@ -1049,43 +1050,13 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
 
       {/* ── Main ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        {/* Topbar */}
-        <div style={{ height: 54, background: "#080c14", borderBottom: "1px solid #1c2a40", display: "flex", alignItems: "center", padding: "0 28px", gap: 16, flexShrink: 0 }}>
-          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
-            <button
-              onClick={() => onNavChange("dashboard")}
-              title="Home"
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:2, background:"rgba(79,142,247,.10)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, cursor:"pointer", padding:"5px 10px", color:"#7eb8d8", transition:"all .15s", marginRight:4 }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(79,142,247,.20)"; e.currentTarget.style.borderColor = "rgba(79,142,247,.5)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(79,142,247,.10)"; e.currentTarget.style.borderColor = "rgba(79,142,247,.3)"; }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-              <span style={{ fontSize:12, fontFamily:"'DM Mono',monospace" }}>Home</span>
-            </button>
-            {/* UI-26: Search beside Home — opens the App-level SearchPopup */}
-            <button
-              onClick={() => window.dispatchEvent(new Event("insina-open-search"))}
-              title="Search"
-              aria-label="Search"
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:2, background:"rgba(79,142,247,.10)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, cursor:"pointer", padding:"5px 10px", color:"#7eb8d8", transition:"all .15s", marginRight:4 }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(79,142,247,.20)"; e.currentTarget.style.borderColor = "rgba(79,142,247,.5)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(79,142,247,.10)"; e.currentTarget.style.borderColor = "rgba(79,142,247,.3)"; }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <span style={{ fontSize:12, fontFamily:"'DM Mono',monospace" }}>Search</span>
-            </button>
-            <div className="live-dot" />
-            <span style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace" }}>{fmtDate(time)} · {fmt(time)}</span>
-          </div>
+        {/* Top bar: shared (WO_DASHBOARD_POLISH_02 item 4; DEC-059) */}
+        <TopBar activeNav={activeNav} onNav={handleNav} />
+        {/* Screen actions */}
+        <div className="screen-bar">
           <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", background: "#0b1220", border: "1px solid #1c2a40", padding: "5px 12px", borderRadius: 6 }}>
             Last import: {getLastImportLabel()}
           </div>
-          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#4f8ef7,#a78bfa)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, cursor: "pointer", color: "#fff" }}>G</div>
         </div>
 
         {/* Content */}

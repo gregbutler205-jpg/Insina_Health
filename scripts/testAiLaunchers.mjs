@@ -156,11 +156,13 @@ const html = (el) => renderToStaticMarkup(el);
   for (const f of ["components/tabs/Tab12.jsx", "components/LabBatchReview.jsx", "components/tabs/Tab09.jsx", "components/onboarding/ReviewQueue.jsx"]) {
     ok(count(f, /AILauncher|AIEntryButton/g) === 0, `${f}: no launcher (Import, confirmation, archive zones)`);
   }
-  const app = read("App.jsx");
+  const app = read("components/TopBar.jsx");
   // WO_DASHBOARD_FEED_01: one top bar (the auth branches are gone) and the
   // quick-launch panel lives in the dashboard component's right rail.
+  // WO_DASHBOARD_POLISH_02 (DEC-059): the bar is the shared TopBar component.
   ok((app.match(/<AIEntryButton iconSize=\{32\}/g) || []).length === 1 && (app.match(/activeNav !== "import" && <AIEntryButton/g) || []).length === 1,
     "Topbar: one entry button, hidden on Import Records");
+  ok(!read("App.jsx").includes("<AIEntryButton") && (read("App.jsx").match(/<TopBar /g) || []).length === 2, "App.jsx renders the shared TopBar (shell and AI branch) and no entry button of its own");
   const dash = read("components/dashboard/Dashboard.jsx");
   ok((dash.match(/<AIEntryButton iconSize=\{44\} source="dashboard"/g) || []).length === 1, "Dashboard panel: one full-cut entry button");
   ok(dash.includes("Insina <span") && dash.includes(">AI</span>"), "Dashboard panel: Insina AI wordmark lockup");
