@@ -12,6 +12,36 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.62.0 (2026-09-07)
+
+WO_DASHBOARD_POLISH_02, Greg's six items after the v1.61.0 deploy (DEC-058 to
+DEC-062). Unmerged on `feat/dashboard-polish-02` pending review.
+
+### Changed
+- **Icon rail.** The collapsed sidebar shows the shield mark and lists only
+  the Today and My health screens; Records and Tools are one icon each and
+  open a flyout beside the rail. Emergency Information stays pinned.
+- **One top bar everywhere.** Medications, Labs, Vitals, Symptoms, and Insina
+  AI render the shared top bar (collapse toggle, Home on every screen except
+  the dashboard, Emergency, search, date, Import records, bell, Insina AI,
+  avatar). Their own actions sit in a slim bar under it.
+- **Reports** prints the Patient Profile in one step with every stored card,
+  and every print from Reports runs the record preflight first (the Emergency
+  Card runs the ED Prep checklist).
+- **Print consistency.** One Print button on every screen, one report shell
+  for every printout (the Emergency Card, the consent record, and the AI
+  session document keep their layouts), and the preflight check before every
+  print. Vitals, Documents, Notes, Conditions, Procedures, Diagnostics, and
+  the lab entries on Import print a report instead of the screen itself. The
+  lab report and per-answer AI printout now escape every value.
+- **Reference** (Care team) sections each open with a "may not include
+  every ..." line.
+
+### Added
+- `src/lib/printShell.js`, `src/lib/printProfile.js`, `src/lib/printReports.js`,
+  `src/components/PrintButton.jsx`, `src/components/TopBar.jsx`;
+  `npm run test:print-shell` (in prebuild).
+
 ## v1.61.0 (2026-09-07)
 
 WO_DASHBOARD_FEED_01, the dashboard restructure under DEC-051 to DEC-057.
