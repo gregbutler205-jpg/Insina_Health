@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printReport } from "../../lib/printShell.js";
 import AppSidebar from "../AppSidebar.jsx";
 import TopBar from "../TopBar.jsx";
 import { getMedsFull, setMedsFull, getPendingMeds, setPendingMeds, getLastImportLabel } from "../../store.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
-import { wirePrintWindow } from "../../lib/printWindow.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import AILauncher from "../ai/AILauncher.jsx";
-import { requestReport } from "../../rie/preflightChecks.js";
-import { PrintLabel } from "../icons.jsx";
 import { takePendingSelect } from "../../lib/searchSelect.js";
 import { printMedicationList } from "../../lib/printMedicationList.js";
 
-const PRINT_LOGO = import.meta.env.BASE_URL + "logo.png";
 
 function printRefillReport(meds) {
   const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
@@ -44,7 +42,7 @@ function printRefillReport(meds) {
   };
 
   const bodyHTML = Object.entries(byPharmacy).map(([ph, phMeds]) => `
-    <div class="pharmacy-header">${esc(ph)}</div>
+    <h3>${esc(ph)}</h3>
     <table>
       <thead><tr><th>Medication</th><th>Dose / Frequency</th><th>Rx Number</th><th>Prescriber</th><th>Refill Date</th><th>Days Left</th></tr></thead>
       <tbody>
@@ -52,7 +50,7 @@ function printRefillReport(meds) {
           const dl = calcDaysLeft(m.refillDate);
           const urgent = dl <= 3;
           return `<tr class="${urgent ? "urgent" : ""}">
-            <td><strong>${esc(m.name)}</strong>${m.brand ? `<br><span class="brand">${esc(m.brand)}</span>` : ""}</td>
+            <td><strong>${esc(m.name)}</strong>${m.brand ? `<br><span class="muted">${esc(m.brand)}</span>` : ""}</td>
             <td>${esc(m.dose||"–")} · ${esc(m.frequency||"–")}</td>
             <td>${esc(m.rxNumber||"–")}</td>
             <td>${esc(m.prescriber||"–")}</td>
@@ -64,48 +62,13 @@ function printRefillReport(meds) {
     </table>
   `).join("");
 
-  const win = window.open("", "_blank", "width=920,height=680");
-  if (!win) return;
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>Refill Report: Insina Health</title>
-    <style>
-      * { box-sizing:border-box; margin:0; padding:0; }
-      body { font-family:Georgia,serif; max-width:880px; margin:36px auto; color:#1a1a1a; font-size:13px; line-height:1.6; padding:0 24px; }
-      .logo { height:46px; margin-bottom:14px; }
-      h1 { text-align:center; font-size:24px; font-weight:700; margin-bottom:4px; }
-      .subtitle { text-align:center; font-size:12px; color:#555; margin-bottom:4px; }
-      .meta { text-align:center; font-size:11px; color:#777; margin-bottom:18px; font-family:monospace; }
-      .rule { border:none; border-top:2.5px solid #dc2626; margin-bottom:22px; }
-      .notice { background:#fef2f2; border:1px solid #fecaca; border-left:3px solid #dc2626; padding:8px 12px; margin-bottom:20px; border-radius:3px; font-size:11.5px; color:#7f1d1d; font-family:monospace; }
-      .pharmacy-header { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#1d4ed8; background:#eff6ff; padding:7px 12px; margin-top:22px; margin-bottom:0; border-left:3px solid #1d4ed8; font-family:monospace; font-weight:600; }
-      table { width:100%; border-collapse:collapse; margin-bottom:4px; }
-      th { font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:#555; font-family:monospace; text-align:left; padding:7px 8px; border-bottom:1.5px solid #ddd; background:#f8f8f8; }
-      td { font-size:12px; padding:7px 8px; border-bottom:1px solid #eee; vertical-align:top; }
-      tr.urgent td { background:#fef9f0; }
-      tr:last-child td { border-bottom:none; }
-      .brand { font-size:10.5px; color:#777; font-style:italic; }
-      .days-cell { font-family:monospace; color:#92400e; font-weight:600; }
-      .urgent-cell { font-family:monospace; color:#dc2626; font-weight:700; }
-      .footer { margin-top:32px; border-top:1px solid #ddd; padding-top:10px; font-size:11px; color:#777; display:flex; justify-content:space-between; }
-      .disclaimer { margin-top:12px; font-size:10px; color:#999; border-top:1px dashed #ddd; padding-top:8px; }
-      @media print { body { margin:20px; } .notice { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
-    </style>
-  </head><body>
-    <img src="${PRINT_LOGO}" class="logo" />
-    <h1>Medication Refill Report</h1>
-    <div class="subtitle">${patientName ? patientName + ": " : ""}Insina Health</div>
-    <div class="meta">${due.length} medication${due.length !== 1 ? "s" : ""} due within 7 days &nbsp;·&nbsp; ${date}</div>
-    <hr class="rule" />
-    <div class="notice">⚠ These medications are due for refill within 7 days. Contact your pharmacy or prescriber promptly.</div>
-    ${bodyHTML}
-    <div class="disclaimer">This report is for reference only. Always verify refill status with your pharmacy.</div>
-    <div class="footer">
-      <span>Insina Health: Personal Health Intelligence</span>
-      <span>Printed ${date}</span>
-    </div>
-  </body></html>`);
-  win.document.close();
-  wirePrintWindow(win); // CSP-safe: the opener fires print; inline scripts are blocked in the popup
+  printReport({
+    title: "Medication Refill Report",
+    subtitle: `${due.length} medication${due.length !== 1 ? "s" : ""} due within 7 days`,
+    body: `<div class="callout">These medications are due for refill within 7 days. Contact your pharmacy or prescriber promptly.</div>${bodyHTML}`,
+    disclaimer: "This report is for reference only. Always verify refill status with your pharmacy.",
+    extraCss: "tr.urgent td { background:#fef9f0; } .days-cell { font-family:Arial, sans-serif; color:#92400e; font-weight:600; white-space:nowrap; } .urgent-cell { font-family:Arial, sans-serif; color:#dc2626; font-weight:700; white-space:nowrap; }",
+  });
 }
 
 
@@ -672,12 +635,10 @@ export default function App({ onNavChange }) {
           <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", background: "#0b1220", border: "1px solid #1c2a40", padding: "5px 12px", borderRadius: 6 }}>
             Last import: {getLastImportLabel()}
           </div>
-          <button onClick={() => requestReport("medications", () => printRefillReport(meds))} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(239,68,68,.08)", border:"1px solid rgba(239,68,68,.3)", borderRadius:8, color:"#f87171", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
-            <PrintLabel>Refill Report</PrintLabel>
-          </button>
-          <button onClick={() => requestReport("medications", () => printMedicationList(meds))} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
-            <PrintLabel>Print Med List</PrintLabel>
-          </button>
+          <PrintButton items={[
+            { label: "Medication list", reportType: "medications", onPrint: () => printMedicationList(meds) },
+            { label: "Refill report", reportType: "refills", onPrint: () => printRefillReport(meds) },
+          ]} />
         </div>
 
         {/* Content */}

@@ -89,14 +89,12 @@ const POPUP_SITES = [
   // App.jsx left this list with WO_DASHBOARD_FEED_01: the Upcoming Refills
   // printout went with the hot-button row (DEC-051), and Reports (DEC-057) lists
   // the four remaining outputs; the Medication Report carries refill dates.
+  // WO_DASHBOARD_POLISH_02 (DEC-061): every shell report opens through
+  // lib/printShell.js; the three reviewed layouts keep their own popups.
   ["PrintableConsent.jsx",    SRC("components/PrintableConsent.jsx")],
-  ["Tab02.jsx",               SRC("components/tabs/Tab02.jsx")],
-  ["Tab04.jsx",               SRC("components/tabs/Tab04.jsx")],
-  ["Tab05.jsx",               SRC("components/tabs/Tab05.jsx")],
   ["Tab11.jsx",               SRC("components/tabs/Tab11.jsx")],
-  ["Tab14.jsx",               SRC("components/tabs/Tab14.jsx")],
   ["printEmergency.js",       SRC("lib/printEmergency.js")],
-  ["printMedicationList.js",  SRC("lib/printMedicationList.js")],
+  ["printShell.js",           SRC("lib/printShell.js")],
 ];
 for (const [name, path] of POPUP_SITES) {
   const src = readFileSync(path, "utf8");
@@ -105,16 +103,21 @@ for (const [name, path] of POPUP_SITES) {
 }
 
 // ── 3. Every popup site is wired through the opener ──────────────────────────
-// Tab02's profile print keeps its pre-existing opener-side setTimeout(print)
-// (already CSP-safe); every other site calls wirePrintWindow after close.
 for (const [name, path] of POPUP_SITES) {
-  if (name === "Tab02.jsx") continue;
   const src = readFileSync(path, "utf8");
   ok(src.includes("wirePrintWindow(win)"), `${name}: wirePrintWindow wired`);
 }
-{
-  const tab02 = readFileSync(SRC("components/tabs/Tab02.jsx"), "utf8");
-  ok(tab02.includes("setTimeout(() => { win.focus(); win.print(); }"), "Tab02 profile print keeps its opener-side trigger");
+// The shell is the ONLY popup site for reports: no screen or report module
+// opens its own window any more (one CSP wiring to keep right), and no screen
+// prints the dark UI with window.print().
+for (const rel of ["components/tabs/Tab02.jsx", "components/tabs/Tab04.jsx", "components/tabs/Tab05.jsx", "components/tabs/Tab14.jsx",
+                   "lib/printMedicationList.js", "lib/printProfile.js", "lib/printReports.js"]) {
+  const src = readFileSync(SRC(rel), "utf8");
+  ok(!src.includes("window.open(") && !src.includes("document.write("), `${rel}: no popup of its own (prints through printShell)`);
+}
+for (const rel of ["Tab02", "Tab04", "Tab05", "Tab06", "Tab09", "Tab10", "Tab12", "Tab14", "Tab15", "Tab16", "Tab17"]) {
+  const src = readFileSync(SRC(`components/tabs/${rel}.jsx`), "utf8");
+  ok(!src.includes("window.print()"), `${rel}: no window.print() of the screen itself`);
 }
 
 // ── 4. The helper itself ─────────────────────────────────────────────────────

@@ -45,11 +45,26 @@ const REPORT_CRITICALS = {
   edPrep:           [diagnosesEmpty, medsEmpty, allergyEmpty],
   medications:      [],
   labs:             [],
+  // WO_DASHBOARD_POLISH_02 item 5 C (DEC-061): every print is gated. These
+  // reports have no report-specific essentials; the CRITICAL full scan still
+  // applies to them.
+  refills:          [],
+  vitals:           [],
+  documents:        [],
+  notes:            [],
+  conditions:       [],
+  procedures:       [],
+  diagnostics:      [],
+  aiAnalysis:       [],
+  report:           [],
 };
 
 export const REPORT_LABELS = {
   profile: "Patient Profile", consultationPrep: "Consultation Prep",
   edPrep: "ED Prep Packet", medications: "Medication Report", labs: "Lab Report",
+  refills: "Refill Report", vitals: "Vitals Report", documents: "Documents List",
+  notes: "Notes", conditions: "Conditions Report", procedures: "Procedures Report",
+  diagnostics: "Diagnostics Report", aiAnalysis: "AI Analysis", report: "Report",
 };
 
 export function runPreflight(reportType) {

@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printReport, esc as escP } from "../../lib/printShell.js";
 import AppSidebar from "../AppSidebar.jsx";
 import TopBar from "../TopBar.jsx";
-import { requestReport } from "../../rie/preflightChecks.js";
 import { renderAiMarkdownToHtml, applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText.js";
-import { wirePrintWindow } from "../../lib/printWindow.js";
 import { callAI } from "../../lib/aiClient.js";
 import { getIdentity } from "../../prompts/identity.js";
 import { buildSurfaceB1, buildSurfaceB2 } from "../../prompts/surfaceB.js";
@@ -12,7 +12,6 @@ import { checkLabReading } from "../../lib/plausibility.js";
 import AnalysisOverlay from "../AnalysisOverlay.jsx";
 import { canonicalLabId, displayLabName, stripLabNoise, setLabMappings, removeLabGroup, getConfirmedGroups } from "../../lib/labCanonical.js";
 import { evaluateAndFire } from "../../lib/advisoryRuntime.js";
-import { PrintLabel } from "../icons.jsx";
 import { getLastImportLabel } from "../../store.js";
 import { reconcilePromotedRows, countExactDuplicateLabs, removeDuplicateLabRows } from "../../lib/labBatchConfirm.js";
 import { takePendingSelect } from "../../lib/searchSelect.js";
@@ -21,7 +20,6 @@ import AILauncher from "../ai/AILauncher.jsx";
 import { buildLabDigestData, formatLabDigest, formatLabsWindow } from "../../lib/labDigest.js";
 import { selectConditionModules, formatConditionModules } from "../../lib/conditionModules.js";
 
-const PRINT_LOGO = import.meta.env.BASE_URL + "logo.png";
 // A-04: `mi_lab_canonical` (the old destructive merge's write-only map) is
 // superseded by `mi_lab_name_map` in src/lib/labCanonical.js.
 
@@ -293,41 +291,15 @@ function labOutOfRange(lab, customRanges) {
   return val < low || val > high;
 }
 
-function printAIResponse(question, answer, logoUrl) {
-  const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
-  const win = window.open("", "_blank", "width=900,height=700");
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>AI Analysis: Insina Health</title>
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: Georgia, serif; max-width: 760px; margin: 48px auto; color: #1a1a1a; font-size: 14px; line-height: 1.65; padding: 0 24px; }
-      .logo { height: 56px; margin-bottom: 20px; }
-      h1 { text-align: center; font-size: 30px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 10px; }
-      .rule { border: none; border-top: 2px solid #2563eb; margin-bottom: 26px; }
-      .q-label { font-weight: 700; font-size: 13px; margin-bottom: 5px; }
-      .q-text  { margin-bottom: 22px; font-size: 14px; }
-      .a-label { font-weight: 700; font-size: 16px; margin-bottom: 14px; }
-      .footer  { margin-top: 48px; border-top: 1px solid #ddd; padding-top: 12px; font-size: 11px; color: #777; display: flex; justify-content: space-between; }
-      @media print { body { margin: 28px; } }
-    </style>
-  </head><body>
-    <img src="${logoUrl}" class="logo" />
-    <h1>AI Analysis</h1>
-    <hr class="rule" />
-    <div class="q-label">Question:</div>
-    <div class="q-text">${question.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
-    <div class="a-label">Analysis</div>
-    ${renderAiMarkdownToHtml(answer)}
-    <div class="footer">
-      <span>Insina Health: Personal Health Intelligence</span>
-      <span>Generated ${date}</span>
-    </div>
-  </body></html>`);
-  win.document.close();
-  wirePrintWindow(win); // CSP-safe: the opener fires print; inline scripts are blocked in the popup
+function printAIResponse(question, answer) {
+  printReport({
+    title: "AI Analysis",
+    body: `<h2>Question</h2><div class="note">${escP(question)}</div><h2>Analysis</h2>${renderAiMarkdownToHtml(answer)}`,
+    disclaimer: "AI-generated analysis: informational only, not clinician text. Verify against source records.",
+  }, { width: 900, height: 700 });
 }
 
-function printLabReport(labs, logoUrl) {
+function printLabReport(labs) {
   // Most recent entry per canonical analyte (A-04)
   const latest = {};
   labs.forEach(l => {
@@ -348,63 +320,31 @@ function printLabReport(labs, logoUrl) {
   Object.values(grouped).forEach(arr => arr.sort((a, b) => (a.name||"").localeCompare(b.name||"")));
   const orderedCats = [...LAB_CAT_ORDER, ...Object.keys(grouped).filter(c => !LAB_CAT_ORDER.includes(c))];
 
-  const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
-
   const tableRows = orderedCats.filter(c => grouped[c]?.length).map(cat => {
     const rows = grouped[cat].map(t => {
       const oor = labOutOfRange(t, customRanges);
-      const status = oor === true ? '<span style="color:#d97706;font-weight:700">⚠ Flagged</span>' : '<span style="color:#059669">✓ Normal</span>';
+      const status = oor === true ? '<span class="flag">Flagged</span>' : '<span class="ok">Normal</span>';
       const cr = customRanges[canonicalLabId(t.name)] || customRanges[(t.name || "").toLowerCase().trim()];
-      const rangeCell = (cr && cr.low != null && cr.high != null) ? `${cr.low}–${cr.high} <span style="color:#888">(your range)</span>` : (t.refRange || "–");
+      const rangeCell = (cr && cr.low != null && cr.high != null) ? `${escP(cr.low)}–${escP(cr.high)} <span class="muted">(your range)</span>` : escP(t.refRange || "–");
       return `<tr>
-        <td>${(displayLabName(t.name)||"").replace(/</g,"&lt;")}</td>
-        <td style="text-align:center;font-weight:600">${t.value||"–"}</td>
-        <td style="text-align:center">${t.unit||"–"}</td>
-        <td style="text-align:center">${rangeCell}</td>
-        <td style="text-align:center">${formatDateUS(t.date, "–")}</td>
-        <td style="text-align:center">${status}</td>
+        <td>${escP(displayLabName(t.name) || "")}</td>
+        <td class="num" style="font-weight:600">${escP(t.value || "–")}</td>
+        <td>${escP(t.unit || "–")}</td>
+        <td>${rangeCell}</td>
+        <td>${escP(formatDateUS(t.date, "–"))}</td>
+        <td>${status}</td>
       </tr>`;
     }).join("");
-    return `<tr><td colspan="6" class="cat-hdr">${cat}</td></tr>${rows}`;
+    return `<tr><td colspan="6" class="cat-hdr">${escP(cat)}</td></tr>${rows}`;
   }).join("");
 
-  const win = window.open("", "_blank", "width=1000,height=750");
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>Lab Report: Insina Health</title>
-    <style>
-      * { box-sizing:border-box; margin:0; padding:0; }
-      body { font-family:Arial,sans-serif; max-width:900px; margin:40px auto; color:#1a1a1a; font-size:13px; line-height:1.5; padding:0 24px; }
-      .logo { height:50px; margin-bottom:18px; }
-      h1 { font-size:26px; font-weight:700; letter-spacing:-.4px; margin-bottom:4px; }
-      .subtitle { font-size:12px; color:#555; margin-bottom:20px; }
-      hr { border:none; border-top:2px solid #2563eb; margin-bottom:22px; }
-      table { width:100%; border-collapse:collapse; font-size:12px; }
-      th { background:#1e40af; color:#fff; padding:8px 10px; text-align:left; font-size:11px; letter-spacing:.5px; text-transform:uppercase; }
-      td { padding:7px 10px; border-bottom:1px solid #e5e7eb; }
-      tr:nth-child(even) td { background:#f8faff; }
-      .cat-hdr { background:#dbeafe; color:#1e3a8a; font-weight:700; font-size:11px; letter-spacing:1px; text-transform:uppercase; padding:8px 10px; }
-      .footer { margin-top:36px; border-top:1px solid #ddd; padding-top:10px; font-size:10px; color:#777; display:flex; justify-content:space-between; }
-      @media print { body { margin:18px; } }
-    </style>
-  </head><body>
-    <img src="${logoUrl}" class="logo" />
-    <h1>Lab Results Report</h1>
-    <div class="subtitle">Most recent value per test &nbsp;·&nbsp; Generated ${date}</div>
-    <hr />
-    <table>
-      <thead><tr>
-        <th>Test Name</th><th style="text-align:center">Value</th><th style="text-align:center">Unit</th>
-        <th style="text-align:center">Ref Range</th><th style="text-align:center">Date</th><th style="text-align:center">Status</th>
-      </tr></thead>
-      <tbody>${tableRows}</tbody>
-    </table>
-    <div class="footer">
-      <span>Insina Health: Personal Health Intelligence</span>
-      <span>Printed ${date} &nbsp;·&nbsp; ${tests.length} tests</span>
-    </div>
-  </body></html>`);
-  win.document.close();
-  wirePrintWindow(win); // CSP-safe: the opener fires print; inline scripts are blocked in the popup
+  printReport({
+    title: "Lab Results Report",
+    subtitle: `Most recent value per test  ·  ${tests.length} test${tests.length === 1 ? "" : "s"}`,
+    body: `<table><thead><tr><th>Test Name</th><th class="num">Value</th><th>Unit</th><th>Ref Range</th><th>Date</th><th>Status</th></tr></thead><tbody>${tableRows}</tbody></table>`,
+    disclaimer: "Values as imported. Reference ranges are the reporting lab's unless marked as your range.",
+    extraCss: ".cat-hdr { font-family:Arial, sans-serif; font-size:8.5pt; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a; border-left:3pt solid #1e3a8a; padding:4pt 8pt; border-bottom:none; }",
+  }, { width: 1000, height: 750 });
 }
 
 // Shared AI response renderer — strips emojis, renders bold/bullets/dividers cleanly
@@ -1057,6 +997,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
           <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", background: "#0b1220", border: "1px solid #1c2a40", padding: "5px 12px", borderRadius: 6 }}>
             Last import: {getLastImportLabel()}
           </div>
+          <PrintButton reportType="labs" onPrint={() => printLabReport(importedLabs)} disabled={dedupedLabs.length === 0} />
         </div>
 
         {/* Content */}
@@ -1066,12 +1007,6 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
           <div style={{ width: 292, minWidth: 292, borderRight: "1px solid #1c2a40", overflowY: "auto", padding: "20px 14px 20px 16px" }}>
             <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:4 }}>
               <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 22, color: "#dde8f5", fontWeight: 400, letterSpacing: "-0.4px" }}>Labs & Trends</h1>
-              {dedupedLabs.length > 0 && (
-                <button onClick={() => requestReport("labs", () => printLabReport(importedLabs, PRINT_LOGO))}
-                  style={{ marginTop:4, padding:"4px 10px", background:"rgba(79,142,247,.08)", border:"1px solid rgba(79,142,247,.25)", borderRadius:6, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer", display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
-                  <PrintLabel>Print Report</PrintLabel>
-                </button>
-              )}
             </div>
             <p style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", marginBottom: 16 }}>
               {dedupedLabs.length > 0 ? `${dedupedLabs.length} tests · ${flaggedCount} flagged` : "No imported labs yet"}
@@ -1602,10 +1537,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                           : <>
                               {renderMarkdown(item.a)}
                               <div style={{ display:"flex", justifyContent:"flex-end", marginTop:8, paddingTop:6, borderTop:"1px solid #1c2a40" }}>
-                                <button onClick={() => printAIResponse(item.q, item.a, PRINT_LOGO)}
-                                  style={{ background:"none", border:"none", color:"#6ea3ff", fontSize:12, cursor:"pointer", fontFamily:"'DM Mono',monospace", opacity:0.65, display:"flex", alignItems:"center", gap:5, padding:0 }}>
-                                  <PrintLabel />
-                                </button>
+                                <PrintButton compact reportType="aiAnalysis" onPrint={() => printAIResponse(item.q, item.a)} />
                               </div>
                             </>
                         }

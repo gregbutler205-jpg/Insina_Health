@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printVitalsReport } from "../../lib/printReports.js";
 import AppSidebar from "../AppSidebar.jsx";
 import TopBar from "../TopBar.jsx";
 import { getStore, setStore } from "../../store.js";
 import { mkReading, saveReading, getFieldHistory, defaultVitalFlag } from "../../lib/vitals.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import { checkVitalReading, checkVitalCrossFields } from "../../lib/plausibility.js";
-import { PrintLabel } from "../icons.jsx";
 
 // UI-4: one shared mapping from a vital-card id to the mi_readings field it
 // reads — "latest"/"previous" must be looked up per field, not per record,
@@ -643,9 +644,7 @@ export default function App({ onNavChange }) {
             style={{ padding:"7px 16px", background:"#10b981", border:"none", borderRadius:8, color:"#fff", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor:"pointer" }}>
             + Log Vitals
           </button>
-          <button onClick={() => window.print()} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
-            <PrintLabel />
-          </button>
+          <PrintButton reportType="vitals" onPrint={() => printVitalsReport(manualReadings)} />
         </div>
 
         {/* Content */}

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printDocumentsReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import { takePendingSelect } from "../../lib/searchSelect.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
 import { tombstoneRecord, untombstoneRecord } from "../../lib/recordTombstones.js";
 import { callAI, extractPdfVision } from "../../lib/aiClient.js";
-import { PrintLabel } from "../icons.jsx";
 import { formatDocumentBlock } from "../../prompts/documents.js";
 import { uploadReportToDrive, areaForDocCategory, sanitizeReportUrl } from "../../lib/driveReports.js";
 
@@ -641,10 +642,7 @@ export default function DocumentsTab() {
           style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
           + Upload
         </button>
-        <button onClick={() => window.print()}
-          style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"transparent", border:"1px solid #1c2a40", borderRadius:8, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
-          <PrintLabel />
-        </button>
+        <PrintButton reportType="documents" onPrint={() => printDocumentsReport(docs)} />
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>

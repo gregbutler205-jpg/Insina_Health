@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printProceduresReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
-import { PrintLabel } from "../icons.jsx";
 import CPT_COMMON from "../../data/cpt_common.json";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 // v1.59.0: calendar-sync-style procedure suggestions from the record text
@@ -301,7 +302,7 @@ export default function SurgeriesTab() {
           </div>
           <div style={{ display:"flex", gap:10 }}>
             <button onClick={() => handleScan(false)} style={btnGhost} title="Scan Diagnostics, Notes, Records, and imported documents for procedures">⟳ Scan Records</button>
-            <button onClick={() => window.print()} style={btnGhost}><PrintLabel /></button>
+            <PrintButton reportType="procedures" onPrint={() => printProceduresReport(allProcedures)} />
             <button onClick={() => setModal(BLANK)} style={btnPrimary}>+ Add Procedure</button>
           </div>
         </div>

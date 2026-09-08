@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printLabEntries } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import { getStore, setStore, mergeRecords, addImportLog } from "../../store.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
 import { callAI } from "../../lib/aiClient.js";
 import { formatDocumentBlock } from "../../prompts/documents.js";
-import { PrintLabel } from "../icons.jsx";
 import ReviewQueue from "../onboarding/ReviewQueue.jsx";
 import { getStagedStore } from "../../lib/onboardingStaging.js";
 import { evaluateAndFire } from "../../lib/advisoryRuntime.js";
@@ -334,10 +335,6 @@ export default function ImportTab({ onImport, onNavChange }) {
   function handleCancel() {
     setForm(EMPTY_FORM);
     setEditId(null);
-  }
-
-  function handlePrint() {
-    window.print();
   }
 
   async function handlePdfUpload(e) {
@@ -719,7 +716,7 @@ export default function ImportTab({ onImport, onNavChange }) {
             </p>
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"flex-start", marginTop:4 }}>
-            <button className="imp-btn btn-ghost" onClick={handlePrint}><PrintLabel /></button>
+            <PrintButton reportType="labs" onPrint={() => printLabEntries(labs)} />
           </div>
         </div>
 

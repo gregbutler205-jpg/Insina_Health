@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printReport } from "../../lib/printShell.js";
 import { listCalendars, listEvents, diffNewAppointments, getSelectedCalendar, setSelectedCalendar, tombstoneAppt, filterTombstoned } from "../../lib/calendarSync.js";
 import { matchCareTeamMember } from "../../lib/careTeamMatch.js";
 import { formatPhone, displayPhone, formatDateUS } from "../../lib/displaySafe.js";
 import AILauncher from "../ai/AILauncher.jsx";
 import { directionsUrl } from "../../lib/mapsLink.js";
 import { requestReport } from "../../rie/preflightChecks.js";
-import { PrintLabel } from "../icons.jsx";
 import { escapeHtml, applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
 import { compressImage } from "../../lib/cards.js";
@@ -14,7 +15,6 @@ import { callAI } from "../../lib/aiClient.js";
 import { formatDocumentBlock } from "../../prompts/documents.js";
 import { QUESTION_RULES } from "../../prompts/core.js";
 import { takePendingSelect } from "../../lib/searchSelect.js";
-import { wirePrintWindow } from "../../lib/printWindow.js";
 // DEC-046: reports the patient marked for this visit ride into the prep prompt;
 // completing the visit consumes the marks.
 import { markedReportsForAppointment, buildMarkedReportsSection, clearPrepMarksForAppointment } from "../../lib/prepMarks.js";
@@ -23,7 +23,6 @@ import { markedReportsForAppointment, buildMarkedReportsSection, clearPrepMarksF
 import { isDemoMode } from "../../lib/secureStorage.js";
 import { DEMO_PREP_REPORTS } from "../../config/demoPrepReports.js";
 
-const PRINT_LOGO = import.meta.env.BASE_URL + "logo.png";
 
 // Shared consultation prep, keyed by appointment id and synced via Drive so the
 // mobile companion reads the same prep. `prepSig` must match the companion's
@@ -44,10 +43,7 @@ function saveVisitPrep(apptId, entry) {
 }
 
 function printConsultationPrep(appt, analysis) {
-  const date = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
   const apptDate = appt.date ? new Date(appt.date + "T12:00:00").toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" }) : "–";
-  const win = window.open("", "_blank", "width=900,height=700");
-  if (!win) return;
   const renderText = rawText => {
     if (!rawText) return "";
     const text = stripAiEmojis(rawText);
@@ -63,45 +59,21 @@ function printConsultationPrep(appt, analysis) {
       return `<div style="margin-bottom:3px;line-height:1.7">${applyBoldSafe(line)}</div>`;
     }).join("");
   };
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>Consultation Prep — Insina Health</title>
-    <style>
-      * { box-sizing:border-box; margin:0; padding:0; }
-      body { font-family:Georgia,serif; max-width:760px; margin:48px auto; color:#1a1a1a; font-size:14px; line-height:1.65; padding:0 24px; }
-      .logo { height:52px; margin-bottom:18px; }
-      h1 { text-align:center; font-size:28px; font-weight:700; letter-spacing:-.5px; margin-bottom:8px; }
-      .subtitle { text-align:center; font-size:13px; color:#555; margin-bottom:22px; }
-      .rule { border:none; border-top:2px solid #2563eb; margin-bottom:24px; }
-      .appt-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px; background:#f8f9fa; border:1px solid #ddd; border-radius:6px; padding:16px; }
-      .appt-field label { font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:#777; font-family:monospace; display:block; margin-bottom:3px; }
-      .appt-field span { font-size:13px; color:#1a1a1a; font-weight:600; }
-      .section-title { font-weight:700; font-size:16px; margin-bottom:12px; }
-      .footer { margin-top:48px; border-top:1px solid #ddd; padding-top:12px; font-size:11px; color:#777; display:flex; justify-content:space-between; }
-      @media print { body { margin:28px; } }
-    </style>
-  </head><body>
-    <img src="${PRINT_LOGO}" class="logo" />
-    <h1>Consultation Prep</h1>
-    <div class="subtitle">Insina Health &mdash; AI Appointment Analysis</div>
-    <hr class="rule" />
-    <div class="appt-grid">
+  printReport({
+    title: "Consultation Prep",
+    subtitle: "AI Appointment Analysis",
+    body: `<div class="appt-grid">
       <div class="appt-field"><label>Appointment</label><span>${escapeHtml(appt.title)}</span></div>
-      <div class="appt-field"><label>Date</label><span>${apptDate}</span></div>
-      <div class="appt-field"><label>Provider</label><span>${escapeHtml(appt.provider||"—")}</span></div>
-      <div class="appt-field"><label>Specialty</label><span>${escapeHtml(appt.specialty||"—")}</span></div>
-      ${appt.facility ? `<div class="appt-field" style="grid-column:1/-1"><label>Facility</label><span>${escapeHtml(appt.facility)}</span></div>` : ""}
-      ${appt.prepInstructions ? `<div class="appt-field" style="grid-column:1/-1"><label>Prep Instructions</label><span>${escapeHtml(appt.prepInstructions)}</span></div>` : ""}
-      ${appt.notes ? `<div class="appt-field" style="grid-column:1/-1"><label>Notes</label><span style="font-weight:400;white-space:pre-wrap">${escapeHtml(appt.notes)}</span></div>` : ""}
-    </div>
-    <div class="section-title">AI Preparation Analysis</div>
-    ${renderText(analysis)}
-    <div class="footer">
-      <span>Insina Health &mdash; Personal Health Intelligence</span>
-      <span>Generated ${date}</span>
-    </div>
-  </body></html>`);
-  win.document.close();
-  wirePrintWindow(win); // CSP-safe: the opener fires print; inline scripts are blocked in the popup
+      <div class="appt-field"><label>Date</label><span>${escapeHtml(apptDate)}</span></div>
+      <div class="appt-field"><label>Provider</label><span>${escapeHtml(appt.provider || "–")}</span></div>
+      <div class="appt-field"><label>Specialty</label><span>${escapeHtml(appt.specialty || "–")}</span></div>
+      ${appt.facility ? `<div class="appt-field wide"><label>Facility</label><span>${escapeHtml(appt.facility)}</span></div>` : ""}
+      ${appt.prepInstructions ? `<div class="appt-field wide"><label>Prep Instructions</label><span>${escapeHtml(appt.prepInstructions)}</span></div>` : ""}
+      ${appt.notes ? `<div class="appt-field wide"><label>Notes</label><span class="note" style="font-weight:400">${escapeHtml(appt.notes)}</span></div>` : ""}
+    </div><h2>AI Preparation Analysis</h2>${renderText(analysis)}`,
+    disclaimer: "AI-generated preparation: informational only, not clinician text. Verify against source records.",
+    extraCss: ".appt-grid { display:grid; grid-template-columns:1fr 1fr; gap:8pt; margin:6pt 0 14pt; border:.5pt solid #ccc; border-radius:4pt; padding:10pt; } .appt-field label { font-size:7.5pt; text-transform:uppercase; letter-spacing:.8px; color:#555; font-family:Arial, sans-serif; display:block; margin-bottom:2pt; } .appt-field span { font-size:9.5pt; font-weight:700; } .appt-field.wide { grid-column:1 / -1; }",
+  }, { width: 900, height: 700 });
 }
 
 const URGENCY_CFG = {
@@ -1131,7 +1103,7 @@ Please provide:
       <div style={{ fontSize:12, fontWeight:600, color:"#6ea3ff", fontFamily:"'DM Mono',monospace", letterSpacing:"1px", marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
         <span>✦</span> AI Appointment Prep
         {stale && <span style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", letterSpacing:0 }}>· details changed: regenerate</span>}
-        {analysis && <button onClick={() => requestReport("consultationPrep", () => printConsultationPrep(appt, analysis))} style={{ marginLeft:"auto", padding:"3px 10px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:6, color:"#7eb8d8", fontSize:12, cursor:"pointer", fontFamily:"'DM Mono',monospace" }}><PrintLabel size={11} /></button>}
+        {analysis && <span style={{ marginLeft: "auto" }}><PrintButton compact reportType="consultationPrep" onPrint={() => printConsultationPrep(appt, analysis)} /></span>}
       </div>
       {/* DEC-046: what marked analyses will ride into this prep — visible and
           excludable BEFORE generating, never silently included. */}

@@ -2,18 +2,24 @@
 // A plain page that lists the existing printable outputs as links and nothing
 // else. The ED artifact that exists is the Emergency Card (DEC-057 note);
 // Consultation Prep prints from an appointment; the Medication Report and the
-// Patient Profile print from their own screens or directly from here.
+// Patient Profile print directly from here.
+// WO_DASHBOARD_POLISH_02 item 2 (DEC-060): the Patient Profile prints in one
+// step with every stored card, and every print here runs the RIE preflight
+// first. The Emergency Card runs the ED Prep checklist (diagnoses, medications,
+// allergies present), the report id that had no print path before.
 import { ShieldAlert, Calendar, Pill, User, Printer } from "lucide-react";
 import { printEmergency } from "../../lib/printEmergency.js";
 import { printMedicationList } from "../../lib/printMedicationList.js";
+import { printProfile } from "../../lib/printProfile.js";
+import { requestReport } from "../../rie/preflightChecks.js";
 import { getStore } from "../../store.js";
 
 export default function ReportsPage({ onNavChange }) {
   const rows = [
-    { icon: ShieldAlert, title: "Emergency Card", body: "What ER teams need first: transplant status, medications, allergies, care team, and recent labs.", action: "Print Emergency Card", onClick: () => printEmergency() },
+    { icon: ShieldAlert, title: "Emergency Card", body: "What ER teams need first: transplant status, medications, allergies, care team, and recent labs.", action: "Print Emergency Card", onClick: () => requestReport("edPrep", () => printEmergency()) },
     { icon: Calendar, title: "Consultation Prep", body: "A visit-specific brief. Open an upcoming appointment and choose Prepare for this visit or AI Prep Analysis.", action: "Open Appointments", onClick: () => onNavChange?.("appointments") },
-    { icon: Pill, title: "Medication Report", body: "Your current medication list with doses, schedules, prescribers, and refill dates.", action: "Print Medication Report", onClick: () => printMedicationList(getStore("meds_full") || []) },
-    { icon: User, title: "Patient Profile", body: "Demographics, insurance, conditions, and history as one printable profile.", action: "Open Health Profile", onClick: () => onNavChange?.("profile") },
+    { icon: Pill, title: "Medication Report", body: "Your current medication list with doses, schedules, prescribers, and refill dates.", action: "Print Medication Report", onClick: () => requestReport("medications", () => printMedicationList(getStore("meds_full") || [])) },
+    { icon: User, title: "Patient Profile", body: "Demographics, insurance, conditions, and history as one printable profile, with every stored insurance and ID card.", action: "Print Patient Profile", onClick: () => requestReport("profile", () => printProfile()) },
   ];
   return (
     <div style={{ padding: 28, fontFamily: "'Sora',sans-serif", color: "var(--text-primary)", maxWidth: 820 }}>

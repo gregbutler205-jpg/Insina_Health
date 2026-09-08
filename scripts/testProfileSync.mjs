@@ -248,22 +248,27 @@ const KEY = "mi_profile_personal";
 // Greg: "On the Patient Profile printout there needs to be a place at the top
 // to identify that I'm a Liver Transplant." Same derivation as the Emergency
 // Card — one clinically-reviewed list, never two drifting copies.
+// WO_DASHBOARD_POLISH_02 (DEC-060/061): the printout moved from Tab02's hidden
+// markup to src/lib/printProfile.js (store-based, on the shared shell). The
+// same guarantees are pinned there; testPrintShell.mjs renders the document.
 {
-  const tab02 = readFileSync(SRC("components/tabs/Tab02.jsx"), "utf8");
-  ok(tab02.includes('import { deriveTransplantBanner } from "../../lib/printEmergency.js"'),
+  const profile = readFileSync(SRC("lib/printProfile.js"), "utf8");
+  ok(profile.includes('import { deriveTransplantBanner } from "./printEmergency.js"'),
      "profile print IMPORTS the shared banner derivation (no local copy)");
-  const printBlock = tab02.slice(tab02.indexOf('id="print-profile"'));
-  const noticeIdx = printBlock.indexOf("print-notice");
-  ok(noticeIdx > 0, "the notice block renders inside the printed profile");
-  ok(noticeIdx > printBlock.indexOf("Demographics not recorded") && noticeIdx < printBlock.indexOf("<div>Personal Health Record</div>"),
-     "the notice lives in the header's LEFT column, before the brand block's 'Personal Health Record' element (v1.53.5 placement)");
-  ok(printBlock.slice(noticeIdx, noticeIdx + 700).includes("No allergies recorded"),
+  const tab02 = readFileSync(SRC("components/tabs/Tab02.jsx"), "utf8");
+  ok(!tab02.includes('id="print-profile"') && tab02.includes('from "../../lib/printProfile.js"'),
+     "Tab02 no longer carries a second copy of the printout; it calls the shared builder");
+  const header = profile.slice(profile.indexOf("const headerHtml ="), profile.indexOf("// ── Sections ──"));
+  ok(header.includes('class="notice"') && header.indexOf('class="who"') < header.indexOf('class="notice"'),
+     "the notice block renders in the header's LEFT column under the demographics line (v1.53.5 placement)");
+  ok(profile.includes('reportDocument({ title: "Patient Profile", headerHtml') && profile.includes('kind: "Personal Health Record"'),
+     "the brand block ('Personal Health Record') is the shell's right column, after the notice");
+  ok(profile.includes('|| "No allergies recorded"') && header.includes("ALLERGIES: ${esc(allergyNames)}"),
      "the notice includes allergies, stating absence explicitly (never silence)");
-  ok(/\.print-notice \{ text-align: left/.test(tab02) &&
-     /\.transplant-banner \{ color: #b91c1c;[^}]*font-size: 10pt/.test(tab02) &&
-     !/\.transplant-banner \{[^}]*border/.test(tab02),
+  const shell = readFileSync(SRC("lib/printShell.js"), "utf8");
+  ok(/\.banner \{ color:#b91c1c;[^}]*font-size:10pt/.test(shell) && !/\.banner \{[^}]*border/.test(shell) && /\.allergies \{ color:#b91c1c;[^}]*font-size:10pt/.test(shell),
      "notice is left-justified 10pt red TYPE with no box (v1.53.5 founder styling)");
-  ok(tab02.includes('.replace(/ ON IMMUNOSUPPRESSION$/, "")'),
+  ok(profile.includes('.replace(/ ON IMMUNOSUPPRESSION$/, "")'),
      "profile shows the SHORT banner — suffix trimmed for display, shared derivation intact (Emergency Card keeps the full text)");
 }
 

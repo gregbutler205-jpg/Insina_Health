@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printConditionsReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
-import { PrintLabel } from "../icons.jsx";
 import { takePendingSelect } from "../../lib/searchSelect.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 // v1.57.0: calendar-sync-style condition suggestions — a deterministic
@@ -360,7 +361,7 @@ export default function ConditionsTab() {
           </div>
           <div style={{ display:"flex", gap:10 }}>
             <button onClick={() => handleScan(false)} style={btnGhost} title="Scan Diagnostics, Notes, Records, Procedures, and imported documents for condition mentions">⟳ Scan Records</button>
-            <button onClick={() => window.print()} style={btnGhost}><PrintLabel /></button>
+            <PrintButton reportType="conditions" onPrint={() => printConditionsReport(conditions)} />
             <button onClick={() => setModal(BLANK)} style={btnPrimary}>+ Add Condition</button>
           </div>
         </div>

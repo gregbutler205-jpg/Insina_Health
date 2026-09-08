@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printDiagnosticsReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
-import { PrintLabel } from "../icons.jsx";
 import { getDiagnostics, setDiagnostics as persistDiagnostics, getConditions } from "../../store.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { uploadReportToDrive, sanitizeReportUrl } from "../../lib/driveReports.js";
@@ -193,7 +194,7 @@ export default function DiagnosticsTab() {
             </p>
           </div>
           <div style={{ display:"flex", gap:10 }}>
-            <button onClick={() => window.print()} style={btnGhost}><PrintLabel /></button>
+            <PrintButton reportType="diagnostics" onPrint={() => printDiagnosticsReport(sorted)} />
             <button onClick={() => setModal(BLANK)} style={btnPrimary}>+ Add Study</button>
           </div>
         </div>

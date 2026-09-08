@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PrintLabel } from "../icons.jsx";
+import PrintButton from "../PrintButton.jsx";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { sanitizeReportUrl } from "../../lib/driveReports.js";
 import { formatPhone, displayPhone, formatDateUS } from "../../lib/displaySafe.js";
@@ -15,40 +15,10 @@ import {
   getConditions, getSurgeries, getMedsFull, getLatestReading, latestWeightReading, ageFromDob,
 } from "../../store.js";
 import { getCards, setCards, blankCard, compressImage, shareImageDataUrl } from "../../lib/cards.js";
-import { requestReport } from "../../rie/preflightChecks.js";
 import { deriveTransplantBanner } from "../../lib/printEmergency.js";
 
-// ── Featured labs helper (11 key labs) ────────────────────────────────────────
-const FEATURED_LAB_DEFS = [
-  { label: "Alk Phos",   pattern: /alk.*phos|alkaline.*phos/i },
-  { label: "ALT",        pattern: /\balt\b|alanine\s*(amino)?trans/i },
-  { label: "AST",        pattern: /\bast\b|aspartate\s*(amino)?trans/i },
-  { label: "Bilirubin",  pattern: /bilirubin/i },
-  { label: "Glucose",    pattern: /\bglucose\b/i },
-  { label: "Calcium",    pattern: /\bcalcium\b/i },
-  { label: "Platelets",  pattern: /platelet/i },
-  { label: "Creatinine", pattern: /\bcreatinine\b/i },
-  { label: "eGFR",       pattern: /egfr|glom.*filt/i },
-  { label: "Sodium",     pattern: /\bsodium\b/i },
-  { label: "Magnesium",  pattern: /magnesium/i },
-];
-
-function getFeaturedLabs() {
-  try {
-    const all = JSON.parse(localStorage.getItem("mi_labs") || "[]");
-    const latest = {};
-    all.forEach(l => {
-      const key = (l.name || "").toLowerCase().trim();
-      if (!key) return;
-      if (!latest[key] || new Date(l.date || 0) > new Date(latest[key].date || 0)) latest[key] = l;
-    });
-    const deduped = Object.values(latest);
-    return FEATURED_LAB_DEFS.map(def => {
-      const match = deduped.find(l => def.pattern.test(l.name || ""));
-      return { label: def.label, lab: match || null };
-    });
-  } catch { return FEATURED_LAB_DEFS.map(def => ({ label: def.label, lab: null })); }
-}
+// Featured labs (11 key labs) now live with the printout in lib/printProfile.js.
+import { getFeaturedLabs, printProfile } from "../../lib/printProfile.js";
 
 const T = {
   bg:"#07090f", sidebar:"#080c14", card:"#0b1220",
@@ -673,59 +643,6 @@ export default function ProfileTab() {
     return careTeam;
   })();
 
-  function handlePrint(selectedCardIds) {
-    const el = document.getElementById("print-profile");
-    if (!el) return;
-    const clone = el.cloneNode(true);
-    // Keep only the selected cards in the printed report.
-    const keep = new Set((selectedCardIds || cards.map(c => c.id)).map(String));
-    clone.querySelectorAll(".print-card").forEach(n => { if (!keep.has(n.dataset.cardId)) n.remove(); });
-    const cardsSection = clone.querySelector("#print-cards-section");
-    if (cardsSection && cardsSection.querySelectorAll(".print-card").length === 0) cardsSection.remove();
-    const html = clone.innerHTML;
-    const win = window.open("", "_blank", "width=900,height=700");
-    win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8"/>
-  <title>Insina Health: Patient Profile</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: #ffffff; color: #000000; font-family: Georgia, serif; font-size: 10pt; }
-    body { padding: 32pt 40pt; }
-    h1 { font-size: 18pt; color: #000; margin-bottom: 3pt; }
-    h2 { font-size: 10.5pt; font-family: Arial, sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #000; border-bottom: 1.5pt solid #000; padding-bottom: 3pt; margin: 16pt 0 8pt; }
-    .print-notice { text-align: left; margin: 6pt 0 0; }
-    .transplant-banner { color: #b91c1c; font-family: Arial, sans-serif; font-weight: 800; font-size: 10pt; letter-spacing: 1px; }
-    .notice-allergies { color: #b91c1c; font-family: Arial, sans-serif; font-weight: 700; font-size: 10pt; margin-top: 3pt; }
-    .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12pt; }
-    .header-meta { font-size: 9pt; color: #444; font-family: Arial, sans-serif; margin-top: 4pt; }
-    .brand { text-align: right; font-family: Arial, sans-serif; }
-    .brand-name { font-size: 12pt; font-weight: 700; color: #000; letter-spacing: 1px; }
-    .brand-sub { font-size: 8pt; color: #555; }
-    .pr { display: flex; padding: 3.5pt 0; border-bottom: 0.5pt solid #ccc; font-size: 9.5pt; align-items: flex-start; }
-    .pr-lbl { font-family: Arial, sans-serif; font-size: 8.5pt; color: #444; min-width: 120pt; flex-shrink: 0; padding-top: 1pt; }
-    .pr-val { color: #000; flex: 1; line-height: 1.45; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32pt; }
-    .allergy-row { padding: 4pt 0; border-bottom: 0.5pt solid #ccc; font-size: 9.5pt; color: #000; }
-    .allergy-row strong { color: #000; }
-    .pr-meta { font-size: 8.5pt; color: #555; }
-    .footer { margin-top: 24pt; font-size: 8pt; color: #777; font-family: Arial, sans-serif; text-align: center; border-top: 0.5pt solid #ccc; padding-top: 6pt; }
-    .print-card { margin-bottom: 14pt; page-break-inside: avoid; }
-    .print-card-label { font-family: Arial, sans-serif; font-size: 9.5pt; font-weight: 700; color: #000; margin-bottom: 4pt; }
-    .print-card-imgs { display: flex; gap: 14pt; flex-wrap: wrap; }
-    .print-card-img { width: 46%; max-width: 300pt; border: 0.5pt solid #999; border-radius: 4pt; }
-    @media print {
-      body { padding: 0; }
-      @page { margin: 18mm 20mm; }
-    }
-  </style>
-</head>
-<body>${html}</body>
-</html>`);
-    win.document.close();
-    setTimeout(() => { win.focus(); win.print(); }, 400);
-  }
 
   const P = personal;
   const I = insurance;
@@ -777,18 +694,13 @@ export default function ProfileTab() {
         .icon-btn:hover { border-color:#1a2f4a; color:#7eb8d8; }
         .icon-btn.danger:hover { border-color:rgba(239,68,68,.4); color:#f87171; }
 
-        @media screen { #print-profile { display: none; } }
       `}</style>
 
       {/* Topbar */}
       <div className="no-print" style={{ height:54, background:T.sidebar, borderBottom:`1px solid ${T.border}`, display:"flex", alignItems:"center", padding:"0 28px", gap:16, flexShrink:0 }}>
         <div style={{ flex:1 }} />
-        <button
-          onClick={() => { if (cards.length > 1) setCardSelectOpen(true); else requestReport("profile", () => handlePrint(cards.map(c => c.id))); }}
-          style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(79,142,247,.08)", border:"1px solid rgba(79,142,247,.25)", borderRadius:8, color:T.blue, fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}
-        >
-          <PrintLabel>Print Profile</PrintLabel>
-        </button>
+        {/* DEC-061: the shared Print button runs the preflight, then the card picker when there are cards to choose */}
+        <PrintButton reportType="profile" onPrint={() => { if (cards.length > 1) setCardSelectOpen(true); else printProfile(); }} />
         <div style={{ width:32, height:32, background:"linear-gradient(135deg,#4f8ef7,#a78bfa)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700 }}>
           {(P.name || "G").charAt(0).toUpperCase()}
         </div>
@@ -1205,229 +1117,10 @@ export default function ProfileTab() {
       {pharmacyModal && <PharmacyModal pharmacy={pharmacyModal} onSave={savePharmacy}       onClose={() => setPharmacyModal(null)} />}
       {cardModal     && <CardModal     card={cardModal}        onSave={saveCardEntry}      onClose={() => setCardModal(null)}     />}
       {cardViewer    && <CardViewer    card={cardViewer.card}  side={cardViewer.side}      onClose={() => setCardViewer(null)}    />}
-      {cardSelectOpen && <CardSelectModal cards={cards} onClose={() => setCardSelectOpen(false)} onConfirm={(ids) => { setCardSelectOpen(false); setTimeout(() => requestReport("profile", () => handlePrint(ids)), 30); }} />}
+      {cardSelectOpen && <CardSelectModal cards={cards} onClose={() => setCardSelectOpen(false)} onConfirm={(ids) => { setCardSelectOpen(false); setTimeout(() => printProfile({ cardIds: ids }), 30); }} />}
       {deleteTarget  && <DeleteConfirm label={deleteTarget.label} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />}
 
       {/* ── Print layout (screen:hidden, print:visible) ── */}
-      <div id="print-profile">
-        {/* Header */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
-          <div>
-            <h1 style={{ marginBottom:2 }}>{P.name || "Patient Name"}</h1>
-            {/* UI-23: only fields that have values print — no "—" placeholders
-                flagging optional blanks on the report */}
-            <div style={{ fontSize:"9pt", color:"#555", fontFamily:"Arial, sans-serif" }}>
-              {[["DOB", formatDateUS(P.dob)], ["Age", ageDisplay], ["Sex", P.sex], ["Blood Type", P.blood || P.bloodType]]
-                .filter(([, v]) => v)
-                .map(([l, v]) => `${l}: ${v}`)
-                .join("  ·  ") || "Demographics not recorded"}
-            </div>
-            {/* v1.53.5 (Greg): transplant + allergies notice lives in the
-                header's LEFT column, left-justified, sharing the row with the
-                brand block's "Personal Health Record" line. 10pt red type, no
-                box; short-form banner; allergies names-only with "No
-                allergies recorded" stated rather than silence. */}
-            <div className="print-notice">
-              {transplantBanner && <div className="transplant-banner">⚠ {transplantBanner}</div>}
-              <div className="notice-allergies">
-                ALLERGIES: {allergies.map(a => a.allergen || a.name).filter(Boolean).join(", ") || "No allergies recorded"}
-              </div>
-            </div>
-          </div>
-          <div style={{ textAlign:"right", fontSize:"8pt", color:"#444", fontFamily:"Arial, sans-serif" }}>
-            <div style={{ background:"#07090f", borderRadius:6, padding:"6px 8px", display:"inline-block", marginBottom:4 }}>
-              <img src={LOGO_WHITE} alt="Insina Health" style={{ width:180, height:"auto", display:"block" }} />
-            </div>
-            <div>Personal Health Record</div>
-            <div>Printed: {new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}</div>
-          </div>
-        </div>
-
-        {/* Demographics */}
-        <h2>Demographics &amp; Contact</h2>
-        <div className="grid2">
-          {[["Height",P.height],["Weight", vitalsWeightLbs ? `${vitalsWeightLbs}${vitalsWeightDate ? ` (as of ${vitalsWeightDate})` : ""}` : P.weight],["Phone",displayPhone(P.phone)],["Email",P.email],["Address",P.address],
-            ["Code Status",P.codeStatus],["Advance Directive",P.advanceDirective],["Implanted Devices",P.implantedDevices]].map(([l,v])=>v?(
-            <div key={l} className="pr"><span className="pr-lbl">{l}</span><span className="pr-val">{v}</span></div>
-          ):null)}
-        </div>
-
-        {/* Insurance */}
-        {(I.ins1 || I.plan1 || I.ins2) && <>
-          <h2>Insurance / Coverage</h2>
-          <div className="grid2">
-            {[["Primary Insurer",I.ins1],["Plan",I.plan1],["Member ID",I.mid1],["Group #",I.grp1],
-              ["Secondary Insurer",I.ins2],["Member ID (2)",I.mid2],["Copay (Specialist)",I.copay],["Deductible YTD",I.ded],["Out-of-Pocket Max",I.oop]
-            ].map(([l,v])=>v?(
-              <div key={l} className="pr"><span className="pr-lbl">{l}</span><span className="pr-val">{v}</span></div>
-            ):null)}
-          </div>
-        </>}
-
-        {/* Emergency Contacts */}
-        {contacts.length > 0 && <>
-          <h2>Emergency Contacts</h2>
-          {contacts.map((c,i)=>(
-            <div key={i} className="pr">
-              <span className="pr-lbl">{c.name}{c.primary?" (Primary)":""}</span>
-              <span className="pr-val">{c.relationship} &nbsp;·&nbsp; {displayPhone(c.phone)}{c.email?` · ${c.email}`:""}</span>
-            </div>
-          ))}
-        </>}
-
-        {/* Pharmacy */}
-        {pharmacies.length > 0 && <>
-          <h2>Pharmacy</h2>
-          {pharmacies.map((ph,i)=>(
-            <div key={i} className="pr">
-              <span className="pr-lbl">{ph.name}{ph.primary?" (Primary)":""}</span>
-              <span className="pr-val">
-                {[ph.type, ph.phone, ph.fax?`fax ${ph.fax}`:"", ph.address].filter(Boolean).join("  ·  ")}
-              </span>
-            </div>
-          ))}
-        </>}
-
-        {/* Allergies */}
-        {allergies.length > 0 && <>
-          <h2>Allergies</h2>
-          {allergies.map((a,i)=>(
-            <div key={i} className="allergy-row">
-              <strong>{a.name}</strong>: {a.reaction} <span style={{fontSize:"8pt",color:"#555"}}>({a.severity})</span>
-            </div>
-          ))}
-        </>}
-
-        {/* Active Conditions */}
-        {conditions.filter(c=>c.status!=="resolved").length > 0 && <>
-          <h2>Active Conditions / Diagnoses</h2>
-          {[...conditions.filter(c=>c.status!=="resolved")].sort((a,b)=>{
-            const SEV={severe:0,moderate:1,mild:2};
-            const STA={active:0,managed:1};
-            const sd=(SEV[a.severity]??9)-(SEV[b.severity]??9);
-            if(sd!==0)return sd;
-            return (STA[a.status]??9)-(STA[b.status]??9);
-          }).map((c,i)=>(
-            <div key={i} className="pr">
-              <span className="pr-lbl">{c.diagnosedDate ? new Date(c.diagnosedDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "–"}</span>
-              <span className="pr-val">{c.name} <span style={{fontSize:"8pt",color:"#666"}}>({c.status})</span></span>
-            </div>
-          ))}
-        </>}
-
-        {/* Current Medications */}
-        {activeMeds.length > 0 && <>
-          <h2>Current Medications</h2>
-          <div className="grid2">
-            {activeMeds.map((m,i)=>(
-              <div key={i} className="pr">
-                <span className="pr-lbl">{m.name}{m.brand?` (${m.brand})`:""}</span>
-                <span className="pr-val">{m.dose}: {m.frequency}{m.prescriber?` · ${m.prescriber}`:""}</span>
-              </div>
-            ))}
-          </div>
-        </>}
-
-        {/* Recent Lab Results */}
-        {(() => {
-          const featuredLabs = getFeaturedLabs();
-          const hasAny = featuredLabs.some(f => f.lab);
-          if (!hasAny) return null;
-          const latestDate = featuredLabs.filter(f=>f.lab?.date).map(f=>f.lab.date).sort().reverse()[0];
-          return (<>
-            <h2>Recent Lab Results{latestDate ? `: ${new Date(latestDate+"T12:00:00").toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}` : ""}</h2>
-            <div className="grid2">
-              {featuredLabs.map(({ label, lab }) => lab ? (
-                <div key={label} className="pr">
-                  <span className="pr-lbl">{label}</span>
-                  <span className="pr-val" style={lab.flag ? {color:"#c05000",fontWeight:600}:{}}>
-                    {lab.value} {lab.unit}{lab.refRange ? ` (ref: ${lab.refRange})` : ""}{lab.flag ? " ▲" : ""}
-                  </span>
-                </div>
-              ) : (
-                <div key={label} className="pr">
-                  <span className="pr-lbl">{label}</span>
-                  <span className="pr-val" style={{color:"#aaa"}}>Not on file</span>
-                </div>
-              ))}
-            </div>
-          </>);
-        })()}
-
-        {/* Care Team — only selected doctors shown in report */}
-        {selectedCareTeam.length > 0 && <>
-          <h2>Care Team</h2>
-          <div className="grid2">
-            {selectedCareTeam.map((d,i)=>(
-              <div key={i} className="pr">
-                <span className="pr-lbl">{d.name}{d.pcp?" (PCP)":""}</span>
-                <span className="pr-val">{d.role}{d.facility?` · ${d.facility}`:""}{d.phone?` · ${displayPhone(d.phone)}`:""}{d.phone24?<strong> · 24 hr: {displayPhone(d.phone24)}</strong>:null}</span>
-              </div>
-            ))}
-          </div>
-        </>}
-
-        {/* Procedures (interventions, biopsies, treatments — incl. Procedure-type records) */}
-        {allSurgeries.length > 0 && <>
-          <h2>Procedures</h2>
-          {allSurgeries.map((s,i)=>(
-            <div key={i} className="pr" style={{alignItems:"flex-start", paddingTop:5, paddingBottom:5}}>
-              <span className="pr-lbl" style={{paddingTop:1}}>
-                {formatDateUS(s.date, "–")}
-              </span>
-              <span className="pr-val">
-                <strong>{s.procedure}</strong>
-                {s.surgeon?<span style={{fontSize:"9pt"}}> · {s.surgeon}</span>:null}
-                {s.facility?<span style={{fontSize:"9pt"}}> · {s.facility}</span>:null}
-                {s.notes?<span style={{fontSize:"8.5pt",color:"#444",display:"block",marginTop:1}}>{s.notes}</span>:null}
-              </span>
-            </div>
-          ))}
-        </>}
-
-        {/* Diagnostics (observational studies — imaging, EKG, EMG, … incl. Imaging-type records) */}
-        {allDiagnostics.length > 0 && <>
-          <h2>Diagnostics</h2>
-          {allDiagnostics.map((d, i) => (
-            <div key={i} className="pr" style={{ alignItems:"flex-start", paddingTop:5, paddingBottom:5 }}>
-              <span className="pr-lbl" style={{ paddingTop:1 }}>
-                {d.date ? new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) : "–"}
-              </span>
-              <span className="pr-val">
-                <strong>{d.name}</strong>
-                {d.relatedCondition ? <span style={{ fontSize:"9pt" }}> · {d.relatedCondition}</span> : null}
-                {(d.orderedBy || d.readingProvider || d.facility) && (
-                  <span style={{ fontSize:"9pt", color:"#555", display:"block" }}>
-                    {[d.orderedBy && `Ordered by ${d.orderedBy}`, d.readingProvider && `Read by ${d.readingProvider}`, d.facility].filter(Boolean).join(" · ")}
-                  </span>
-                )}
-                {d.impression ? <span style={{ fontSize:"8.5pt", color:"#444", display:"block", marginTop:1 }}>{d.impression}</span> : null}
-              </span>
-            </div>
-          ))}
-        </>}
-
-        {/* Insurance & ID Cards (filtered by selection in handlePrint) */}
-        {cards.length > 0 && (
-          <div id="print-cards-section">
-            <h2>Insurance &amp; ID Cards</h2>
-            {cards.map(c => (
-              <div key={c.id} className="print-card" data-card-id={c.id}>
-                <div className="print-card-label">{c.label}</div>
-                <div className="print-card-imgs">
-                  {c.front && <img className="print-card-img" src={c.front} alt={`${c.label} front`} />}
-                  {c.back  && <img className="print-card-img" src={c.back}  alt={`${c.label} back`} />}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="footer">
-          This document was generated by Insina Health Personal Health Dashboard &nbsp;·&nbsp; For medical use only &nbsp;·&nbsp; {new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}
-        </div>
-      </div>
 
     </div>
   );

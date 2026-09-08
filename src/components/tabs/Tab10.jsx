@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import PrintButton from "../PrintButton.jsx";
+import { printNotesReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import { callAI } from "../../lib/aiClient.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { getIdentity } from "../../prompts/identity.js";
 import { buildSurfaceC } from "../../prompts/surfaceC.js";
 import { downloadAnalysisMarkdown } from "../../lib/analysisExport.js";
-import { PrintLabel, PinIcon } from "../icons.jsx";
+import { PinIcon } from "../icons.jsx";
 // AUDIT_SEC_02 F-03: this summary renders as a plain text child (line ~312,
 // `whiteSpace:"pre-wrap"`) — safe from XSS on its own, but that means it never
 // passes through renderAiText.js's shared filter. Applied explicitly here.
@@ -404,9 +406,7 @@ export default function Notes() {
       <div style={{ height: 54, background: "#080c14", borderBottom: "1px solid #1c2a40", display: "flex", alignItems: "center", padding: "0 24px", gap: 12, flexShrink: 0 }}>
         
         <div style={{ flex: 1 }} />
-        <button onClick={() => window.print()} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", background:"rgba(79,142,247,.1)", border:"1px solid rgba(79,142,247,.3)", borderRadius:8, color:"#7eb8d8", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>
-          <PrintLabel />
-        </button>
+        <PrintButton reportType="notes" onPrint={() => printNotesReport(notes)} />
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
