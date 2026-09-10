@@ -53,6 +53,8 @@ text-primary, text-secondary, text-muted, warning, and the background tokens are
 
 ## DEC-TBD-03: Theme policy
 
+Merged as DEC-063 on 2026-09-10, accepted as written.
+
 **Decision.** Dark navy remains the brand for external materials and the default in the app. A light theme is a first-class surface with its own AA-verified token set, and the app follows the device setting by default. Patients can override in Settings.
 
 **Rationale.** Dark mode reads as premium to reviewers and as unreadable to some patients with dry eyes or cataracts. Both must work.
@@ -60,6 +62,8 @@ text-primary, text-secondary, text-muted, warning, and the background tokens are
 ---
 
 ## DEC-TBD-04: Text size control
+
+Merged as DEC-064 on 2026-09-10, accepted as written.
 
 **Decision.** A patient-facing text size control with three steps (smaller, normal, larger; 88, 100, 118 percent). Normal is the default and is the AA-verified size. Smaller is opt-in and may drop below the AA floor; it is never the default and never set by the app. The setting persists in the patient's record.
 
@@ -156,6 +160,8 @@ Merged as DEC-057 on 2026-09-07, accepted as written.
 ---
 
 ## DEC-TBD-12: Usability testing as a release gate
+
+Merged as DEC-065 on 2026-09-10, accepted as written.
 
 **Decision.** No major patient-facing release ships without a usability round: at least five patients and two caregivers recruited through MSLA, demo persona data only, think-aloud, three fixed tasks (find last tacrolimus level and say whether it is in range; log a blood pressure; say what is due this week), SUS at the end. Exit target: 80 percent task success, SUS 70 or above. Founder-user results are excluded from scoring. Protocol in `INSINA_USABILITY_REMEDIATION_PLAN.md` section 6.
 

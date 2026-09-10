@@ -2025,3 +2025,57 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 **Rationale.** The lists come from a transplant booklet and are not exhaustive. Saying so at the point of use is safer than silence.
 
 **Related:** DEC-039 (patient-facing safety copy is provisional pending clinical review), CSC rule set.
+
+## DEC-063: Theme policy
+
+**Status:** Settled (Greg, in chat, 2026-09-10, on Claude's recommendation to accept the draft as written)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-03. Merged verbatim.
+
+**Decision.** Dark navy remains the brand for external materials and the default in the app. A light theme is a first-class surface with its own AA-verified token set, and the app follows the device setting by default. Patients can override in Settings.
+
+**Rationale.** Dark mode reads as premium to reviewers and as unreadable to some patients with dry eyes or cataracts. Both must work.
+
+**Implementation note (at merge).** `src/index.css` already carries a `.theme-light` token block from DEC-050; the light theme becomes a work order together with DEC-064 (the setting, the device-preference default, and the AA pass on the light tokens).
+
+**Related:** DEC-049, DEC-050, DEC-064.
+
+## DEC-064: Text size control
+
+**Status:** Settled (Greg, in chat, 2026-09-10, on Claude's recommendation to accept the draft as written)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-04. Merged verbatim.
+
+**Decision.** A patient-facing text size control with three steps (smaller, normal, larger; 88, 100, 118 percent). Normal is the default and is the AA-verified size. Smaller is opt-in and may drop below the AA floor; it is never the default and never set by the app. The setting persists in the patient's record.
+
+**Rationale.** Requested by the founder-user; accepted as opt-in so the accessibility floor is not weakened for anyone who has not chosen it.
+
+**Related:** DEC-049, DEC-056 (the top bar reserved the slot), DEC-063.
+
+## DEC-065: Usability testing as a release gate
+
+**Status:** Settled (Greg, in chat, 2026-09-10, on Claude's recommendation to accept the draft as written)
+
+**Source.** `docs/DEC_DRAFT_USABILITY_2026-09-06.md`, entry DEC-TBD-12. Merged verbatim.
+
+**Decision.** No major patient-facing release ships without a usability round: at least five patients and two caregivers recruited through MSLA, demo persona data only, think-aloud, three fixed tasks (find last tacrolimus level and say whether it is in range; log a blood pressure; say what is due this week), SUS at the end. Exit target: 80 percent task success, SUS 70 or above. Founder-user results are excluded from scoring. Protocol in `INSINA_USABILITY_REMEDIATION_PLAN.md` section 6.
+
+**Implementation note (at merge).** This is a process rule, not code. "Major patient-facing release" is read as a new screen, a changed flow, or a change to the dashboard structure; token, copy, and fix releases are not gated. The protocol document named above is not in the repository at merge time.
+
+**Related:** DEC-049, DEC-051.
+
+## DEC-066: Model routing per question, one paid tier, consent names the practice rather than the model
+
+**Status:** Settled (Greg, in chat, 2026-09-10; amends DEC-018)
+
+**Source.** Chat, 2026-09-09 (design and the cost analysis from `Insina_Health_Financial_Projections.xlsx`) and 2026-09-10 ("Yes").
+
+**Decision.**
+1. The proxy chooses the model for each request from the surface and the hints the app sends; the app no longer names a model. Deterministic rules first, no extra model call: summaries and annotation to the lite model, everyday questions to the standard model, and longitudinal, multi-domain, full-analysis, consultation-prep, and unclassifiable questions, plus any question carrying an urgent tripwire flag, to the strong model. One escalation: a cheaper answer that trips the output filter or declines re-runs once on the strong model. Consequence of error, not difficulty, breaks ties (DEC-018 stands). The router ships with a labeled question fixture tested like the thresholds; that fixture is the verification instrument DEC-018 gated routing behind. The session report records which model answered.
+2. One paid tier at $12 per month replaces Standard ($9) and Advanced ($24). The free tier stays storage and reports. A monthly allowance of deep analyses bounds the strong-model share near a third of questions.
+3. The consent document and the privacy copy describe processing by "Anthropic models chosen by Insina per question" and no longer name a model. A new consent version is required before routing ships; consent to processing by Anthropic stays explicit and per version.
+
+**Rationale.** The three modes did three jobs: model choice, analysis depth, and consent plus pricing. The first two are Insina's to make per question; only consent and price must stay the patient's explicit choice. On the workbook's figures a routed tier costs about $2.40 in AI per subscriber per month blended, so $12 keeps today's contribution per subscriber (about $9.40) and break-even (about 46 subscribers) unchanged.
+
+**Related:** DEC-018, DEC-060, DEC-061, PG-11 (consent), OPEN-1.
+
