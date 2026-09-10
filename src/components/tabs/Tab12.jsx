@@ -5,7 +5,7 @@ import { formatDateUS } from "../../lib/displaySafe.js";
 import { getStore, setStore, mergeRecords, addImportLog } from "../../store.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
-import { callAI } from "../../lib/aiClient.js";
+import { callAI, responseText } from "../../lib/aiClient.js";
 import { formatDocumentBlock } from "../../prompts/documents.js";
 import ReviewQueue from "../onboarding/ReviewQueue.jsx";
 import { getStagedStore } from "../../lib/onboardingStaging.js";
@@ -122,7 +122,7 @@ ${formatDocumentBlock({ id: docType, source: "upload", date: "", text, maxLength
     throw new Error(`API error: ${response.status}: ${err}`);
   }
   const data = await response.json();
-  let raw = data.content[0].text.trim();
+  let raw = responseText(data);
   raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
   try { return JSON.parse(raw); }
   catch { throw new Error("Could not parse document information from PDF."); }
@@ -189,7 +189,7 @@ ${formatDocumentBlock({ id: "lab-report", source: "upload", date: "", text: chun
       throw new Error(`Claude API error: ${response.status}: ${err}`);
     }
     const data = await response.json();
-    let raw = data.content[0].text.trim();
+    let raw = responseText(data);
     raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
     let parsed;
     try {

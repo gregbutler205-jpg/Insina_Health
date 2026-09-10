@@ -12,6 +12,22 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.63.1 (2026-09-10)
+
+### Fixed
+- **Imports and AI analyses failed on the Claude 5 models.** Sonnet 5 and
+  Opus 5 return a "thinking" block before the text block, so every place that
+  read the first content block as text failed with "Cannot read properties of
+  undefined (reading 'trim')": document and lab PDF imports, lab analysis and
+  questions, note summaries, document summaries, consultation prep. One
+  extractor (`responseText` in `src/lib/aiClient.js`) now takes every text
+  block; the proxy's OCR route does the same (Render redeploy needed).
+  `npm run test:ai-response` pins it.
+- **Lab trend line ran past the chart.** Readings without a numeric value were
+  skipped but their positions were not, so the line and its dots were placed
+  beyond the right edge and the date labels overlapped. Plotted points are
+  spaced by their own count, and date labels thin to at most eight.
+
 ## v1.63.0 (2026-09-10)
 
 WO_HISTORY_BUILDER_01 merged (DEC-P52, DEC-P53, DEC-P54), built 2026-08-12 on

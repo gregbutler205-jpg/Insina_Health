@@ -12,7 +12,7 @@ import { escapeHtml, applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText
 import { loadPdfjs } from "../../lib/pdfjs.js";
 import { compressImage } from "../../lib/cards.js";
 import { getDiagnostics, setDiagnostics, getMedsFull, setMedsFull } from "../../store.js";
-import { callAI } from "../../lib/aiClient.js";
+import { callAI, responseText } from "../../lib/aiClient.js";
 import { formatDocumentBlock } from "../../prompts/documents.js";
 import { QUESTION_RULES } from "../../prompts/core.js";
 import { takePendingSelect } from "../../lib/searchSelect.js";
@@ -1090,7 +1090,7 @@ Please provide:
         throw new Error(isServerSleep ? "Server is waking up (takes ~30 sec). Wait and try again." : errMsg);
       }
       const data = await res.json();
-      const text = data.content?.[0]?.text || "No response";
+      const text = responseText(data) || "No response";
       setAnalysis(text);
       saveVisitPrep(appt.id, { text, sig });   // persist so the companion reads it
       setStale(false);

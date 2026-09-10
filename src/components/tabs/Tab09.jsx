@@ -5,7 +5,7 @@ import { formatDateUS } from "../../lib/displaySafe.js";
 import { takePendingSelect } from "../../lib/searchSelect.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
 import { tombstoneRecord, untombstoneRecord } from "../../lib/recordTombstones.js";
-import { callAI, extractPdfVision } from "../../lib/aiClient.js";
+import { callAI, extractPdfVision, responseText } from "../../lib/aiClient.js";
 import { formatDocumentBlock } from "../../prompts/documents.js";
 import { uploadReportToDrive, areaForDocCategory, sanitizeReportUrl } from "../../lib/driveReports.js";
 
@@ -84,7 +84,7 @@ async function apiChatJSON(system, user, surface) {
   });
   if (!r.ok) throw new Error(`Chat API ${r.status}`);
   const data = await r.json();
-  return data.content?.[0]?.text || "";
+  return responseText(data);
 }
 
 async function apiSummarizeDoc(rawText, docName) {

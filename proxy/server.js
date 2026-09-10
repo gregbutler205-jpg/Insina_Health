@@ -281,7 +281,8 @@ app.post("/api/extract-pdf", express.json({ limit: "30mb" }), extractLimiter, pi
     }
 
     const result = await anthropicRes.json();
-    const text = result.content?.[0]?.text || "";
+    // Claude 5 replies can lead with a "thinking" block; take every text block, not the first block.
+    const text = (Array.isArray(result.content) ? result.content : []).filter(b => b && b.type === "text").map(b => b.text || "").join("");
     res.json({ text, pageCount: pages.length });
 
   } catch (err) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PrintButton from "../PrintButton.jsx";
 import { printNotesReport } from "../../lib/printReports.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
-import { callAI } from "../../lib/aiClient.js";
+import { callAI, responseText } from "../../lib/aiClient.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { getIdentity } from "../../prompts/identity.js";
 import { buildSurfaceC } from "../../prompts/surfaceC.js";
@@ -315,7 +315,7 @@ function AIPanel({ note, onClose }) {
         throw new Error(err?.error?.message || err?.error || `Server error ${res.status}`);
       }
       const data = await res.json();
-      setResult(scanForProhibitedDirectives(data.content[0].text).redactedText);
+      setResult(scanForProhibitedDirectives(responseText(data)).redactedText);
     } catch (e) {
       setError(e.message || "Request failed.");
     }

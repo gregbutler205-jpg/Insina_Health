@@ -5,7 +5,7 @@ import { parseRefRange, effectiveRange, labOutOfRange, ALL_LAB_CATEGORIES, getLa
 import AppSidebar from "../AppSidebar.jsx";
 import TopBar from "../TopBar.jsx";
 import { renderAiMarkdownToHtml, applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText.js";
-import { callAI } from "../../lib/aiClient.js";
+import { callAI, responseText } from "../../lib/aiClient.js";
 import { getIdentity } from "../../prompts/identity.js";
 import { buildSurfaceB1, buildSurfaceB2 } from "../../prompts/surfaceB.js";
 import { getTripwireEnvelope, formatTripwireEnvelope, canonicalizeLabName, dismissTripwireFlag } from "../../lib/tripwire.js";
@@ -128,7 +128,11 @@ function RangeBar({ value, low, high, customLow = null, customHigh = null, compa
 // else the lab's printed range — the call site decides; never both bands).
 // `dates` are the full per-point draw dates for the hover reveal.
 function TrendChart({ lab, color, monthLabels, dates = [] }) {
-  const pts = lab.values.map((v, i) => ({ v, i })).filter(x => x.v !== null && !isNaN(x.v));
+  // `i` is the position in the history (for its label and date); `k` is the
+  // position among the plotted points. Readings without a numeric value are
+  // skipped, so the two differ, and x must come from `k` or the line runs
+  // past the right edge of the chart (v1.63.1).
+  const pts = lab.values.map((v, i) => ({ v, i })).filter(x => x.v !== null && !isNaN(x.v)).map((x, k) => ({ ...x, k }));
   if (pts.length < 2) return null;
   const allV = pts.map(x => x.v);
   const hasRef = lab.low !== null && lab.high !== null;
@@ -142,8 +146,10 @@ function TrendChart({ lab, color, monthLabels, dates = [] }) {
   const toY = v => PT + cH - ((v - minV) / rng) * cH;
   const refLY = hasRef ? toY(lab.low) : null;
   const refHY = hasRef ? toY(lab.high) : null;
-  const polyPts = pts.map(({ v, i }) => `${toX(i)},${toY(v)}`).join(" ");
+  const polyPts = pts.map(({ v, k }) => `${toX(k)},${toY(v)}`).join(" ");
   const areaPts = `${toX(0)},${PT + cH} ${polyPts} ${toX(n - 1)},${PT + cH}`;
+  // Date labels: at most eight, always the first and the last plotted point.
+  const labelEvery = Math.max(1, Math.ceil(n / 8));
 
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
@@ -160,22 +166,22 @@ function TrendChart({ lab, color, monthLabels, dates = [] }) {
       {/* Line */}
       <polyline points={polyPts} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
       {/* Points */}
-      {pts.map(({ v, i }) => {
+      {pts.map(({ v, i, k }) => {
         const bad = hasRef && (v < lab.low || v > lab.high);
         return (
           <g key={i}>
             {/* UI-16: every point reveals its date and result on hover */}
             <title>{`${dates[i] || monthLabels[i] || ""}: ${v}`}</title>
-            <circle cx={toX(i)} cy={toY(v)} r={4} fill={bad ? "#f87171" : color} />
-            {bad && <circle cx={toX(i)} cy={toY(v)} r={7} fill="none" stroke="#f87171" strokeWidth={1} opacity={0.4} />}
+            <circle cx={toX(k)} cy={toY(v)} r={4} fill={bad ? "#f87171" : color} />
+            {bad && <circle cx={toX(k)} cy={toY(v)} r={7} fill="none" stroke="#f87171" strokeWidth={1} opacity={0.4} />}
             {/* invisible wider hit target so the hover reveal is reachable */}
-            <circle cx={toX(i)} cy={toY(v)} r={10} fill="transparent" />
+            <circle cx={toX(k)} cy={toY(v)} r={10} fill="transparent" />
           </g>
         );
       })}
       {/* X labels */}
-      {monthLabels.map((m, i) => (
-        <text key={i} x={toX(i)} y={H - 4} textAnchor="middle" fontSize={12} fill="#a0b4c8" fontFamily="DM Mono">{m}</text>
+      {pts.filter(({ k }) => k % labelEvery === 0 || k === n - 1).map(({ i, k }) => (
+        <text key={i} x={toX(k)} y={H - 4} textAnchor={k === 0 ? "start" : k === n - 1 ? "end" : "middle"} fontSize={12} fill="#a0b4c8" fontFamily="DM Mono">{monthLabels[i]}</text>
       ))}
     </svg>
   );
@@ -791,7 +797,7 @@ ${formatTripwireEnvelope(tripwireEnvelope)}${conditionModulesText ? `\n\n${condi
         throw new Error(errData?.error || `Server error ${res.status}`);
       }
       const data = await res.json();
-      const analysisText = data.content[0].text.trim();
+      const analysisText = responseText(data);
       setAiAnalysis(analysisText);
       setSessionContext("");
       // A-13: Full Analysis always opens in the report overlay. Saving to Notes
@@ -858,7 +864,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
         throw new Error(errData?.error || `Server error ${res.status}`);
       }
       const data = await res.json();
-      const answer = data.content[0].text.trim();
+      const answer = responseText(data);
       setAiQA(prev => { const copy = [...prev]; copy[copy.length - 1] = { q, a: answer }; return copy; });
     } catch (e) {
       const isNetworkErr = e.message?.includes("Failed to fetch") || e.message?.includes("503") || e.message?.includes("waking");

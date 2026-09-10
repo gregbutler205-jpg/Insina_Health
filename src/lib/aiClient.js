@@ -107,6 +107,19 @@ function getAuthHeaders() {
 }
 
 /**
+ * The text of a Messages response. Claude 5 models return a "thinking" block
+ * before the text block (adaptive thinking is on by default), so the first
+ * content block is not always text; every reader goes through this. Joins
+ * all text blocks, ignores thinking and any other block type, trims.
+ * @param {object} data - the parsed JSON body of a non-streaming /api/chat reply
+ * @returns {string}
+ */
+export function responseText(data) {
+  const blocks = Array.isArray(data?.content) ? data.content : [];
+  return blocks.filter(b => b && b.type === "text" && typeof b.text === "string").map(b => b.text).join("").trim();
+}
+
+/**
  * The single entry point for a chat-completion call to the proxy.
  *
  * @param {object} opts
