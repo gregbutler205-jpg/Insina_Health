@@ -12,6 +12,15 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.62.2 (2026-09-10)
+
+### Changed
+- **Readable dim text everywhere (DEC-050 amendment).** The three greys the
+  code used for secondary text and icons (`#4a5c6a`, `#4a6070`, `#6a8090`)
+  become the dim-text token value `#8299ad` in every text and icon use (101
+  places across 25 files); fills and borders are unchanged. This closes the
+  color-contrast failures the accessibility pass left open.
+
 ## v1.62.1 (2026-09-10)
 
 ### Changed

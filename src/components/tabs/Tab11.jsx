@@ -473,14 +473,14 @@ function Message({ role, text, streaming, mode, ts, isAdvancedUi }) {
                   }}>
                     {isAdvanced ? "Advanced" : "Standard"}
                   </span>
-                  {tsLabel && <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>{tsLabel}</span>}
+                  {tsLabel && <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>{tsLabel}</span>}
                 </div>
               )}
               {renderMarkdown(text)}
               {streaming && <span style={{ display: "inline-block", width: 8, height: 14, background: "#4f8ef7", marginLeft: 2, animation: "cursorBlink 1s step-end infinite", verticalAlign: "text-bottom" }} />}
               {/* Footer disclaimer — all responses */}
               {!streaming && text && (
-                <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>
+                <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>
                   {isAdvancedUi ? "Advanced Mode" : "Standard Mode"}: Informational only. This is not medical advice. Always consult your physician before making any health decisions.
                 </div>
               )}
@@ -1031,7 +1031,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
         <div style={{ position: "fixed", inset: 0, zIndex: 9600, background: "rgba(0,0,0,.78)", display: "flex", flexDirection: "column" }}>
           <div style={{ height: 48, background: "#080c14", borderBottom: "1px solid #1c2a40", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0 }}>
             <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 16, color: "#dde8f5", flex: 1 }}>Report Preview</div>
-            <span style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace" }}>exactly as Save &amp; Print produces it</span>
+            <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>exactly as Save &amp; Print produces it</span>
             {/* v1.54.0 (Greg): print straight from the preview — same DEC-C9
                 flow as the main button: saves to Notes FIRST, then prints. */}
             <button onClick={() => { setPreviewHtml(null); saveAndPrint(); }}
@@ -1076,9 +1076,9 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
           <button
             onClick={closeSession}
             title="Back to your sessions"
-            style={{ display:"flex", alignItems:"center", gap:4, background:"none", border:"none", cursor:"pointer", color:"#4a5c6a", fontSize:12, fontFamily:"'DM Mono',monospace", padding:"4px 6px", borderRadius:6, marginRight:4 }}
+            style={{ display:"flex", alignItems:"center", gap:4, background:"none", border:"none", cursor:"pointer", color:"#8299ad", fontSize:12, fontFamily:"'DM Mono',monospace", padding:"4px 6px", borderRadius:6, marginRight:4 }}
             onMouseEnter={e => { e.currentTarget.style.color = "#7eb8d8"; e.currentTarget.style.background = "rgba(255,255,255,.04)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#4a5c6a"; e.currentTarget.style.background = "none"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "#8299ad"; e.currentTarget.style.background = "none"; }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             Sessions
@@ -1087,9 +1087,9 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
           <button
             onClick={() => onNavChange("dashboard")}
             title="Back to Dashboard"
-            style={{ display:"flex", alignItems:"center", gap:4, background:"none", border:"none", cursor:"pointer", color:"#4a5c6a", fontSize:12, fontFamily:"'DM Mono',monospace", padding:"4px 6px", borderRadius:6, marginRight:4 }}
+            style={{ display:"flex", alignItems:"center", gap:4, background:"none", border:"none", cursor:"pointer", color:"#8299ad", fontSize:12, fontFamily:"'DM Mono',monospace", padding:"4px 6px", borderRadius:6, marginRight:4 }}
             onMouseEnter={e => { e.currentTarget.style.color = "#7eb8d8"; e.currentTarget.style.background = "rgba(255,255,255,.04)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#4a5c6a"; e.currentTarget.style.background = "none"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "#8299ad"; e.currentTarget.style.background = "none"; }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             Dashboard
@@ -1133,7 +1133,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
         }}>
           {isAdvanced ? "Advanced Mode" : "Standard Mode"}
         </span>
-        <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
+        <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>
           {isAdvanced ? "deeper analysis · consent given" : "recommended for daily use"}
         </span>
         {onNavChange && (
@@ -1175,7 +1175,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", marginBottom: 8 }}
             >
               <span style={{ fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#a0b4c8", fontFamily: "'DM Mono',monospace" }}>Quick Prompts</span>
-              <span style={{ fontSize: 12, color: "#4a5c6a" }}>{quickPromptsOpen ? "▾" : "▸"}</span>
+              <span style={{ fontSize: 12, color: "#8299ad" }}>{quickPromptsOpen ? "▾" : "▸"}</span>
             </button>
             {quickPromptsOpen && (
               <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 18 }}>
@@ -1194,7 +1194,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", marginBottom: 10 }}
               >
                 <span style={{ fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#a0b4c8", fontFamily: "'DM Mono',monospace", textAlign: "left" }}>Data used in this analysis</span>
-                <span style={{ fontSize: 12, color: "#4a5c6a" }}>{dataUsedOpen ? "▾" : "▸"}</span>
+                <span style={{ fontSize: 12, color: "#8299ad" }}>{dataUsedOpen ? "▾" : "▸"}</span>
               </button>
               {dataUsedOpen && contextCounts.map(({ label, color }) => (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "#b0c4d8", fontFamily: "'DM Mono',monospace", marginBottom: 7 }}>
@@ -1217,20 +1217,20 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               </div>
               {refError && <div style={{ fontSize: 12, color: "#f87171", fontFamily: "'DM Mono',monospace", marginBottom: 6 }}>{refError}</div>}
               {refDocs.length === 0
-                ? <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>No reference docs.<br />Upload a PDF to include it in AI context.</div>
+                ? <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", lineHeight: 1.5 }}>No reference docs.<br />Upload a PDF to include it in AI context.</div>
                 : refDocs.map(d => (
                   <div key={d.id} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 6, background: "#0b1220", border: "1px solid rgba(167,139,250,.15)", borderRadius: 7, padding: "6px 8px" }}>
                     <span style={{ fontSize: 12, color: "#a78bfa", flexShrink: 0, marginTop: 1 }}>▣</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 12, color: "#c4d8ee", fontFamily: "'DM Mono',monospace", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{d.name}</div>
-                      <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace" }}>Added {formatDateUS(d.addedDate)}</div>
+                      <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>Added {formatDateUS(d.addedDate)}</div>
                       <button
                         onClick={() => analyzeDoc(d)}
                         disabled={streaming}
                         style={{ marginTop: 4, background: "none", border: "none", color: streaming ? "#3a4c5a" : "#a78bfa", fontSize: 12, fontFamily: "'DM Mono',monospace", cursor: streaming ? "not-allowed" : "pointer", padding: 0, letterSpacing: "0.3px" }}
                       >Analyze ▸</button>
                     </div>
-                    <button onClick={() => removeRefDoc(d.id)} style={{ background: "transparent", border: "none", color: "#6a8090", cursor: "pointer", fontSize: 12, flexShrink: 0, padding: 0 }}>✕</button>
+                    <button onClick={() => removeRefDoc(d.id)} style={{ background: "transparent", border: "none", color: "#8299ad", cursor: "pointer", fontSize: 12, flexShrink: 0, padding: 0 }}>✕</button>
                   </div>
                 ))
               }
@@ -1272,7 +1272,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
                         <span style={{ fontSize: 14, color: "#6ea3ff", flexShrink: 0 }}>✦</span>
                         <span style={{ flex: 1, minWidth: 0 }}>
                           <span style={{ display: "block", fontSize: 13, color: "#dde8f5", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.title}</span>
-                          <span style={{ display: "block", fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", marginTop: 3 }}>
+                          <span style={{ display: "block", fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 3 }}>
                             {fmtShort(s.createdAt)} · {s.segments.length} part{s.segments.length !== 1 ? "s" : ""} · {msgCount} message{msgCount !== 1 ? "s" : ""}
                           </span>
                         </span>
@@ -1305,15 +1305,15 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 15, color: "#dde8f5" }}>
                 {activeSession ? activeSession.title : "New session"}
               </span>
-              <span style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace" }}>
+              <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>
                 {patientName}{patientName ? " · " : ""}started {fmtShort(activeSession?.createdAt || new Date().toISOString())}
               </span>
               <div style={{ flex: 1 }} />
-              <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
+              <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>
                 record {headerStamp?.recordHash || "–"} · reference set {headerStamp?.corpusVersion || CORPUS_VERSION}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 3 }}>
               {SESSION_COPY.headerFooter}
             </div>
           </div>
@@ -1428,7 +1428,7 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
               style={{ background: "transparent", border: "1px solid #1c2a40", color: "#98afc4" }}>
               Close
             </button>
-            <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>
+            <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>
               {activeSession?.state === "saved"
                 ? (unsaved ? "new turns not yet saved" : "saved to Notes")
                 : (activeSession ? "not saved yet" : "")}

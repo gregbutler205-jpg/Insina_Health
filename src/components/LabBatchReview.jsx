@@ -141,7 +141,7 @@ export default function LabBatchReview({ doc, file, onDone, onClose }) {
                   <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
                     <label style={{ display:"flex", alignItems:"center", gap:7, cursor:"pointer", flexShrink:0 }}>
                       <input type="checkbox" checked={included} onChange={() => toggleInclude(r)} style={{ accentColor:"#6ea3ff", width:14, height:14 }} />
-                      <span style={{ fontSize:12, color: included ? "#7eb8d8" : "#6a8090", fontFamily:mono }}>{included ? "include" : "excluded"}</span>
+                      <span style={{ fontSize:12, color: included ? "#7eb8d8" : "#8299ad", fontFamily:mono }}>{included ? "include" : "excluded"}</span>
                     </label>
                     <span style={{ fontSize:13, fontWeight:600, color: isMonitored ? "#6ea3ff" : "#c4d8ee", minWidth:120 }}>{r.name}</span>
                     {r.flags.map(f => (
@@ -172,14 +172,14 @@ export default function LabBatchReview({ doc, file, onDone, onClose }) {
                       </span>
                       {r.refRange && <span style={{ fontSize:12, color:"#98afc4" }}>ref {r.refRange}</span>}
                       {r.date && <span style={{ fontSize:12, color:"#98afc4" }}>{r.date}</span>}
-                      <span style={{ fontSize:12, color:"#6a8090" }}>{r.category}</span>
+                      <span style={{ fontSize:12, color:"#8299ad" }}>{r.category}</span>
                       {included && (
                         <button onClick={() => startEdit(r)} style={{ background:"transparent", border:"none", color:"#4a6a8a", cursor:"pointer", fontSize:12, fontFamily:mono, textDecoration:"underline", padding:0 }}>
                           correct
                         </button>
                       )}
                       {r.correction && (
-                        <span style={{ fontSize:12, color:"#6a8090" }}>
+                        <span style={{ fontSize:12, color:"#8299ad" }}>
                           was {String(r.correction.originalValue)}{r.correction.originalUnit ? ` ${r.correction.originalUnit}` : ""}
                         </span>
                       )}

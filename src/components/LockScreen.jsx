@@ -247,7 +247,7 @@ export default function LockScreen({ onUnlock }) {
                 Restore from a backup file
               </button>
             </div>
-            <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", textAlign: "center", marginTop: 6, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", textAlign: "center", marginTop: 6, lineHeight: 1.6 }}>
               Rebuilds this device from your Drive backup or an encrypted backup file (folder backups included). You'll unlock with your existing password or recovery key.
             </div>
           </>
@@ -318,7 +318,7 @@ export default function LockScreen({ onUnlock }) {
             </form>
             <button type="button" onClick={() => setMode("enter")} style={styles.linkBtn}>Back to password</button>
             {!wipeConfirm ? (
-              <button type="button" onClick={() => setWipeConfirm(true)} style={{ ...styles.linkBtn, color: "#6a8090", marginTop: 18 }}>
+              <button type="button" onClick={() => setWipeConfirm(true)} style={{ ...styles.linkBtn, color: "#8299ad", marginTop: 18 }}>
                 Lost the recovery key too?
               </button>
             ) : (
@@ -361,7 +361,7 @@ const styles = {
   checkboxRow: { display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#b0c4d8", marginBottom: 16, cursor: "pointer" },
   wipeBox: { marginTop: 16, background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 12, padding: "16px 18px", textAlign: "center" },
   divider: { display: "flex", alignItems: "center", justifyContent: "center", width: "100%", margin: "20px 0 12px", borderTop: "1px solid rgba(255,255,255,.08)", position: "relative" },
-  dividerText: { position: "absolute", top: -8, background: "#07090f", padding: "0 10px", fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#4a5c6a", fontFamily: "'DM Mono',monospace" },
+  dividerText: { position: "absolute", top: -8, background: "#07090f", padding: "0 10px", fontSize: 12, letterSpacing: "1.5px", textTransform: "uppercase", color: "#8299ad", fontFamily: "'DM Mono',monospace" },
 };
 
 const css = `

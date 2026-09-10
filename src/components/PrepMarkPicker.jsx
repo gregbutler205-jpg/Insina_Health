@@ -81,7 +81,7 @@ export default function PrepMarkPicker({ noteId, reportText, onChanged, persist 
               cursor: "pointer", transition: "all .12s",
               background: on ? "rgba(79,142,247,.16)" : "transparent",
               border: `1px solid ${on ? "rgba(79,142,247,.45)" : "#1a2f4a"}`,
-              color: on ? "#7eb8d8" : "#4a5c6a",
+              color: on ? "#7eb8d8" : "#8299ad",
             }}>
             {on ? "✓ " : ""}{m.name}
           </button>
@@ -98,7 +98,7 @@ export default function PrepMarkPicker({ noteId, reportText, onChanged, persist 
           ? (count ? "✓ Marked for prep" : "✓ Marks cleared")
           : (count ? `Mark for prep (${count})` : (applied ? "Remove marks" : "Mark for prep"))}
       </button>
-      <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: mono }}>
+      <span style={{ fontSize: 12, color: "#8299ad", fontFamily: mono }}>
         Included when you prep for that doctor · clears after the visit
       </span>
     </div>

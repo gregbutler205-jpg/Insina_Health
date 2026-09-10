@@ -116,7 +116,7 @@ function LogPanel({ onClose, onSave }) {
                 onChange={e => { setCustom(e.target.value); if (e.target.value) setSelected(null); }}
                 style={{ width: "100%", padding: "9px 12px", background: "#0b1220", border: `1px solid ${custom ? "#4f8ef7" : "#1c2a40"}`, borderRadius: 8, color: "#c4d8ee", fontSize: 12, fontFamily: "'Sora',sans-serif", outline: "none" }}
               />
-              <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", marginTop: 6 }}>…or pick from the common symptoms below</div>
+              <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 6 }}>…or pick from the common symptoms below</div>
             </div>
 
             {categories.map(cat => (
@@ -228,7 +228,7 @@ function SeverityBar({ value }) {
       {/* numbered scale */}
       <div style={{ display: "flex", justifyContent: "space-between", paddingRight: 84 }}>
         {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-          <span key={n} style={{ fontSize: 12, fontFamily: "'DM Mono',monospace", color: n === value ? color : "#4a5c6a", fontWeight: n === value ? 700 : 400 }}>{n}</span>
+          <span key={n} style={{ fontSize: 12, fontFamily: "'DM Mono',monospace", color: n === value ? color : "#8299ad", fontWeight: n === value ? 700 : 400 }}>{n}</span>
         ))}
       </div>
     </div>

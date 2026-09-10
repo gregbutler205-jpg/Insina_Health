@@ -341,11 +341,11 @@ export default function SurgeriesTab() {
                     <div key={i} style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", lineHeight:1.6, marginBottom:2 }}>
                       <span style={{ color:"#f59e0b" }}>{s.store}</span>
                       {": "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
-                      {s.snippet ? <span style={{ color:"#6a8090" }}>{" · “"}{s.snippet}{"”"}</span> : null}
+                      {s.snippet ? <span style={{ color:"#8299ad" }}>{" · “"}{s.snippet}{"”"}</span> : null}
                     </div>
                   ))}
                   {sug.sources.length > 3 && (
-                    <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>+ {sug.sources.length - 3} more place{sug.sources.length - 3 !== 1 ? "s" : ""} in your records</div>
+                    <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>+ {sug.sources.length - 3} more place{sug.sources.length - 3 !== 1 ? "s" : ""} in your records</div>
                   )}
                 </div>
               </div>
@@ -396,7 +396,7 @@ export default function SurgeriesTab() {
                 </div>
                 <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:16, alignItems:"center" }} className="no-print">
                   {s.fromRecords
-                    ? <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace" }}>from Medical Records ↗</span>
+                    ? <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>from Medical Records ↗</span>
                     : <>
                         <button onClick={() => setModal(s)} style={{ ...btnGhost, padding:"5px 12px", fontSize:12 }}>Edit</button>
                         <button onClick={() => setDeleteId(s.id)} style={{ padding:"5px 12px", background:"transparent", border:"1px solid rgba(239,68,68,.3)", borderRadius:7, color:"#f87171", fontSize:12, cursor:"pointer", fontFamily:"'DM Mono',monospace" }}>Delete</button>

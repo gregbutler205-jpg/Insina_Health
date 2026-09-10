@@ -49,7 +49,7 @@ function ReportArchiveRow({ showToast }) {
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, marginTop:10, borderTop:"1px solid #1c2a40" }}>
       <div>
         <div style={{ fontSize:12, fontWeight:600, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>REPORT ARCHIVE</div>
-        <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", lineHeight:1.6 }}>
+        <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", lineHeight:1.6 }}>
           {folders
             ? <>“{REPORT_ROOT}” is set up in your Drive: imported reports are filed there automatically.{" "}
                 {folders.rootLink && <a href={folders.rootLink} target="_blank" rel="noopener noreferrer" style={{ color:"#7eb8d8" }}>Open folder ↗</a>}</>
@@ -605,7 +605,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, marginTop:10, borderTop:"1px solid #1c2a40" }}>
               <div>
                 <div style={{ fontSize:12, fontWeight:600, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>WEEKLY SNAPSHOT</div>
-                <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+                <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                   {(() => {
                     // UI-2: daysAgoLabel never renders "NaN days ago" — a
                     // malformed/JSON-quoted timestamp (how snapshot-restored
@@ -635,7 +635,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             {/* Sync diagnostics: key fingerprint + last merge health */}
             <div style={{ paddingTop:10, marginTop:10, borderTop:"1px solid #1c2a40" }}>
               <div style={{ fontSize:12, fontWeight:600, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:2 }}>SYNC DIAGNOSTICS</div>
-              <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", lineHeight:1.7 }}>
+              <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", lineHeight:1.7 }}>
                 Vault key fingerprint: <span style={{ color:"#7eb8d8" }}>{vaultFp || "–"}</span> · must match on every device that syncs this record (phone companion shows its own under Sync).
               </div>
               {syncDiag?.failed > 0 && (
@@ -667,9 +667,9 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                 </svg>
                 Connect Google Drive
               </button>
-              <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace" }}>Free with your Google account · no health data stored on our servers</span>
+              <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>Free with your Google account · no health data stored on our servers</span>
             </div>
-            <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", marginTop:10, lineHeight:1.7 }}>
+            <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", marginTop:10, lineHeight:1.7 }}>
               No Google account? Creating one is free at accounts.google.com: Drive comes with it.
               {isFolderBackupSupported()
                 ? " Prefer to skip Google entirely? Use Folder Backup below instead."
@@ -705,7 +705,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                   Saving encrypted backups to “{folderStatus.name}”
                   {folderStatus.permission !== "granted" && " · permission needed. Click Back up now to re-allow"}
                 </div>
-                <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+                <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                   {(() => {
                     const label = daysAgoLabel(localStorage.getItem("mi_last_folder_backup"), null);
                     return label ? `Last folder backup ${label} · keeps 4 rolling copies` : "No folder backup yet · keeps 4 rolling copies";
@@ -958,7 +958,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
               }
             </div>
             {currentMode === "advanced" && consentDate && (
-              <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono', monospace", lineHeight: 1.5 }}>
+              <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono', monospace", lineHeight: 1.5 }}>
                 Consent given: {consentDate}<br />
                 Consent version: v{consentVersion}
               </div>
@@ -988,7 +988,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
                 </button>
                 <button
                   onClick={() => printConsent({ mode: "Advanced", consentDate: consentDate || "–", consentVersion: consentVersion || CONSENT_VERSION })}
-                  style={{ marginTop: 8, background: "none", border: "none", color: "#4a5c6a", fontSize: 12, fontFamily: "'DM Mono', monospace", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 5 }}
+                  style={{ marginTop: 8, background: "none", border: "none", color: "#8299ad", fontSize: 12, fontFamily: "'DM Mono', monospace", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 5 }}
                 ><PrintLabel size={11}>View / reprint consent document</PrintLabel></button>
               </div>
             ) : (
@@ -1101,7 +1101,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
           >
             {AUTOLOCK_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono', monospace", marginTop: 5, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono', monospace", marginTop: 5, lineHeight: 1.5 }}>
             Locks when idle and clears your encryption key from memory. Your data is unreadable until you re-enter your password.
           </div>
         </div>
@@ -1109,7 +1109,7 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
         <div>
           <div style={{ fontSize: 12, color: "#7eb8d8", marginBottom: 6 }}>Pilot access token</div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ flex: 1, background: "#07090f", border: "1px solid #1c2a40", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: pilotToken ? "#b0c4d8" : "#6a8090", fontFamily: "'DM Mono', monospace" }}>
+            <div style={{ flex: 1, background: "#07090f", border: "1px solid #1c2a40", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: pilotToken ? "#b0c4d8" : "#8299ad", fontFamily: "'DM Mono', monospace" }}>
               {pilotToken ? "•".repeat(20) : "Not set. Not needed for founder use"}
             </div>
             <button onClick={() => setModal("pilot_token")} style={btnGhost}>{pilotToken ? "Change" : "Set"}</button>

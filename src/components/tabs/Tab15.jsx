@@ -99,7 +99,7 @@ function Icd10Lookup({ value, onChange, inp }) {
         placeholder="Type code or diagnosis name to search…"
       />
       {loading && (
-        <div style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", fontSize:12, color:"#6a8090" }}>…</div>
+        <div style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", fontSize:12, color:"#8299ad" }}>…</div>
       )}
       {open && results.length > 0 && (
         <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, right:0, background:"#0b1220", border:"1px solid #1a2f4a", borderRadius:8, zIndex:400, maxHeight:240, overflowY:"auto", boxShadow:"0 8px 24px rgba(0,0,0,.5)" }}>
@@ -398,11 +398,11 @@ export default function ConditionsTab() {
                     <div key={i} style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", lineHeight:1.6, marginBottom:2 }}>
                       <span style={{ color:"#f59e0b" }}>{s.store}</span>
                       {": "}{s.title}{s.date ? ` (${formatDateUS(s.date)})` : ""}
-                      {s.snippet ? <span style={{ color:"#6a8090" }}>{" · “"}{s.snippet}{"”"}</span> : null}
+                      {s.snippet ? <span style={{ color:"#8299ad" }}>{" · “"}{s.snippet}{"”"}</span> : null}
                     </div>
                   ))}
                   {sug.sources.length > 3 && (
-                    <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>+ {sug.sources.length - 3} more place{sug.sources.length - 3 !== 1 ? "s" : ""} in your records</div>
+                    <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>+ {sug.sources.length - 3} more place{sug.sources.length - 3 !== 1 ? "s" : ""} in your records</div>
                   )}
                 </div>
               </div>

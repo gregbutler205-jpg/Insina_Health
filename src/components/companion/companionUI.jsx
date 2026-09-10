@@ -17,7 +17,7 @@ export const C = {
   p:      "#dde8f5",
   s:      "#7eb8d8",
   dim:    "#98afc4",
-  ghost:  "#4a5c6a",
+  ghost:  "#8299ad",
 };
 
 export const mono  = "'DM Mono',monospace";

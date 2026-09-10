@@ -317,7 +317,7 @@ export default function AIModeOnboardingModal({ onConfirm }) {
             borderRadius: 10,
             color: canConfirm
               ? (selected === "advanced" ? "#4f8ef7" : "#10b981")
-              : "#4a5c6a",
+              : "#8299ad",
             fontSize: 13,
             fontWeight: 600,
             fontFamily: "'Sora', sans-serif",
@@ -335,7 +335,7 @@ export default function AIModeOnboardingModal({ onConfirm }) {
         </button>
 
         <div style={{
-          fontSize: 12, color: "#4a5c6a",
+          fontSize: 12, color: "#8299ad",
           fontFamily: "'DM Mono', monospace",
           textAlign: "center", marginTop: 12, lineHeight: 1.5,
         }}>

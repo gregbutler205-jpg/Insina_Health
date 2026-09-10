@@ -770,7 +770,7 @@ export default function ImportTab({ onImport, onNavChange }) {
               : pdfStatus === "parsing"    ? "✦ Extracting…"
               : `⬆ Upload ${uploadDocType} PDF${""}`}
           </button>
-          <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", alignSelf:"center" }}>select one or multiple</span>
+          <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", alignSelf:"center" }}>select one or multiple</span>
           <input ref={fileInputRef} type="file" accept="application/pdf" multiple onChange={handlePdfUpload} style={{ display:"none" }} />
         </div>
         )}
@@ -782,14 +782,14 @@ export default function ImportTab({ onImport, onNavChange }) {
               <span style={{ fontSize:12, color:"#a78bfa", fontFamily:"'DM Mono',monospace" }}>
                 Processing {batchProgress.done + 1} of {batchProgress.total}
               </span>
-              <span style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+              <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                 {Math.round(((batchProgress.done) / batchProgress.total) * 100)}%
               </span>
             </div>
             <div style={{ background:"#07090f", borderRadius:4, height:4, overflow:"hidden", marginBottom:10 }}>
               <div style={{ height:"100%", background:"#a78bfa", borderRadius:4, width:`${(batchProgress.done / batchProgress.total) * 100}%`, transition:"width .3s ease" }} />
             </div>
-            <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+            <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
               {batchProgress.current}
             </div>
           </div>
@@ -802,7 +802,7 @@ export default function ImportTab({ onImport, onNavChange }) {
               <div style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", fontWeight:600 }}>
                 Batch Import: {batchSummary.filter(s=>s.ok).length} of {batchSummary.length} succeeded
               </div>
-              <button onClick={() => setBatchSummary([])} style={{ background:"transparent", border:"none", color:"#6a8090", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>Clear</button>
+              <button onClick={() => setBatchSummary([])} style={{ background:"transparent", border:"none", color:"#8299ad", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer" }}>Clear</button>
             </div>
             <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
               {batchSummary.map((item, i) => (
@@ -812,8 +812,8 @@ export default function ImportTab({ onImport, onNavChange }) {
                     {item.ok ? (
                       <span style={{ fontSize:12, color:"#c4d8ee", fontFamily:"'DM Mono',monospace" }}>
                         {item.title || item.name}
-                        {item.count !== undefined && <span style={{ color:"#6a8090" }}>–{item.count} result{item.count!==1?"s":""}</span>}
-                        {item.date && <span style={{ color:"#6a8090" }}> · {formatDateUS(item.date)}</span>}
+                        {item.count !== undefined && <span style={{ color:"#8299ad" }}>–{item.count} result{item.count!==1?"s":""}</span>}
+                        {item.date && <span style={{ color:"#8299ad" }}> · {formatDateUS(item.date)}</span>}
                       </span>
                     ) : (
                       <span style={{ fontSize:12, color:"#f87171", fontFamily:"'DM Mono',monospace" }}>
@@ -902,7 +902,7 @@ export default function ImportTab({ onImport, onNavChange }) {
             <div style={{ background:"#0b1220", border:"1px solid #1c2a40", borderRadius:12, padding:"16px 18px" }}>
               <div style={{ fontSize:12, letterSpacing:"1.5px", textTransform:"uppercase", color:"#a0b4c8", fontFamily:"'DM Mono',monospace", marginBottom:12 }}>Import History</div>
               {log.length === 0 ? (
-                <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", padding:"12px 0" }}>
+                <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", padding:"12px 0" }}>
                   No imports recorded yet. Completed uploads and batch imports will appear here.
                 </div>
               ) : (
@@ -1037,7 +1037,7 @@ export default function ImportTab({ onImport, onNavChange }) {
                     </div>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
                       <span style={{ fontSize:12, color:"#7eb8d8", fontFamily:"'DM Mono',monospace" }}>{group.length} reading{group.length !== 1 ? "s" : ""}</span>
-                      <span style={{ fontSize:12, color:"#6a8090", transition:"transform .2s", transform:isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
+                      <span style={{ fontSize:12, color:"#8299ad", transition:"transform .2s", transform:isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
                     </div>
                   </div>
 

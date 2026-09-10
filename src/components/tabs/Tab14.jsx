@@ -1120,8 +1120,8 @@ Please provide:
                   style={{ width:14, height:14, border:`1px solid ${included ? "#10b981" : "#1a2f4a"}`, borderRadius:3, background: included ? "rgba(16,185,129,.12)" : "transparent", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   {included && <span style={{ fontSize:12, color:"#2dd4a0" }}>✓</span>}
                 </div>
-                <span style={{ fontSize:12, color: included ? "#c4d8ee" : "#4a5c6a", flex:1, lineHeight:1.4 }}>{r.title}</span>
-                <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", flexShrink:0 }}>{formatDateUS(r.date)}</span>
+                <span style={{ fontSize:12, color: included ? "#c4d8ee" : "#8299ad", flex:1, lineHeight:1.4 }}>{r.title}</span>
+                <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", flexShrink:0 }}>{formatDateUS(r.date)}</span>
               </div>
             );
           })}
@@ -1130,7 +1130,7 @@ Please provide:
               +{markedForVisit.droppedCount} older marked {markedForVisit.droppedCount === 1 ? "report" : "reports"} not included (3 newest only)
             </div>
           )}
-          <div style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", marginTop:6 }}>
+          <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", marginTop:6 }}>
             Marked in My Notes · included in this prep · clears when the visit is completed
           </div>
         </div>

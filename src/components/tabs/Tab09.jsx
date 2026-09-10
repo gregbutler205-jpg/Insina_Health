@@ -202,7 +202,7 @@ function UploadModal({ onSave, onClose }) {
             <>
               <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
               <div style={{ fontSize: 12, color: "#7eb8d8" }}>Click or drag & drop to upload</div>
-              <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginTop: 4 }}>PDF, JPG, PNG, TXT, DOCX supported</div>
+              <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 4 }}>PDF, JPG, PNG, TXT, DOCX supported</div>
             </>
           )}
         </div>
@@ -843,7 +843,7 @@ export default function DocumentsTab() {
                     <span style={{ fontSize: 12, fontFamily: "'DM Mono',monospace", display: "flex", gap: 8, alignItems: "center" }}>
                       {sanitizeReportUrl(selectedDoc.driveLink)
                         ? <a href={sanitizeReportUrl(selectedDoc.driveLink)} target="_blank" rel="noopener noreferrer" style={{ color: "#7eb8d8" }}>Open in Drive ↗</a>
-                        : <span style={{ color: "#4a5c6a" }}>not linked</span>}
+                        : <span style={{ color: "#8299ad" }}>not linked</span>}
                       <button
                         onClick={() => {
                           const entered = window.prompt("Paste the report's link (https…: Google Drive “Copy link” works; empty clears):", selectedDoc.driveLink || "");
@@ -938,7 +938,7 @@ export default function DocumentsTab() {
                               <button
                                 onClick={() => handleDeleteFinding(f.id)}
                                 title="Remove finding"
-                                style={{ background: "transparent", border: "none", color: "#4a5c6a", cursor: "pointer", fontSize: 12, lineHeight: 1, flexShrink: 0, padding: "0 2px" }}
+                                style={{ background: "transparent", border: "none", color: "#8299ad", cursor: "pointer", fontSize: 12, lineHeight: 1, flexShrink: 0, padding: "0 2px" }}
                               >
                                 ✕
                               </button>

@@ -767,7 +767,7 @@ export default function App({ onNavChange }) {
                           <span style={{ fontSize: 12, background: "rgba(239,68,68,.12)", color: "#f87171", padding: "1px 6px", borderRadius: 8, fontFamily: "'DM Mono',monospace" }}>RENEWAL DUE</span>
                         )}
                       </div>
-                      <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace" }}>{med.dose} · {med.frequency} · {med.schedule}{med.rxNumber ? <span style={{ color:"#4a6070" }}> · Rx# {med.rxNumber}</span> : ""}</div>
+                      <div style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace" }}>{med.dose} · {med.frequency} · {med.schedule}{med.rxNumber ? <span style={{ color:"#8299ad" }}> · Rx# {med.rxNumber}</span> : ""}</div>
                     </div>
 
                     {/* Refill badge */}
@@ -865,7 +865,7 @@ export default function App({ onNavChange }) {
                         onChange={e => setEditingMed(prev => ({ ...prev, daysSupply: parseInt(e.target.value) || 30 }))}
                         style={{ width: "100%", padding: "8px 11px", background: "#080c14", border: "1px solid #1a2f4a", borderRadius: 7, color: "#c4d8ee", fontSize: 12, fontFamily: "'DM Mono',monospace", outline: "none" }}
                       />
-                      <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginTop: 4 }}>Used by Complete Refill to calculate the next fill date</div>
+                      <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 4 }}>Used by Complete Refill to calculate the next fill date</div>
                     </div>
 
                     {/* Refill Date */}
@@ -1133,7 +1133,7 @@ export default function App({ onNavChange }) {
                             onClick={() => downloadICS(selectedMed, existing)}
                             style={{ width: "100%", padding: "7px 10px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.25)", borderRadius: 7, color: "#2dd4a0", fontSize: 12, fontFamily: "'DM Mono',monospace", cursor: "pointer" }}
                           >📅 Download Calendar File</button>
-                          <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginTop: 6, lineHeight: 1.55, textAlign: "center" }}>
+                          <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginTop: 6, lineHeight: 1.55, textAlign: "center" }}>
                             Open the downloaded file on your phone to add to Apple Calendar, Google Calendar, or Outlook
                           </div>
                         </div>
@@ -1141,7 +1141,7 @@ export default function App({ onNavChange }) {
 
                       {/* No reminder placeholder */}
                       {!existing && !isEditing && (
-                        <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", textAlign: "center", padding: "8px 0" }}>
+                        <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", textAlign: "center", padding: "8px 0" }}>
                           No reminders set for this medication
                         </div>
                       )}
@@ -1187,7 +1187,7 @@ export default function App({ onNavChange }) {
                             : <div style={{ marginBottom: 12 }} />
                           }
 
-                          <div style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", marginBottom: 10, padding: "7px 10px", background: "rgba(79,142,247,.05)", borderRadius: 6, border: "1px solid rgba(79,142,247,.1)", lineHeight: 1.6 }}>
+                          <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", marginBottom: 10, padding: "7px 10px", background: "rgba(79,142,247,.05)", borderRadius: 6, border: "1px solid rgba(79,142,247,.1)", lineHeight: 1.6 }}>
                             📅 Saving downloads a calendar file. Open it on your phone to add the reminder to Apple Calendar, Google Calendar, or Outlook. Your device will handle all alerts.
                           </div>
 

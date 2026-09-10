@@ -106,15 +106,15 @@ function RangeBar({ value, low, high, customLow = null, customHigh = null, compa
           {/* Lab range labels — dim when custom present, normal when sole range */}
           {labLowPct !== null && (
             <div style={{ position: "relative", height: 13 }}>
-              <span style={{ position: "absolute", left: `${labLowPct}%`, transform: "translateX(-50%)", fontSize: hasCustom ? 12 : 12, color: hasCustom ? "#4a5c6a" : "#98afc4", fontFamily: "'DM Mono',monospace", whiteSpace: "nowrap" }}>{low}</span>
-              <span style={{ position: "absolute", left: `${labHighPct}%`, transform: "translateX(-50%)", fontSize: hasCustom ? 12 : 12, color: hasCustom ? "#4a5c6a" : "#98afc4", fontFamily: "'DM Mono',monospace", whiteSpace: "nowrap" }}>{high}</span>
+              <span style={{ position: "absolute", left: `${labLowPct}%`, transform: "translateX(-50%)", fontSize: hasCustom ? 12 : 12, color: hasCustom ? "#8299ad" : "#98afc4", fontFamily: "'DM Mono',monospace", whiteSpace: "nowrap" }}>{low}</span>
+              <span style={{ position: "absolute", left: `${labHighPct}%`, transform: "translateX(-50%)", fontSize: hasCustom ? 12 : 12, color: hasCustom ? "#8299ad" : "#98afc4", fontFamily: "'DM Mono',monospace", whiteSpace: "nowrap" }}>{high}</span>
             </div>
           )}
           {/* Legend when both ranges shown */}
           {hasCustom && labLowPct !== null && (
             <div style={{ display: "flex", gap: 10, marginTop: 3 }}>
               <span style={{ fontSize: 12, color: "#2dd4a0", fontFamily: "'DM Mono',monospace" }}>▬ Your range</span>
-              <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace" }}>▬ Lab range</span>
+              <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>▬ Lab range</span>
             </div>
           )}
         </div>
@@ -362,7 +362,7 @@ function LabGroupReorder({ presentCats }) {
           onDragOver={e => { e.preventDefault(); const from = dragIndex.current; if (from === null || from === i) return; setItems(prev => { const a = [...prev]; const [m] = a.splice(from, 1); a.splice(i, 0, m); return a; }); dragIndex.current = i; }}
           onDrop={endDrag} onDragEnd={endDrag}
           style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", marginBottom: 5, background: "#07090f", border: "1px solid #1c2a40", borderRadius: 7, cursor: "grab" }}>
-          <span style={{ color: "#4a6070", fontSize: 13 }}>⠿</span>
+          <span style={{ color: "#8299ad", fontSize: 13 }}>⠿</span>
           <span style={{ flex: 1, fontSize: 12, color: "#c4d8ee" }}>{cat}</span>
           <button onClick={() => move(i, -1)} disabled={i === 0} style={arrow(i === 0)}>↑</button>
           <button onClick={() => move(i, 1)} disabled={i === items.length - 1} style={arrow(i === items.length - 1)}>↓</button>
@@ -951,7 +951,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
             )}
 
             {/* A-01: evaluation status — surfaced, not hidden, per spec (stale/unavailable is an app-state fact, not an alarm) */}
-            <div style={{ marginBottom: 14, fontSize: 12, fontFamily: "'DM Mono',monospace", color: tripwireEnv.status === "stale" ? "#f59e0b" : "#6a8090" }}>
+            <div style={{ marginBottom: 14, fontSize: 12, fontFamily: "'DM Mono',monospace", color: tripwireEnv.status === "stale" ? "#f59e0b" : "#8299ad" }}>
               {tripwireEnv.status === "current" && `Threshold check: current (as of ${new Date(tripwireEnv.evaluatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })})`}
               {tripwireEnv.status === "stale" && "Threshold check: stale. New results have arrived since the last check ran"}
               {tripwireEnv.status === "unavailable" && "Threshold check: not yet active (pending clinical review of the default threshold library)"}
@@ -1039,7 +1039,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 <button
                   onClick={handleAddLab}
                   disabled={!newLab.name.trim() || !newLab.value.trim()}
-                  style={{ width:"100%", padding:"8px", background: newLab.name.trim() && newLab.value.trim() ? "#10b981" : "#0f1e30", border:"none", borderRadius:7, color: newLab.name.trim() && newLab.value.trim() ? "#fff" : "#6a8090", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: newLab.name.trim() && newLab.value.trim() ? "pointer" : "not-allowed" }}
+                  style={{ width:"100%", padding:"8px", background: newLab.name.trim() && newLab.value.trim() ? "#10b981" : "#0f1e30", border:"none", borderRadius:7, color: newLab.name.trim() && newLab.value.trim() ? "#fff" : "#8299ad", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: newLab.name.trim() && newLab.value.trim() ? "pointer" : "not-allowed" }}
                 >
                   Save Lab Result
                 </button>
@@ -1048,7 +1048,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
 
             {/* ── Imported Labs (deduplicated — latest per test name) ── */}
             {importedLabs.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "32px 12px", color: "#6a8090", fontSize: 12, fontFamily: "'DM Mono',monospace", lineHeight: 1.7 }}>
+              <div style={{ textAlign: "center", padding: "32px 12px", color: "#8299ad", fontSize: 12, fontFamily: "'DM Mono',monospace", lineHeight: 1.7 }}>
                 No lab results imported yet.<br />
                 Use Import Records to upload a PDF lab report.
               </div>
@@ -1144,7 +1144,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                               </div>
                             </div>
                             {lab.refRange && (
-                              <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", paddingLeft: 14, textAlign: "left" }}>ref: {lab.refRange}</div>
+                              <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", paddingLeft: 14, textAlign: "left" }}>ref: {lab.refRange}</div>
                             )}
                           </div>
                         );
@@ -1342,7 +1342,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                       {chartData ? (
                         <TrendChart lab={chartData} color={lineColor} monthLabels={histLabels} dates={chartDates} />
                       ) : (
-                        <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace", padding: "16px 0", textAlign: "center" }}>
+                        <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", padding: "16px 0", textAlign: "center" }}>
                           No readings in the selected {trendRange}-month window. Try a wider range.
                         </div>
                       )}
@@ -1441,7 +1441,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                       <div style={{ fontSize: 12, color: "#7eb8d8", fontWeight: 600, marginBottom: 8 }}>Q: {item.q}</div>
                       <div style={{ fontSize: 12, color: "#a8c4dc", background: "#0b1220", borderRadius: 8, padding: "10px 14px", border: "1px solid #1c2a40" }}>
                         {item.a === null
-                          ? <span style={{ color: "#6a8090", fontFamily: "'DM Mono',monospace" }}>⟳ Thinking…</span>
+                          ? <span style={{ color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>⟳ Thinking…</span>
                           : <>
                               {renderMarkdown(item.a)}
                               <div style={{ display:"flex", justifyContent:"flex-end", marginTop:8, paddingTop:6, borderTop:"1px solid #1c2a40" }}>
@@ -1469,7 +1469,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 </div>
               )}
               {!aiAnalysis && !aiAnalyzing && aiQA.length === 0 && !aiError && (
-                <div style={{ fontSize: 12, color: "#6a8090", fontFamily: "'DM Mono',monospace" }}>
+                <div style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>
                   {importedLabs.length > 0
                     ? "Ask a question above or click Full Analysis for a complete review."
                     : "Import lab results using the Import Records tab, then ask questions here."}
@@ -1514,7 +1514,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                       <div key={grp.canonical} style={{ background:"#0b1220", border:"1px solid rgba(16,185,129,.25)", borderRadius:10, padding:"10px 13px", marginBottom:8, display:"flex", alignItems:"center", gap:10 }}>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:12, color:"#c4d8ee", fontWeight:600 }}>{grp.canonical}</div>
-                          <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", lineHeight:1.5 }}>grouped from: {grp.sources.join(", ")}</div>
+                          <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", lineHeight:1.5 }}>grouped from: {grp.sources.join(", ")}</div>
                         </div>
                         <button onClick={() => ungroup(grp.canonical)} style={{ flexShrink:0, background:"none", border:"1px solid #1a2840", borderRadius:6, color:"#a0b4c8", fontSize:12, fontFamily:"'DM Mono',monospace", padding:"4px 10px", cursor:"pointer" }}>Ungroup</button>
                       </div>
@@ -1530,7 +1530,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 return (
                   <div style={{ marginBottom:18 }}>
                     <div style={{ fontSize:12, color:"#7eb8d8", fontFamily:"'DM Mono',monospace", letterSpacing:"1px", textTransform:"uppercase", marginBottom:8 }}>Group manually</div>
-                    <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", marginBottom:8 }}>Select two or more names that are the same test, then name the group.</div>
+                    <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", marginBottom:8 }}>Select two or more names that are the same test, then name the group.</div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10, maxHeight:120, overflowY:"auto" }}>
                       {distinctNames.map(name => {
                         const on = manualSel.includes(name);
@@ -1549,7 +1549,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                           style={{ flex:1, background:"#0b1220", border:"1px solid #1a2f4a", color:"#c4d8ee", padding:"7px 11px", borderRadius:8, fontFamily:"'Sora',sans-serif", fontSize:12, outline:"none" }} />
                         <button onClick={() => { applyManualGroup(manualSel, manualCanon.trim()); setManualSel([]); setManualCanon(""); }}
                           disabled={!manualCanon.trim()}
-                          style={{ padding:"7px 16px", background: manualCanon.trim() ? "rgba(16,185,129,.14)" : "#0f1e30", border:`1px solid ${manualCanon.trim() ? "rgba(16,185,129,.4)" : "#1a2840"}`, borderRadius:8, color: manualCanon.trim() ? "#2dd4a0" : "#4a5c6a", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: manualCanon.trim() ? "pointer" : "not-allowed", whiteSpace:"nowrap" }}>
+                          style={{ padding:"7px 16px", background: manualCanon.trim() ? "rgba(16,185,129,.14)" : "#0f1e30", border:`1px solid ${manualCanon.trim() ? "rgba(16,185,129,.4)" : "#1a2840"}`, borderRadius:8, color: manualCanon.trim() ? "#2dd4a0" : "#8299ad", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: manualCanon.trim() ? "pointer" : "not-allowed", whiteSpace:"nowrap" }}>
                           Group
                         </button>
                       </div>
@@ -1572,7 +1572,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                       <span style={{ fontSize:12, fontFamily:"'DM Mono',monospace", background:"rgba(245,158,11,.12)", color:"#f59e0b", border:"1px solid rgba(245,158,11,.28)", padding:"1px 7px", borderRadius:4, letterSpacing:"0.5px" }}>
                         GROUP {gi + 1}
                       </span>
-                      <span style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+                      <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                         {g.names.length} variants · {totalEntries} total entries
                       </span>
                     </div>
@@ -1596,7 +1596,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                           </div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ fontSize:12, color:"#c4d8ee", fontWeight:600 }}>{v.name}</div>
-                            <div style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+                            <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                               {v.count} entr{v.count === 1 ? "y" : "ies"}{v.dateRange ? ` · ${v.dateRange}` : ""}
                             </div>
                           </div>
@@ -1606,7 +1606,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                             </span>
                           )}
                           {gi === 0 && v === g.variants[0] && !isSelected && !dec.skip && (
-                            <span style={{ fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace", flexShrink:0 }}>most common</span>
+                            <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", flexShrink:0 }}>most common</span>
                           )}
                         </div>
                       );
@@ -1615,7 +1615,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                     {/* Skip toggle */}
                     <button
                       onClick={() => setDupDecisions(d => ({ ...d, [g.norm]: { ...d[g.norm], skip: !dec.skip } }))}
-                      style={{ marginTop:6, padding:"4px 11px", background: dec.skip ? "rgba(167,139,250,.12)" : "transparent", border:`1px solid ${dec.skip ? "rgba(167,139,250,.35)" : "#1a2840"}`, borderRadius:6, color: dec.skip ? "#a78bfa" : "#6a8090", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer", transition:"all .12s" }}>
+                      style={{ marginTop:6, padding:"4px 11px", background: dec.skip ? "rgba(167,139,250,.12)" : "transparent", border:`1px solid ${dec.skip ? "rgba(167,139,250,.35)" : "#1a2840"}`, borderRadius:6, color: dec.skip ? "#a78bfa" : "#8299ad", fontSize:12, fontFamily:"'DM Mono',monospace", cursor:"pointer", transition:"all .12s" }}>
                       {dec.skip ? "✓ Keeping separate" : "Keep separate (skip)"}
                     </button>
                   </div>
@@ -1625,7 +1625,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
 
             {/* Modal footer */}
             <div style={{ padding:"14px 22px", borderTop:"1px solid #1c2a40", display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
-              <div style={{ flex:1, fontSize:12, color:"#6a8090", fontFamily:"'DM Mono',monospace" }}>
+              <div style={{ flex:1, fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>
                 {(() => {
                   if (dupGroups.length === 0) return "No auto-detected duplicates";
                   const grouping = dupGroups.filter(g => !dupDecisions[g.norm]?.skip).length;
@@ -1641,7 +1641,7 @@ ${formatTripwireEnvelope(qaTripwireEnvelope)}`;
                 <button
                   onClick={applyMerges}
                   disabled={dupGroups.every(g => dupDecisions[g.norm]?.skip)}
-                  style={{ padding:"8px 20px", background: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#0f1e30" : "rgba(16,185,129,.14)", border:`1px solid ${dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#1a2840" : "rgba(16,185,129,.4)"}`, borderRadius:8, color: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#4a5c6a" : "#2dd4a0", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "not-allowed" : "pointer" }}>
+                  style={{ padding:"8px 20px", background: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#0f1e30" : "rgba(16,185,129,.14)", border:`1px solid ${dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#1a2840" : "rgba(16,185,129,.4)"}`, borderRadius:8, color: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "#8299ad" : "#2dd4a0", fontSize:12, fontFamily:"'Sora',sans-serif", fontWeight:600, cursor: dupGroups.every(g => dupDecisions[g.norm]?.skip) ? "not-allowed" : "pointer" }}>
                   Group Selected
                 </button>
               )}

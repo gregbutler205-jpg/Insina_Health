@@ -56,7 +56,7 @@ export default function PreflightHost({ onNavChange }) {
             {f.suggestion && (
               <div style={{ marginTop: 5, fontSize: 12, fontFamily: mono, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <span style={{ color: "#f87171", textDecoration: "line-through" }}>{f.original}</span>
-                <span style={{ color: "#6a8090" }}>→</span><span style={{ color: "#2dd4a0" }}>{f.suggestion}</span>
+                <span style={{ color: "#8299ad" }}>→</span><span style={{ color: "#2dd4a0" }}>{f.suggestion}</span>
               </div>
             )}
             <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>

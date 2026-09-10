@@ -85,7 +85,7 @@ export default function RIEWidget({ onNavChange }) {
                 <div style={{ textAlign: "center", padding: "60px 20px", color: "#98afc4" }}>
                   <div style={{ fontSize: 30, color: "#2dd4a0", marginBottom: 10 }}>✓</div>
                   <div style={{ fontSize: 13 }}>No integrity issues found.</div>
-                  <div style={{ fontSize: 12, color: "#6a8090", fontFamily: mono, marginTop: 6 }}>Your record looks clean.</div>
+                  <div style={{ fontSize: 12, color: "#8299ad", fontFamily: mono, marginTop: 6 }}>Your record looks clean.</div>
                 </div>
               )}
               {findings.map(f => {
@@ -94,13 +94,13 @@ export default function RIEWidget({ onNavChange }) {
                   <div key={f.id} style={{ background: "#0b1220", border: `1px solid ${sv.bd}`, borderLeft: `3px solid ${sv.color}`, borderRadius: 9, padding: "11px 13px", marginBottom: 9 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
                       <span style={{ fontSize: 12, fontFamily: mono, color: sv.color, background: sv.bg, border: `1px solid ${sv.bd}`, borderRadius: 4, padding: "1px 6px", textTransform: "uppercase", letterSpacing: ".5px" }}>{sv.label}</span>
-                      <span style={{ fontSize: 12, color: "#6a8090", fontFamily: mono, textTransform: "uppercase" }}>{f.module}</span>
+                      <span style={{ fontSize: 12, color: "#8299ad", fontFamily: mono, textTransform: "uppercase" }}>{f.module}</span>
                     </div>
                     <div style={{ fontSize: 12, color: "#c4d8ee", lineHeight: 1.5 }}>{f.message}</div>
                     {f.suggestion && (
                       <div style={{ marginTop: 6, fontSize: 12, fontFamily: mono, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         <span style={{ color: "#f87171", textDecoration: "line-through" }}>{f.original}</span>
-                        <span style={{ color: "#6a8090" }}>→</span>
+                        <span style={{ color: "#8299ad" }}>→</span>
                         <span style={{ color: "#2dd4a0" }}>{f.suggestion}</span>
                       </div>
                     )}
@@ -113,7 +113,7 @@ export default function RIEWidget({ onNavChange }) {
                 );
               })}
             </div>
-            <div style={{ padding: "8px 14px", borderTop: "1px solid #1c2a40", fontSize: 12, color: "#4a5c6a", fontFamily: mono, textAlign: "center", flexShrink: 0 }}>
+            <div style={{ padding: "8px 14px", borderTop: "1px solid #1c2a40", fontSize: 12, color: "#8299ad", fontFamily: mono, textAlign: "center", flexShrink: 0 }}>
               Flags issues for your review · never changes data without confirmation
             </div>
           </div>

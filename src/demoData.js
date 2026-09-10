@@ -234,7 +234,7 @@ export const DEMO_DATA = {
       dose: "40 mg", frequency: "Once daily", schedule: "Bedtime",
       category: "Cholesterol", status: "inactive",
       refillDate: "", prescriber: "Dr. Michael Torres",
-      pharmacy: "", rxNumber: "", color: "#4a5c6a",
+      pharmacy: "", rxNumber: "", color: "#8299ad",
       notes: "Duplicate entry — inactive.",
       flag: false, flagNote: "" },
     { id: 1700000051, name: "Vitamin D3", brand: "",

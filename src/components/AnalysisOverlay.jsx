@@ -74,7 +74,7 @@ export default function AnalysisOverlay({ title, content, mode = "standard", tim
           border: `1px solid ${isAdvanced ? "rgba(79,142,247,.25)" : "rgba(16,185,129,.25)"}`,
           padding: "2px 8px", borderRadius: 4, letterSpacing: "0.4px", textTransform: "uppercase",
         }}>{modeLabel}</span>
-        <span style={{ fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", flexShrink: 0 }}>{dateLabel}</span>
+        <span style={{ fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", flexShrink: 0 }}>{dateLabel}</span>
         <button onClick={() => window.print()}
           style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", background: "rgba(79,142,247,.12)", border: "1px solid rgba(79,142,247,.3)", borderRadius: 8, color: "#7eb8d8", fontSize: 12, fontFamily: "'Sora',sans-serif", cursor: "pointer", flexShrink: 0 }}>
           <PrintLabel />
@@ -118,7 +118,7 @@ export default function AnalysisOverlay({ title, content, mode = "standard", tim
           <div className="ao-body" dangerouslySetInnerHTML={{ __html: renderAiMarkdownToHtml(safeContent) }} />
 
           {/* Screen footer note */}
-          <div className="ao-chrome" style={{ marginTop: 28, paddingTop: 12, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#4a5c6a", fontFamily: "'DM Mono',monospace", lineHeight: 1.6 }}>
+          <div className="ao-chrome" style={{ marginTop: 28, paddingTop: 12, borderTop: "1px solid #1c2a40", fontSize: 12, color: "#8299ad", fontFamily: "'DM Mono',monospace", lineHeight: 1.6 }}>
             {ANALYSIS_FOOTER} · Record last synced: {getLastSyncStamp()}
           </div>
 

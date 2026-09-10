@@ -104,7 +104,7 @@ function StudyModal({ study, conditions, onSave, onClose }) {
             {uploadState && uploadState !== "busy" && (
               <div style={{ fontSize:12, color:"#f59e0b", fontFamily:"'DM Mono',monospace", marginTop:5 }}>{uploadState}</div>
             )}
-            <div style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", marginTop:5 }}>
+            <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", marginTop:5 }}>
               The file goes to your own Drive ("Insina Health Reports / Imaging &amp; Diagnostics"): Insina keeps only this link, never the document.
             </div>
           </div>
@@ -234,14 +234,14 @@ export default function DiagnosticsTab() {
                   </div>
                   {s.impression && <div style={{ fontSize:12, color:"#7eb8d8", lineHeight:1.55 }}>{s.impression}</div>}
                   {s.migratedFromImaging && !s.impression && (
-                    <div style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace", marginTop:4 }}>
+                    <div style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace", marginTop:4 }}>
                       Migrated from Imaging History. Add ordered-by, reading provider, and impression when known.
                     </div>
                   )}
                 </div>
                 <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:16, alignItems:"center" }} className="no-print">
                   {s.fromRecords
-                    ? <span style={{ fontSize:12, color:"#4a5c6a", fontFamily:"'DM Mono',monospace" }}>from Medical Records ↗</span>
+                    ? <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>from Medical Records ↗</span>
                     : <>
                         <button onClick={() => setModal(s)} style={{ ...btnGhost, padding:"5px 12px", fontSize:12 }}>Edit</button>
                         <button onClick={() => setDeleteId(s.id)} style={{ padding:"5px 12px", background:"transparent", border:"1px solid rgba(239,68,68,.3)", borderRadius:7, color:"#f87171", fontSize:12, cursor:"pointer", fontFamily:"'DM Mono',monospace" }}>Delete</button>

@@ -1854,6 +1854,16 @@ outside this entry and waits on DEC-TBD-03.
 
 **Related:** DEC-049, UI-8, DEC-TBD-03 (draft), WO_ACCESSIBLE_TOKENS_01.
 
+## DEC-050 amendment: the greys the code actually used
+
+**Status:** Settled (Greg, in chat, 2026-09-10: "Yes" to the proposed amendment)
+
+**Decision.** The three dim greys the code used for secondary text and icons, which DEC-050's mapping did not name because they were never design-system tokens, map to the DEC-050 dim-text value wherever they set a text or icon color: `#4a5c6a` (2.7:1 on the card), `#4a6070` (2.9:1), and `#6a8090` (4.6:1 on the card, 4.2:1 on the raised button fill) become `#8299ad` (`--text-dim`, 6.3:1 on the card, 5.9:1 on the button fill). Palette entries that feed text (`ghost` in the search popup and companion palettes) change at the definition. Fills, borders, and comparison operands keep their values, as in DEC-050.
+
+**Rationale.** The axe pass after WO_ACCESSIBLE_TOKENS_01 left 22 failing nodes, all color contrast, all from these three values in text use. One replacement value that already exists as a token closes them without changing any surface's layout.
+
+**Related:** DEC-049, DEC-050.
+
 ## DEC-051: Dashboard structure
 
 **Status:** Settled (accepted by Greg as written from the usability DEC drafts, 2026-09-07)

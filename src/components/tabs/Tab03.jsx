@@ -245,7 +245,7 @@ export default function Records({ onNavChange }) {
                 Source: {selected.source || (selected.refDocId ? "Imported from PDF" : selected.epicId ? "Imported from Epic export" : "Entered manually")}
               </span>
               {selected.addedAt && (
-                <span style={{ color: "#6a8090" }}>· Added {new Date(selected.addedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                <span style={{ color: "#8299ad" }}>· Added {new Date(selected.addedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               )}
               {selected.refDocId && getRefDoc(selected.refDocId) && (
                 <button onClick={() => setShowSourceDoc(s => !s)}
@@ -320,7 +320,7 @@ export default function Records({ onNavChange }) {
         ) : (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#a0b4c8", fontSize: 12, fontFamily: "'DM Mono',monospace", gap: 8 }}>
             {records.length === 0
-              ? <><div style={{ fontSize: 24, marginBottom: 8, opacity: 0.4 }}>▤</div><div>No records yet</div><div style={{ fontSize: 12, color: "#6a8090" }}>Import XML or PDF files on the Import Records tab</div></>
+              ? <><div style={{ fontSize: 24, marginBottom: 8, opacity: 0.4 }}>▤</div><div>No records yet</div><div style={{ fontSize: 12, color: "#8299ad" }}>Import XML or PDF files on the Import Records tab</div></>
               : "Select a record to view details"
             }
           </div>

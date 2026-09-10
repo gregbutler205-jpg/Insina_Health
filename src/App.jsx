@@ -531,7 +531,7 @@ function AppShell() {
                         </button>
                         <button
                           onClick={() => setShowBackupBanner(false)}
-                          style={{ background:"transparent", border:"none", color:"#4a5c6a", fontSize:18, cursor:"pointer", padding:"0 4px", lineHeight:1 }}
+                          style={{ background:"transparent", border:"none", color:"#8299ad", fontSize:18, cursor:"pointer", padding:"0 4px", lineHeight:1 }}
                           title="Dismiss"
                         >×</button>
                       </div>
