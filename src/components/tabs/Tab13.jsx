@@ -953,8 +953,8 @@ export default function DataBackup({ onNavChange, googleUser, syncStatus = "idle
             </div>
             <div style={{ fontSize: 12, color: "#7eb8d8", fontFamily: "'DM Mono', monospace", lineHeight: 1.6 }}>
               {currentMode === "advanced"
-                ? <>Model: <strong>Claude Opus 4.6</strong><br />Deeper cross-referenced analysis</>
-                : <>Model: <strong>Claude Sonnet 4.6</strong><br />Clear daily-use analysis</>
+                ? <>Model: <strong>Claude Opus 5</strong><br />Deeper cross-referenced analysis</>
+                : <>Model: <strong>Claude Sonnet 5</strong><br />Clear daily-use analysis</>
               }
             </div>
             {currentMode === "advanced" && consentDate && (

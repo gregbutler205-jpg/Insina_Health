@@ -58,15 +58,15 @@ const PROXY_URL = import.meta.env?.VITE_PROXY_URL || "http://localhost:3001";
 // capability, it just stops the companion from hardcoding its own copy of
 // the model string.
 // v1.52.1 rollback: the Render proxy does NOT auto-deploy from this repo, so
-// its live allowlist still rejects the Claude 5 ids — the v1.52.0 bundle made
-// every AI question error. Client stays on 4.6 until the proxy is manually
-// redeployed (Render dashboard → insina-health → Deploy latest commit); the
-// proxy's allowlist in this repo already accepts BOTH generations, so the
-// re-upgrade is a strings-only change here once that click happens.
+// its live allowlist rejected the Claude 5 ids and the v1.52.0 bundle made
+// every AI question error. The client stayed on 4.6 until the proxy was
+// manually redeployed. 2026-09-10: Greg redeployed the proxy (its allowlist
+// accepts both generations), so the client moves to the Claude 5 ids; the
+// proxy keeps 4.6 allowed for cached bundles through the upgrade window.
 export const MODEL_MAP = {
-  standard:   "claude-sonnet-4-6",
-  advanced:   "claude-opus-4-6",
-  extraction: "claude-sonnet-4-6",
+  standard:   "claude-sonnet-5",
+  advanced:   "claude-opus-5",
+  extraction: "claude-sonnet-5",
   lite:       "claude-haiku-4-5",
 };
 

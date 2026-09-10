@@ -12,6 +12,15 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.62.1 (2026-09-10)
+
+### Changed
+- **Claude 5 models.** Standard mode and extraction use `claude-sonnet-5`,
+  Advanced mode uses `claude-opus-5` (the companion's lite tier stays on
+  `claude-haiku-4-5`). The Render proxy was redeployed by Greg on 2026-09-10 with
+  an allow list that accepts both generations, which is what the v1.52.1
+  rollback was waiting for. Settings copy names the new models.
+
 ## v1.62.0 (2026-09-07)
 
 WO_DASHBOARD_POLISH_02, Greg's six items after the v1.61.0 deploy (DEC-058 to
