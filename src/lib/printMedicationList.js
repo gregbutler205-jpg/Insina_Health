@@ -6,6 +6,7 @@
 // category, the same columns and disclaimer); the page is now the shared
 // report shell in printShell.js, which owns the popup and the CSP wiring.
 import { esc, fmtD, printReport, tableHtml } from "./printShell.js";
+import { readAttestations, provenanceLine } from "./reportData.js";
 
 /** Pure builder, exported so the report is testable without a window. */
 export function buildMedicationList(meds) {
@@ -25,8 +26,11 @@ export function buildMedicationList(meds) {
     { label: "Rx #", key: "rxNumber" },
     { label: "Refill", get: m => fmtD(m.refillDate) },
   ];
-  const body = Object.entries(grouped).map(([cat, catMeds]) => `<h3>${esc(cat)}</h3>${tableHtml(columns, catMeds)}`).join("")
-    || `<div class="empty">No active medications recorded.</div>`;
+  // C-24 provenance (HISTORY_BUILDER_SPEC section 5): only when the list was confirmed.
+  const provenance = provenanceLine("Medication list", readAttestations().medsCompleteAt);
+  const body = (Object.entries(grouped).map(([cat, catMeds]) => `<h3>${esc(cat)}</h3>${tableHtml(columns, catMeds)}`).join("")
+    || `<div class="empty">No active medications recorded.</div>`)
+    + (provenance ? `<div class="muted" style="margin-top:8pt">${esc(provenance)}</div>` : "");
   return {
     title: "Medication List",
     subtitle: `${active.length} active medication${active.length === 1 ? "" : "s"}`,

@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard, Calendar, FlaskConical, Pill, HeartPulse, ClipboardList, User, Users,
   Stethoscope, Scissors, ScanLine, FolderOpen, FileText, NotebookPen, Upload, Printer,
-  ShieldAlert, ChevronDown, ChevronRight, Folders, Wrench,
+  ShieldAlert, ChevronDown, ChevronRight, Folders, Wrench, History,
 } from "lucide-react";
 import { openEmergencyInfo } from "../lib/advisoryRuntime.js";
 
@@ -38,6 +38,7 @@ export const NAV = [
   { id: "notes",       icon: NotebookPen,     label: "Notes" },
   { id: "import",      icon: Upload,          label: "Import records" },
   { id: "reports",     icon: Printer,         label: "Reports" },
+  { id: "history",     icon: History,         label: "History Builder" }, // WO_HISTORY_BUILDER_01 (DEC-P52)
   { id: "ai",          icon: null,            label: "Insina AI" },     // renders the Insina AI mark (DEC-P47)
 ];
 
@@ -45,7 +46,7 @@ export const NAV_GROUPS = [
   { key: "today",   label: "Today",     fixed: true, ids: ["dashboard", "appointments"] },
   { key: "health",  label: "My health", fixed: true, ids: ["labs", "medications", "vitals", "symptoms", "profile", "careplan"] },
   { key: "records", label: "Records",   defaultCollapsed: true, ids: ["conditions", "surgeries", "diagnostics", "records", "documents", "notes"] },
-  { key: "tools",   label: "Tools",     defaultCollapsed: false, ids: ["import", "reports", "ai"] },
+  { key: "tools",   label: "Tools",     defaultCollapsed: false, ids: ["import", "reports", "history", "ai"] },
 ];
 
 // WO_DASHBOARD_POLISH_02 item 3 (DEC-058): on the rail each collapsible group

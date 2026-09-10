@@ -48,6 +48,7 @@ const ALL_ROUTES = [
   { id: "labs",        nav: "Labs and trends", title: "Labs and trends" },
   { id: "vitals",      nav: "Vitals",          title: "Vitals" },
   { id: "profile",     nav: "Health profile",  title: "Profile" },
+  { id: "history",     nav: "History Builder", title: "History Builder" }, // DEC-P52
 ];
 // A fixture run screenshots and checks the dashboard only, under the fixture's name.
 const ROUTES = FIXTURE ? [{ id: `dashboard-${FIXTURE}`, nav: null, title: `Dashboard (${FIXTURE})` }] : ALL_ROUTES;

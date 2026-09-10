@@ -18,6 +18,7 @@ import { assertNoKnownAllergies, hasNkdaAssertion } from "../../lib/artifactEngi
 const CAT_LABEL = {
   medication: "Medications", allergy: "Allergies", condition: "Conditions",
   care_team: "Care Team", lab: "Labs", procedure: "Procedures", immunization: "Immunizations", vital: "Vitals",
+  record: "Medical Records", // DEC-P53: History Builder 'event' items share this queue
 };
 
 const card = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, padding: 16 };
@@ -59,6 +60,7 @@ const EDITABLE_FIELDS = {
   procedure: ["name", "date"],
   immunization: ["name", "date"],
   vital: ["type", "value", "unit", "date"],
+  record: ["title", "type", "date", "facility"],
 };
 
 // ── Source side-by-side panel (§3.4 — mandatory for every item) ──────────────

@@ -139,6 +139,32 @@ export function stageExtractionResult(result, docLinks = [], now = new Date()) {
   return { docIds: stagedDocIds, itemCount: (result.documents || []).reduce((n, d) => n + (d.items?.length || 0), 0) };
 }
 
+/** DEC-P53: a builder-sourced (lookup) or typed-in item enters the same queue
+ *  as extracted ones, so there is one review list and one write path. `hb`
+ *  carries the History Builder's own view of the item (source, type, payload). */
+export function addManualItem({ category, fields = {}, hb = null }, now = new Date()) {
+  const store = load();
+  const item = {
+    id: genId(),
+    docId: null,
+    category,
+    fields: { ...fields },
+    confidence: 1,
+    source_page: null,
+    source_region: null,
+    staleness: "fresh",
+    staleness_badge: null,
+    default_historical: false,
+    advisory_hit: null,
+    status: "staged",
+    status_changed_at: now.toISOString(),
+    ...(hb ? { hb } : {}),
+  };
+  store.items.push(item);
+  persist(store);
+  return item;
+}
+
 export function getStagedStore() { return load(); }
 export function getItems(filter = {}) {
   return load().items.filter(i =>

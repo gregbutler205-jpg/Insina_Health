@@ -17,11 +17,13 @@ let idSeq = Date.now();
 const genId = () => idSeq++;
 
 const SOURCE_LABEL = "Imported from document";
+// DEC-P53: History Builder items carry their origin in `hb.source`.
+const HB_SOURCE_LABEL = { lookup: "Added from medication lookup", manual: "Typed in", extraction: SOURCE_LABEL };
 
 function sourceStamp(item) {
   const doc = item.docId ? getDocument(item.docId) : null;
   return {
-    source: SOURCE_LABEL,
+    source: item.hb ? (HB_SOURCE_LABEL[item.hb.source] || SOURCE_LABEL) : SOURCE_LABEL,
     addedAt: new Date().toISOString(),
     ...(doc?.documentsModuleId != null ? { refDocId: doc.documentsModuleId } : {}),
   };
@@ -45,7 +47,7 @@ export function recordShapeFor(item, { statusOverride } = {}) {
     case "allergy":
       return { id: genId(), name: cap(f.substance), reaction: f.reaction || "", ...sourceStamp(item) };
     case "condition":
-      return { id: genId(), name: cap(f.name), status: item.default_historical ? "resolved" : "active", since: f.onset_date || "", notes: "", ...sourceStamp(item) };
+      return { id: genId(), name: cap(f.name), status: item.default_historical ? "resolved" : "active", since: f.onset_date || "", notes: f.notes || "", ...sourceStamp(item) };
     case "care_team":
       return { id: genId(), name: f.name, role: f.specialty || "", specialty: f.specialty || "", phone: f.phone || "", credential: f.credential || "", ...sourceStamp(item) };
     case "lab":
@@ -54,6 +56,8 @@ export function recordShapeFor(item, { statusOverride } = {}) {
       return { id: genId(), procedure: f.name, date: f.date || "", ...sourceStamp(item) };
     case "immunization":
       return { id: genId(), name: f.name, date: f.date || "", ...sourceStamp(item) };
+    case "record": // DEC-P53: History Builder 'event' items land in Medical Records
+      return { id: genId(), title: f.title || "", type: f.type || "Note", date: f.date || "", facility: f.facility || "", notes: f.notes || "", ...sourceStamp(item) };
     case "vital": {
       const reading = { id: genId(), date: f.date || "", ...sourceStamp(item) };
       const t = String(f.type || "").toLowerCase();
@@ -82,6 +86,7 @@ const STORE_KEY = {
   procedure: "mi_surgeries",
   immunization: "mi_immunizations",
   vital: "mi_readings",
+  record: "mi_records",
 };
 
 // §5.2 C3 clinical-safety invariant (AUDIT_SEC_02 F-04): these categories must

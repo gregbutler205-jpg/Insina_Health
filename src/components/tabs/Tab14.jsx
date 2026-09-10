@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PrintButton from "../PrintButton.jsx";
 import { printReport } from "../../lib/printShell.js";
+import { readAttestations, provenanceLine } from "../../lib/reportData.js";
 import { listCalendars, listEvents, diffNewAppointments, getSelectedCalendar, setSelectedCalendar, tombstoneAppt, filterTombstoned } from "../../lib/calendarSync.js";
 import { matchCareTeamMember } from "../../lib/careTeamMatch.js";
 import { formatPhone, displayPhone, formatDateUS } from "../../lib/displaySafe.js";
@@ -59,6 +60,8 @@ function printConsultationPrep(appt, analysis) {
       return `<div style="margin-bottom:3px;line-height:1.7">${applyBoldSafe(line)}</div>`;
     }).join("");
   };
+  // C-24 provenance (HISTORY_BUILDER_SPEC section 5): only when the list was confirmed.
+  const provenance = provenanceLine("Medication list", readAttestations().medsCompleteAt);
   printReport({
     title: "Consultation Prep",
     subtitle: "AI Appointment Analysis",
@@ -70,7 +73,7 @@ function printConsultationPrep(appt, analysis) {
       ${appt.facility ? `<div class="appt-field wide"><label>Facility</label><span>${escapeHtml(appt.facility)}</span></div>` : ""}
       ${appt.prepInstructions ? `<div class="appt-field wide"><label>Prep Instructions</label><span>${escapeHtml(appt.prepInstructions)}</span></div>` : ""}
       ${appt.notes ? `<div class="appt-field wide"><label>Notes</label><span class="note" style="font-weight:400">${escapeHtml(appt.notes)}</span></div>` : ""}
-    </div><h2>AI Preparation Analysis</h2>${renderText(analysis)}`,
+    </div><h2>AI Preparation Analysis</h2>${renderText(analysis)}${provenance ? `<div class="muted" style="margin-top:8pt">${escapeHtml(provenance)}</div>` : ""}`,
     disclaimer: "AI-generated preparation: informational only, not clinician text. Verify against source records.",
     extraCss: ".appt-grid { display:grid; grid-template-columns:1fr 1fr; gap:8pt; margin:6pt 0 14pt; border:.5pt solid #ccc; border-radius:4pt; padding:10pt; } .appt-field label { font-size:7.5pt; text-transform:uppercase; letter-spacing:.8px; color:#555; font-family:Arial, sans-serif; display:block; margin-bottom:2pt; } .appt-field span { font-size:9.5pt; font-weight:700; } .appt-field.wide { grid-column:1 / -1; }",
   }, { width: 900, height: 700 });

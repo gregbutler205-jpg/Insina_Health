@@ -12,6 +12,38 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.63.0 (2026-09-10)
+
+WO_HISTORY_BUILDER_01 merged (DEC-P52, DEC-P53, DEC-P54), built 2026-08-12 on
+`feature/history-builder-01` and reconciled onto the current shell with Greg's
+three dispositions of 2026-09-10.
+
+### Added
+- **History Builder** (Tools group, `history`): one next-step prompt at a time
+  across five areas (Current Health, Recent Care, Transplant History,
+  Important Past History, Older Records), list attestations (medications,
+  allergies, conditions confirmed by the patient), per-report readiness, a
+  deterministic med-to-condition lookup that proposes at most one condition per
+  session for the patient to confirm or decline, and a two-tier document
+  contract: uploads are archive-tier by default and report generators read a
+  reconciled-only accessor (`src/lib/reportData.js`). Migration v4 seeds
+  `mi_attestations` and `mi_history_builder` and stamps existing documents
+  archive-tier. `npm run test:history-builder` (in prebuild).
+- **Provenance lines** on the Medication List, Patient Profile, Consultation
+  Prep, and Emergency Card printouts ("Medication list confirmed by patient on
+  ...") when the patient has confirmed that list.
+
+### Changed (dispositions)
+- The builder's next-step prompt renders as the first card in the dashboard's
+  "Next steps" list instead of as a second card system.
+- The builder's staged items live in the onboarding staging queue and are
+  accepted through the same confirmed-item write path; there is no second
+  staging store.
+- Consultation Prep's AI context keeps reading matched document text (nothing
+  can mark a document "linked" yet); the printed reports read the reconciled
+  accessor only. Applying the reports rule to the AI context is logged as the
+  open follow-up.
+
 ## v1.62.2 (2026-09-10)
 
 ### Changed

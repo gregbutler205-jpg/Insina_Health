@@ -1377,3 +1377,40 @@ Status: Settled
 All launchers, both full-cut entry buttons, and the quick-launch panel sit behind the single global AI-enabled flag. When off, launchers are hidden, not greyed. The AI Analysis nav row remains visible with the mark; the AI Analysis tab alone carries the off-state explanation.
 
 Merge note (founder decision, 2026-09-02): no such flag existed in the code before this work order. It is created as `AI_FEATURES_ENABLED` in src/config/aiFeatures.js, defaulting to true, the same shape as the tripwire advisory's ship-dark constant. It gates the launchers, entry buttons, and quick-launch panel. The AI Analysis tab itself is unchanged: its only off-state copy today is the public demo's explanation, and the work order forbids new copy, so a pilot-off explanation is deferred to a later decision.
+
+## DEC-P52: History Builder sequencing and structure
+
+**Status:** Settled (Greg, 2026-09-10, on merge of WO_HISTORY_BUILDER_01 with his three dispositions; drafted as DEC-P44 in HISTORY_BUILDER_SPEC.md Appendix A)
+
+**Source.** `C:\Documents\Medical\Insina\Decisions\HISTORY_BUILDER_SPEC.md`, Appendix A. Merged verbatim; the provisional P44 to P46 ids were taken by the AI session shell and launcher decisions, so these are P52 to P54.
+
+**Decision: post-first-goal history capture proceeds by clinical stakes in six stages (safety spine, current state, recent care, transplant story, important past history, older records), surfaced as five areas (Current Health, Recent Care, Transplant History, Important Past History, Older Records optional). A single next-step prompt is ranked deterministically by report gaps. No completeness percentage anywhere. Emergency Packet readiness is announced at safety-spine completion. Stages are clinical roles, not calendar windows. Medications before conditions; labs before notes; import over typing.**
+
+**Rationale: guaranteed value in under ten minutes; recency ordering misweights stakes; per-report readiness motivates where meters create homework.**
+
+**Implementation note (at merge, 2026-09-10).** The builder is the `history` screen under Tools (`src/components/HistoryBuilderTab.jsx`, engine `src/lib/historyBuilder.js`). Disposition 2 (Greg, 2026-09-10): the builder's single next-step prompt renders as the first card in the dashboard's existing "Next steps" list (`src/components/onboarding/TaskCards.jsx`) rather than as a second card system; its copy, ranking, and per-session dismissal rule are the builder's own.
+
+## DEC-P53: Two-tier ingestion contract
+
+**Status:** Settled (Greg, 2026-09-10, on merge of WO_HISTORY_BUILDER_01 with his three dispositions; drafted as DEC-P45 in HISTORY_BUILDER_SPEC.md Appendix A)
+
+**Source.** `C:\Documents\Medical\Insina\Decisions\HISTORY_BUILDER_SPEC.md`, Appendix A. Merged verbatim; the provisional P44 to P46 ids were taken by the AI session shell and launcher decisions, so these are P52 to P54.
+
+**Decision: documents ingest to an archive tier (stored, searchable, inert) by default. Structured data enters the reconciled record only through patient-confirmed staged items, whether sourced from extraction, deterministic lookup, or manual entry. Reports draw exclusively from the reconciled tier, enforced at the data layer. No auto-correction, no silent merge. AI extraction is gated; the pilot ships the staged manual path.**
+
+**Rationale: the reconciled layer is the defensibility claim; per-item confirmation preserves AI proposes, patient disposes; archive-without-obligation removes data-entry homework.**
+
+**Implementation note (at merge, 2026-09-10).** Disposition 3 (Greg): one staging store. Builder proposals live in the onboarding staging queue (`mi_onboarding_staged`) as items with an `hb` marker and are accepted through `onboardingConfirm.confirmItemToRecord`, the same per-item write path the document review uses; `src/lib/stagedItems.js` is a view over that queue. Disposition 1 (Greg chose the reports rule; applied conservatively): the four print generators read the reconciled-only accessor (`src/lib/reportData.js`); Consultation Prep's AI context (`Tab14 buildDocContext`) still reads matched document text because nothing in WO 01 can mark a document `linked`, so applying the rule there would remove every document excerpt from prep. That change is the logged follow-up, to land with the first linking path.
+
+## DEC-P54: First-goal selector retained
+
+**Status:** Settled (Greg, 2026-09-10, on merge of WO_HISTORY_BUILDER_01 with his three dispositions; drafted as DEC-P46 in HISTORY_BUILDER_SPEC.md Appendix A)
+
+**Source.** `C:\Documents\Medical\Insina\Decisions\HISTORY_BUILDER_SPEC.md`, Appendix A. Merged verbatim; the provisional P44 to P46 ids were taken by the AI session shell and launcher decisions, so these are P52 to P54.
+
+**Decision: the safety spine is invariant and completes first on every path; Emergency Packet readiness is announced on all paths. Goal selection is implemented as a deterministic boost profile over standard prompt ranking plus goal-aware context suffixes on S1 prompts. Single exception: the appointment-prep goal captures the target appointment before the spine. Skip yields base order with no suffixes. Absent or unmapped goal values resolve to skipped.**
+
+**Rationale: every report's readiness depends on the spine, so the spine is the first mile of every goal, not a toll. The selector captures motivation at the cost of one tap. The base order exists regardless for skippers, so removing the selector deletes no logic and loses the patient's first act of agency.**
+
+**Implementation note (at merge, 2026-09-10).** Goal comes from the onboarding wizard's stored selection via `mapWizardGoal`; the appointment anchor is C-28. `medConditionMap.json` (14 entries) and the three ranking constants in `historyBuilderConfig.js` stay REVIEW_REQUIRED for the clinical review packet.
+

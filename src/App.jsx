@@ -12,6 +12,7 @@ import { SaveIcon } from './components/icons.jsx';
 import { daysAgoLabel } from './lib/displaySafe.js';
 import Dashboard from './components/dashboard/Dashboard.jsx';
 import ReportsPage from './components/dashboard/ReportsPage.jsx';
+import HistoryBuilderTab from './components/HistoryBuilderTab.jsx';
 import TopBar from './components/TopBar.jsx';
 import * as secureStorage from './lib/secureStorage.js';
 import RIEWidget from './rie/ReviewQueuePanel.jsx';
@@ -65,6 +66,7 @@ const TAB_COMPONENTS = {
   surgeries:    TabSurgeries,
   diagnostics:  TabDiagnostics,
   reports:      ReportsPage,   // WO_DASHBOARD_FEED_01 / DEC-057: the print center
+  history:      HistoryBuilderTab, // WO_HISTORY_BUILDER_01 / DEC-P52 to P54
 };
 
 // ── Dashboard ────────────────────────────────────────────────────────────────

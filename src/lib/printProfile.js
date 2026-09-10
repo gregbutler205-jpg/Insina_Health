@@ -17,6 +17,7 @@ import {
 } from "../store.js";
 import { getCards } from "./cards.js";
 import { deriveTransplantBanner } from "./printEmergency.js";
+import { readAttestations, provenanceLine } from "./reportData.js";
 import { displayPhone, formatDateUS } from "./displaySafe.js";
 
 // ── Featured labs (11 key labs), shared with the Health profile screen ───────
@@ -204,6 +205,15 @@ export function buildProfileHtml({ cardIds } = {}) {
       `</div></div>`
     ).join("") + `</div>`);
   }
+
+  // C-24 provenance lines (HISTORY_BUILDER_SPEC section 5): only for lists the patient confirmed.
+  const att = readAttestations();
+  const provenance = [
+    provenanceLine("Medication list", att.medsCompleteAt),
+    provenanceLine("Allergy list", att.allergiesResolvedAt),
+    provenanceLine("Condition list", att.conditionsReviewedAt),
+  ].filter(Boolean);
+  if (provenance.length) parts.push(`<div class="muted" style="margin-top:10pt">${provenance.map(esc).join("  ·  ")}</div>`);
 
   return reportDocument({ title: "Patient Profile", headerHtml, body: parts.join(""), kind: "Personal Health Record" });
 }
