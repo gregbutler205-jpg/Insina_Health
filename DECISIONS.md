@@ -1719,6 +1719,16 @@ reopened), DEC-022 (AI-generated labeling), S-07 (document delimiting), OPEN-9 /
   Pre-existing, widened slightly by sessions persisting across restarts. Candidate fix: migrate
   the family to `mi_`-prefixed keys (encrypted + backed up) with an A-08-style rename migration.
   Session REPORTS are unaffected — they save into `mi_notes`, which is encrypted and backed up.
+  **(b) RESOLVED 2026-09-11 (Greg: "Go"), shipped v1.64.0.** Migration v5 (`src/lib/migrations.js`)
+  renames `insina_ai_messages` → `mi_ai_chat_legacy` and `insina_ai_log` → `mi_ai_log` (both now
+  vault-managed: encrypted, in Drive/folder backups, erased by Erase & Start Fresh) and removes
+  `insina_ai_session` (a cursor into the old feed that nothing renders). `insina_ai_mode` and
+  `insina_ai_daily` deliberately stay outside the vault: operational choices with no clinical
+  content, and the first-run mode modal reads the mode before the vault matters. Runs post-unlock
+  like every A-08 migration, so a device that is never unlocked keeps its old plaintext until it is.
+  A pre-existing target absorbs the source array; a target that fails to persist leaves the
+  source in place and the version un-bumped (retry next boot). Pinned by
+  `scripts/testChatKeyMigration.mjs`.
 
 ---
 

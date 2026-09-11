@@ -145,7 +145,7 @@ function searchAll(query) {
     });
   });
 
-  safeRead("insina_ai_messages", []).forEach((m, i) => {
+  safeRead("mi_ai_chat_legacy", []).forEach((m, i) => { // pre-v1.50 chat threads, vaulted by migration v5
     if (!matchesTerms([m.text], terms)) return;
     results.push({
       category: "aiHistory", record: m,

@@ -9,8 +9,8 @@
 // The proxy's per-IP hourly caps (60/hr chat) remain the hard backstop.
 //
 // Storage: insina_ai_daily {date: "YYYY-MM-DD", count} — operational metadata
-// in Tab11's existing insina_* family (no clinical content; OPEN-17b tracks
-// that family's vault status separately).
+// left outside the vault on purpose (no clinical content; the chat content
+// keys moved into the vault in migration v5, OPEN-17b).
 
 export const DAILY_QUESTION_LIMIT = 15;
 const KEY = "insina_ai_daily";

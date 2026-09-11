@@ -179,6 +179,35 @@ const MIGRATIONS = [
       }
     },
   },
+  {
+    version: 5,
+    major: false, // rename only: the same data under a vaulted key; nothing reshaped
+    description: "OPEN-17(b): move the legacy AI chat family into the vault. insina_ai_messages (pre-v1.50 chat threads, clinical content) becomes mi_ai_chat_legacy and insina_ai_log (mode/send audit) becomes mi_ai_log, so both are encrypted at rest, included in Drive/folder backups, and erased by Erase & Start Fresh. insina_ai_session (a cursor into the old feed that nothing renders) is removed. insina_ai_mode and insina_ai_daily stay where they are: operational choices with no clinical content, read before the vault matters. Idempotent: a target that already exists absorbs the source array; a source that fails to land is left in place and the migration retries next boot.",
+    run() {
+      const parseArray = (raw) => {
+        if (raw == null) return null;
+        try { const v = JSON.parse(raw); return Array.isArray(v) ? v : null; } catch { return null; }
+      };
+      const move = (from, to, cap) => {
+        const raw = localStorage.getItem(from);
+        if (raw == null) return;
+        const incoming = parseArray(raw);
+        const existing = parseArray(localStorage.getItem(to));
+        let next;
+        if (existing == null) next = incoming == null ? raw : JSON.stringify(incoming);
+        else next = JSON.stringify(cap ? [...existing, ...(incoming || [])].slice(0, cap) : [...existing, ...(incoming || [])]);
+        localStorage.setItem(to, next);
+        // Never drop the source unless the target really landed (a locked
+        // vault ignores managed writes; a thrown error leaves the version
+        // un-bumped so the next boot retries).
+        if (localStorage.getItem(to) !== next) throw new Error(`migration v5: "${to}" did not persist; "${from}" left in place`);
+        localStorage.removeItem(from);
+      };
+      move("insina_ai_messages", "mi_ai_chat_legacy");
+      move("insina_ai_log", "mi_ai_log", 200);
+      localStorage.removeItem("insina_ai_session");
+    },
+  },
   // Future migrations (A-07 blob-store move, etc.) append here, in order,
   // each bumping `version` by 1.
 ];

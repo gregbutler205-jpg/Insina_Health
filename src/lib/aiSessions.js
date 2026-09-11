@@ -6,8 +6,8 @@
 // to the model.
 //
 // Storage is the vaulted mi_* family (spec Sec 8: session content inherits
-// the encryption gate). The legacy insina_ai_* feed keys are untouched —
-// OPEN-17(b) tracks that family separately.
+// the encryption gate). The legacy feed threads moved into the vault as
+// mi_ai_chat_legacy in migration v5 (OPEN-17b, v1.64.0).
 
 const SESSIONS_KEY    = "mi_ai_sessions";
 const DISCARD_LOG_KEY = "mi_ai_discard_log";

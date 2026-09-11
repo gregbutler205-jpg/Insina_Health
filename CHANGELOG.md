@@ -12,6 +12,22 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.64.0 (2026-09-11)
+
+### Changed
+- **Old AI chat threads now live inside the vault (OPEN-17b).** Chats from
+  before the session shell (v1.50) were stored under a key the vault never
+  covered, so they sat in plain text, were left out of Drive and folder
+  backups, and survived Erase & Start Fresh. Migration v5 moves them to
+  `mi_ai_chat_legacy` and the mode/send audit log to `mi_ai_log` on the next
+  unlock: both are encrypted at rest, backed up, and erased with everything
+  else. Search still finds the old threads. The mode choice and the daily
+  question counter stay where they were (no clinical content; the first-run
+  mode modal reads the choice before the vault matters). A target that already
+  exists absorbs the moved data rather than replacing it, and a move whose
+  target does not land leaves the source untouched and retries next boot.
+  `npm run test:chat-key-migration` pins it.
+
 ## v1.63.1 (2026-09-10)
 
 ### Fixed

@@ -167,8 +167,8 @@ export function buildSessionReportText({ convMessages = [], careTeam = [], start
 
 // ── AI_SESSION_SPEC v0.3 segment model (DEC-C11, pre-merge) ─────────────
 // Session-document counterparts of the DEC-042 helpers above. The legacy
-// conv-id helpers stay for the archived insina_ai_messages data; nothing new
-// writes that store.
+// conv-id helpers stay for the archived legacy threads (mi_ai_chat_legacy
+// since migration v5); nothing new writes that store.
 
 import { segmentTransition, SESSION_COPY } from "./aiSessions.js";
 import { stripControlChars } from "../prompts/documents.js";

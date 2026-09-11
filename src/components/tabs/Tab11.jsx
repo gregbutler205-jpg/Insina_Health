@@ -32,13 +32,14 @@ import { takeAIScope, scopeChips } from "../../lib/aiScope.js";
 const PRINT_LOGO       = import.meta.env.BASE_URL + "logo.png";
 
 // AI_SESSION_SPEC v0.3 (DEC-C8): AI Analysis is a session index plus a
-// focused session surface. The legacy running-feed keys (insina_ai_messages,
-// insina_ai_session) are no longer written or rendered — the data stays on
-// disk untouched, searchable via the existing Search index, and OPEN-17(b)
-// still tracks that key family. Sessions live in the vaulted mi_ai_sessions
-// store (src/lib/aiSessions.js).
+// focused session surface. The legacy running feed is no longer written or
+// rendered — migration v5 (OPEN-17b) moved its threads to the vaulted
+// mi_ai_chat_legacy key, where the Search index still reads them. Sessions
+// live in the vaulted mi_ai_sessions store (src/lib/aiSessions.js). The mode
+// choice stays outside the vault: no clinical content, and the first-run
+// mode modal reads it before the vault matters.
 const AI_MODE_KEY    = "insina_ai_mode";
-const AI_LOG_KEY     = "insina_ai_log";
+const AI_LOG_KEY     = "mi_ai_log"; // vaulted since migration v5 (was insina_ai_log)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Mode helpers
