@@ -9,6 +9,7 @@
 // real migrations to land on these rails.
 
 import { appendAudit } from "../rie/auditLog.js";
+import { canReadManagedKeys } from "./secureStorage.js";
 
 const VERSION_KEY     = "mi_schema_version";
 const INTERRUPTED_KEY = "mi_migration_interrupted";
@@ -231,6 +232,14 @@ export function runMigrations() {
   } catch { /* storage unavailable — nothing to purge */ }
 
   let current = getVersion();
+  // DEC-069: never run a version-gated migration while the record is
+  // unreadable (interception installed, vault locked). In that state every
+  // managed read is null and every managed write is dropped, so a migration
+  // would run against an apparently empty record, stamp its version anyway,
+  // and never run again; one that removes its source key after a "verified"
+  // move (v3) would delete real plaintext. LockScreen.afterUnlock() and the
+  // companion's Lock.finishUnlock() call this again once the DEK is live.
+  if (!canReadManagedKeys()) return { ran: 0, version: current, deferred: true };
   const pending = MIGRATIONS.filter(m => m.version > current).sort((a, b) => a.version - b.version);
   if (pending.length === 0) return { ran: 0, version: current };
 

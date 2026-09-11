@@ -2147,3 +2147,19 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 
 **Related:** v1.57.0 condition suggestions, DEC-P53 (staged items from the History Builder use the same condition rows).
 
+## DEC-069: Version-gated migrations never run while the record is unreadable
+
+**Status:** Settled (Greg, in chat, 2026-09-11: "Fix now")
+
+**Source.** Found 2026-09-11 while shipping migration v5 (OPEN-17b, v1.64.0): the console showed `[migrations] migration v5 failed: "mi_ai_chat_legacy" did not persist`, which is v5's own guard catching a general condition the earlier migrations had no defence against.
+
+**Problem.** `main.jsx` installs the P-02 interception before running migrations and gated the boot-time run on `!hasVault()`, on the assumption that "no vault" means "plaintext, readable". It does not: the interception is installed for every non-demo install, and with no DEK every managed read returns null, every managed write is dropped, and `removeItem` still deletes the real key. A pre-P-02 install opening any build from v1.32 on therefore ran v2 (readings normalization) and v4 (History Builder seeds) against an apparently empty record and stamped them as applied, and v3 deleted `mi_imaging` after verifying an empty copy while its safety-net export snapshotted nulls. `setupVaultAndMigrate()` then encrypted what was left correctly, but the versions were already stamped, so `afterUnlock()`'s re-run had nothing to do. Reachable only by pre-P-02 installs (post-P-02 the app cannot be used without a vault, and restores reset the version to 1), but that is the population carrying real history.
+
+**Decision.**
+1. `runMigrations()` refuses to run any version-gated migration while `secureStorage.canReadManagedKeys()` is false (interception installed, vault locked). It returns `{ deferred: true }`, touches no key, stamps no version, and writes no audit entry. The un-gated purge of one-shot AI-launch signals stays: it is a delete, which works while locked.
+2. Boot (`main.jsx`) runs migrations only for demo installs, the one case whose record is readable at boot. Every other install migrates in `LockScreen.afterUnlock()` and the companion's `Lock.finishUnlock()`, which already run after setup, resume, unlock and recovery. A fresh install gets its version stamped at the recovery-key screen instead of at boot: same outcome, one path.
+3. Rejected: verifying each managed write (the v5 pattern) cannot tell a legitimately empty store from a locked one and would not stop v3's delete; an "applied while unreadable" marker adds state for a case that must simply never run.
+
+**Consequence.** An install that already lost `mi_imaging` this way can recover it only from a Drive or folder backup made before the upgrade. A repair migration that re-invokes the idempotent v2 and v4 bodies once (so an install stamped while locked gets its readings normalized and seeds planted) is proposed as a separate item, not decided here.
+
+**Related:** DEC-027 (P-02 interception design), A-08 (migration rails), A-12 (v2), OPEN-17b (v5), `npm run test:locked-migrations`.
