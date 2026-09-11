@@ -57,7 +57,7 @@ const Launcher = (await bundle("components/ai/AILauncher.jsx")).default;
 const Entry = (await bundle("components/ai/AIEntryButton.jsx")).default;
 const LauncherOff = (await bundle("components/ai/AILauncher.jsx", { flagOff: true })).default;
 const EntryOff = (await bundle("components/ai/AIEntryButton.jsx", { flagOff: true })).default;
-const scope = await import("../src/lib/aiScope.js");
+const scope = { ...(await import("../src/lib/aiScope.js")), ...(await import("../src/lib/readsLevel.js")) };
 const html = (el) => renderToStaticMarkup(el);
 
 // 1. Mark: variants, traces, ids, aria
@@ -103,8 +103,8 @@ const html = (el) => renderToStaticMarkup(el);
   ok(scope.takeAIScope() === null, "scope is taken once (second take is empty)");
   scope.setAIScope({ source: "dashboard", items: [], question: "Analyze my current health status" });
   ok(scope.takeAIScope().question === "Analyze my current health status", "a dashboard question rides the scope object");
-  ok(scope.scopeChips([]).length === 1 && scope.scopeChips([])[0].label === "Full record" && scope.scopeChips([])[0].removable === false,
-    "empty scope shows the single non-removable Full record chip");
+  ok(scope.scopeChips([], "full").length === 1 && scope.scopeChips([], "full")[0].label === "Full record" && scope.scopeChips([], "full")[0].removable === false,
+    "empty scope shows the single non-removable level chip (Full record at level full)");
   ok(scope.scopeChips([{ kind: "panel", id: "CMP", label: "CMP panel" }])[0].removable === true, "specific items are removable chips");
   ok(localStorage.length === 0, "scope never touches storage");
   const lib = read("lib/aiScope.js");
@@ -177,11 +177,11 @@ const html = (el) => renderToStaticMarkup(el);
 // 7. AI Analysis: scope strip, hand-off, filter, header mark
 {
   const t11 = read("components/tabs/Tab11.jsx");
-  ok(t11.includes(">Reads:</span>") && t11.includes("scopeChips(scopeItems)"), "Reads: chip strip renders from the scope");
+  ok(t11.includes(">Reads:</span>") && t11.includes("scopeChips(scopeItems, readsLevel)"), "Reads: chip strip renders from the scope");
   ok(t11.includes("removeScopeChip(chip)"), "chips are removable");
   ok(t11.includes("const handed = takeAIScope();") && t11.includes("setTimeout(() => sendMessage(handed.question), 300)"),
     "hand-off is taken on mount; only a dashboard question runs (DEC-P50 as amended)");
-  ok(t11.includes("buildDataSections(scopeRef.current)") && t11.includes("function buildDataSections(scopeItems = [])"), "context assembly is filtered by scope");
+  ok(t11.includes("buildDataSections(scopeRef.current, readsRef.current)") && t11.includes('function buildDataSections(scopeItems = [], readsLevel = "core")'), "context assembly is filtered by scope and reads level");
   ok(t11.includes('l.category || "Other"') && t11.includes("includeLabs") && t11.includes("includeVitals") && t11.includes("includeDocs"),
     "scope filters data slices (labs by panel category, vitals, documents)");
   const idx = t11.indexOf("function buildDataSections");
@@ -212,6 +212,47 @@ const html = (el) => renderToStaticMarkup(el);
   const EM = String.fromCharCode(0x2014);
   ok(created.every(f => !read(f).includes(EM)), "no em dash in any file this work order created");
   ok(!readFileSync(fileURLToPath(import.meta.url), "utf8").includes(EM), "no em dash in this suite");
+}
+
+// 10. DEC-067: the Reads chooser (Core record / Full record)
+{
+  const f = (items, level) => scope.slicesFor(items, level);
+  ok(scope.DEFAULT_READS_LEVEL === "core", "the default level is Core record");
+  ok(f([], "core").includeLabs && f([], "core").includeVitals && !f([], "core").includeDocs,
+    "core: labs and vitals ride, documents and extracted findings do not");
+  ok(f([], "full").includeLabs && f([], "full").includeVitals && f([], "full").includeDocs,
+    "full: the old unscoped assembly (documents ride)");
+  ok(f([{ kind: "full_record", label: "Full record" }], "core").includeDocs === false, "a nav hand-off (full_record item) is not a narrowing and obeys the level");
+  const panel = f([{ kind: "panel", id: "CMP", label: "CMP" }], "full");
+  ok(panel.narrowed && panel.includeLabs && !panel.includeVitals && !panel.includeDocs && panel.panelIds[0] === "CMP",
+    "a launcher chip narrows harder than any level: that panel's labs only, even at full");
+  const meds = f([{ kind: "med_list", label: "Medications" }], "full");
+  ok(meds.narrowed && !meds.includeLabs && !meds.includeVitals && !meds.includeDocs, "a medication-list chip reads no optional slice at all");
+  ok(scope.normalizeReadsLevel("anything") === "core" && scope.normalizeReadsLevel("full") === "full", "unknown stored values fall back to core");
+  localStorage.clear();
+  ok(scope.loadReadsLevel() === "core", "nothing stored: core");
+  scope.saveReadsLevel("full");
+  ok(localStorage.getItem(scope.READS_KEY) === "full" && scope.loadReadsLevel() === "full", "the choice persists under insina_ai_reads (UI preference, outside the vault)");
+  ok(!scope.READS_KEY.startsWith("mi_"), "the preference key is not a vault-managed key: no clinical content, readable while locked");
+  ok(!/localStorage|sessionStorage/.test(read("lib/aiScope.js")) && /localStorage/.test(read("lib/readsLevel.js")), "the persisted preference lives in readsLevel.js; aiScope.js stays storage-free (DEC-P50)");
+  localStorage.clear();
+  ok(scope.scopeChips([], "core")[0].label === "Core record" && scope.scopeChips([{ kind: "panel", id: "CMP", label: "CMP" }], "core")[0].label === "CMP",
+    "the level chip shows only when no launcher chips are present");
+  ok(scope.mentionsDocuments("Explain EGD Procedure Notes.") && scope.mentionsDocuments("what did my discharge summary say") && scope.mentionsDocuments("my CT scan"),
+    "document-shaped questions are recognized for the hint");
+  ok(!scope.mentionsDocuments("what is my potassium") && !scope.mentionsDocuments("is tacrolimus 2 mg a lot") && !scope.mentionsDocuments("contact my doctor"),
+    "record questions are not (and 'ct' does not match inside 'contact')");
+  ok(Object.keys(scope.READS_LEVELS).join(",") === "core,full" && /Not your documents/.test(scope.READS_LEVELS.core.hint) && /documents/.test(scope.READS_LEVELS.full.hint),
+    "the two levels say what they do and do not read");
+
+  const t11 = read("components/tabs/Tab11.jsx");
+  ok(t11.includes('role="group" aria-label="How much of your record the next question reads"') && t11.includes("aria-pressed={on}"),
+    "Tab11 renders the chooser as a pressed-state button group");
+  ok(t11.includes("isNarrowed(scopeItems) ? scopeChips(scopeItems, readsLevel)"), "launcher chips replace the chooser while present");
+  ok(t11.includes('readsLevel === "core" && refDocCount > 0 && mentionsDocuments(input)') && t11.includes("Switch to Full record"),
+    "the documents hint shows only at core, with documents on file, when the draft mentions one");
+  ok(t11.includes("const setReadsLevel = (level) => { saveReadsLevel(level); readsRef.current = level;"), "choosing a level persists it and updates the send ref at once");
+  ok(t11.includes("slicesFor(scopeItems, readsLevel)"), "buildDataSections takes its slice flags from slicesFor");
 }
 
 console.log(`\n${pass} passed, ${fail} failed (ai-launchers)`);

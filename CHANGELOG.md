@@ -12,6 +12,22 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.65.0 (2026-09-11)
+
+### Added
+- **Choose how much of your record a question reads (DEC-067).** The "Reads:"
+  line in AI Analysis now offers Core record and Full record. Core record is
+  the default: profile, conditions, medications, allergies, labs and vitals,
+  but not your reference documents or the findings extracted from them. Full
+  record adds the documents, which is what most of the cost, the model's
+  thinking time and the "record too large" errors came from. Medications,
+  allergies and conditions ride on every setting so the safety checks keep
+  working. The choice persists. Launcher chips (a lab panel, the medication
+  list, a symptom) still narrow harder and replace the chooser while present.
+  When you are on Core record, have documents on file, and your draft
+  question mentions a note, report, scan or procedure, a one-line hint offers
+  to switch. `npm run test:ai-launchers` pins the slices per setting.
+
 ## v1.64.1 (2026-09-11)
 
 ### Fixed

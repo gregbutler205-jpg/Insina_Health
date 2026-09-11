@@ -27,7 +27,8 @@ import { DAILY_QUESTION_LIMIT, dailyLimitReached, questionsRemainingToday, recor
 // DEC-P47 / DEC-P50: provenance mark on the one output surface; in-memory
 // scope hand-off from launchers (never URL, never persisted).
 import AIMark from "../ai/AIMark.jsx";
-import { takeAIScope, scopeChips } from "../../lib/aiScope.js";
+import { takeAIScope, scopeChips, isNarrowed, slicesFor } from "../../lib/aiScope.js";
+import { loadReadsLevel, saveReadsLevel, READS_LEVELS, mentionsDocuments } from "../../lib/readsLevel.js";
 
 const PRINT_LOGO       = import.meta.env.BASE_URL + "logo.png";
 
@@ -78,7 +79,7 @@ function appendAuditLog(entry) {
 // rule 7 (data fidelity) prohibits presenting fabricated defaults as record
 // data, and condition-specific reference content is A-06's conditionModules
 // mechanism, not a block injected for every patient regardless of diagnosis.
-function buildDataSections(scopeItems = []) {
+function buildDataSections(scopeItems = [], readsLevel = "core") {
   const safeRead = (key, fallback) => {
     try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; } catch { return fallback; }
   };
@@ -86,16 +87,13 @@ function buildDataSections(scopeItems = []) {
   // DEC-P50: scope narrows which reconciled-record DATA slices are included
   // (labs, vitals, reference documents, clinical findings). Identity and
   // safety slices (conditions, history, medications, allergies, care team,
-  // the tripwire envelope, condition modules) always ride. A full-record
-  // scope, and an appointment scope (no appointment slice exists to narrow
-  // to), produce the unscoped assembly byte for byte. The template text
-  // below is untouched: excluded slices contribute empty content.
-  const narrowing = (scopeItems || []).filter(i => i && (i.kind === "panel" || i.kind === "med_list" || i.kind === "symptom_entry"));
-  const narrowed = narrowing.length > 0;
-  const panelIds = narrowing.filter(i => i.kind === "panel").map(i => String(i.id));
-  const includeLabs = !narrowed || panelIds.length > 0;
-  const includeVitals = !narrowed;
-  const includeDocs = !narrowed;
+  // the tripwire envelope, condition modules) always ride. An appointment
+  // scope (no appointment slice exists to narrow to) reads like no scope.
+  // DEC-067: with no launcher scope the reads level decides whether the
+  // documents ride: "core" leaves them out, "full" is the old unscoped
+  // assembly byte for byte. The template text below is untouched: excluded
+  // slices contribute empty content.
+  const { panelIds, includeLabs, includeVitals, includeDocs } = slicesFor(scopeItems, readsLevel);
 
   const conditions = safeRead("mi_conditions", []);
   const surgeries  = safeRead("mi_surgeries",  []);
@@ -653,7 +651,7 @@ export default function AIAnalysis({ onNavChange }) {
 
     // Build system prompt with prompt caching blocks
     const { userId, age, sex } = getIdentity();
-    const { system: systemPromptText } = buildSurfaceA({ userId, age, sex, dataSections: buildDataSections(scopeRef.current) });
+    const { system: systemPromptText } = buildSurfaceA({ userId, age, sex, dataSections: buildDataSections(scopeRef.current, readsRef.current) });
     const systemBlocks = [
       {
         type: "text",
@@ -769,6 +767,13 @@ export default function AIAnalysis({ onNavChange }) {
   useEffect(() => { scopeRef.current = scopeItems; }, [scopeItems]);
   const removeScopeChip = (chip) => setScopeItems(prev =>
     prev.filter(it => !(it.kind === chip.kind && String(it.id ?? "") === String(chip.id ?? "") && it.label === chip.label)));
+  // DEC-067: reads level (core / full), a persisted UI preference. Ref mirrors
+  // state for the same reason as scopeRef.
+  const [readsLevel, setReadsLevelState] = useState(loadReadsLevel);
+  const readsRef = useRef(readsLevel);
+  useEffect(() => { readsRef.current = readsLevel; }, [readsLevel]);
+  const setReadsLevel = (level) => { saveReadsLevel(level); readsRef.current = level; setReadsLevelState(level); };
+  const refDocCount = (() => { try { return JSON.parse(localStorage.getItem("mi_ref_docs") || "[]").length; } catch { return 0; } })();
 
   // Auto-send pending prompt from Dashboard AI buttons — opens a NEW session
   // pre-seeded with that question (spec Sec 1 [CONFIRM], stated assumption).
@@ -1445,19 +1450,43 @@ Important: Do NOT make any diagnosis. Your role is to help me understand what th
                 functional — pointer-events:none would break it — so the input
                 row yields the corner instead. */}
             {/* DEC-P50: scope preview. Chips say which record slices the next
-                run reads; removing them all reverts to the single Full record chip. */}
+                run reads; removing them all reverts to the reads-level chooser.
+                DEC-067: with no launcher chips the patient picks Core record
+                (no documents) or Full record; the choice persists. */}
             <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, marginBottom: 8, paddingRight: 64 }}>
               <span style={{ fontSize: 12, color: "#98afc4", fontFamily: "'DM Mono',monospace", letterSpacing: ".8px" }}>Reads:</span>
-              {scopeChips(scopeItems).map((chip, i) => (
-                <span key={`${chip.kind}-${chip.id ?? i}`} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "3px 9px", borderRadius: 12, fontSize: 12, fontFamily: "'DM Mono',monospace", background: chip.removable ? "rgba(79,142,247,.12)" : "rgba(255,255,255,.04)", border: `1px solid ${chip.removable ? "rgba(79,142,247,.35)" : "#1a2f4a"}`, color: chip.removable ? "#7eb8d8" : "#98afc4" }}>
+              {isNarrowed(scopeItems) ? scopeChips(scopeItems, readsLevel).map((chip, i) => (
+                <span key={`${chip.kind}-${chip.id ?? i}`} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "3px 9px", borderRadius: 12, fontSize: 12, fontFamily: "'DM Mono',monospace", background: "rgba(79,142,247,.12)", border: "1px solid rgba(79,142,247,.35)", color: "#7eb8d8" }}>
                   {chip.label}
-                  {chip.removable && (
-                    <button type="button" aria-label={`Remove ${chip.label} from scope`} onClick={() => removeScopeChip(chip)}
-                      style={{ background: "none", border: "none", color: "#7eb8d8", cursor: "pointer", padding: 0, fontSize: 12, lineHeight: 1 }}>✕</button>
-                  )}
+                  <button type="button" aria-label={`Remove ${chip.label} from scope`} onClick={() => removeScopeChip(chip)}
+                    style={{ background: "none", border: "none", color: "#7eb8d8", cursor: "pointer", padding: 0, fontSize: 12, lineHeight: 1 }}>✕</button>
                 </span>
-              ))}
+              )) : (
+                <div role="group" aria-label="How much of your record the next question reads" style={{ display: "inline-flex", borderRadius: 12, border: "1px solid #1a2f4a", overflow: "hidden" }}>
+                  {Object.entries(READS_LEVELS).map(([lv, def]) => {
+                    const on = lv === readsLevel;
+                    return (
+                      <button key={lv} type="button" aria-pressed={on} onClick={() => setReadsLevel(lv)}
+                        style={{ padding: "3px 10px", fontSize: 12, fontFamily: "'DM Mono',monospace", cursor: "pointer", border: "none", background: on ? "rgba(79,142,247,.18)" : "rgba(255,255,255,.03)", color: on ? "#9ecbff" : "#8299ad" }}>
+                        {def.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {!isNarrowed(scopeItems) && (
+                <span style={{ fontSize: 11, color: "#8299ad", fontFamily: "'DM Mono',monospace" }}>{READS_LEVELS[readsLevel].hint}</span>
+              )}
             </div>
+            {!isNarrowed(scopeItems) && readsLevel === "core" && refDocCount > 0 && mentionsDocuments(input) && (
+              <div role="status" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 8, paddingRight: 64, fontSize: 12, color: "#e0c15a", fontFamily: "'DM Mono',monospace" }}>
+                <span>This sounds like a question about your documents. Core record does not read them.</span>
+                <button type="button" onClick={() => setReadsLevel("full")}
+                  style={{ padding: "2px 10px", borderRadius: 10, fontSize: 12, fontFamily: "'DM Mono',monospace", cursor: "pointer", background: "rgba(201,162,39,.12)", border: "1px solid rgba(201,162,39,.4)", color: "#e0c15a" }}>
+                  Switch to Full record
+                </button>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 10, alignItems: "flex-end", paddingRight: 64 }}>
               <textarea
                 ref={textareaRef}

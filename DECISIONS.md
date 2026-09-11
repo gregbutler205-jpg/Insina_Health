@@ -2099,3 +2099,24 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 
 **Related:** DEC-018, DEC-060, DEC-061, PG-11 (consent), OPEN-1.
 
+---
+
+## DEC-067: The patient chooses how much of the record a question reads
+
+**Status:** Settled (Greg, in chat, 2026-09-11; amends DEC-P50's default)
+
+**Source.** Chat, 2026-09-11. Greg: "Is it necessary for AI to read the Full Record?" then "Build the Reads scope chooser."
+
+**Decision.**
+1. With no launcher scope, the "Reads:" line offers two levels. **Core record** (default): profile, conditions, surgeries, care team, medications, allergies, labs with the digest, vitals, the tripwire envelope. **Full record**: Core plus the reference documents marked for AI and the clinical findings extracted from them. Full record is byte for byte the assembly every question sent before this decision.
+2. Medications, allergies and conditions ride on every level. The Clinical Safety Core flags interactions and critical values from them and must never be starved.
+3. Launcher chips (DEC-P50) narrow harder than any level and replace the chooser while present; removing the last chip returns to the chooser.
+4. The level is a persisted UI preference (`insina_ai_reads`, outside the vault like `insina_ai_mode`: no clinical content, readable while locked). The launcher scope itself stays in module memory and never touches storage.
+5. A hint, never a gate: at Core with documents on file, a draft that mentions a note, report, scan, procedure or similar shows one line offering to switch to Full record. The app does not pick the level from the question on its own.
+
+**Rationale.** The documents are most of the input on every turn, and they are what made Opus 5 think until it ran out of budget (v1.64.1), what triggers the "record too large" error, and what an attorney review will call out under data minimization. Most questions are about the reconciled record. Guessing the level from the question was rejected: when the guess is wrong the model says something is not in the record when it is, which is worse than a larger bill.
+
+**Implementation.** `src/lib/readsLevel.js` (levels, persistence, the hint regex), `slicesFor` in `src/lib/aiScope.js` (the one place the slice flags are decided), Tab11's `buildDataSections(scopeItems, readsLevel)` and composer.
+
+**Related:** DEC-P50, DEC-066 (a proxy-side router could later use the level as a hint), OPEN-17.
+

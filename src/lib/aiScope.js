@@ -11,6 +11,8 @@
 //   question?: string   // dashboard question launchers only (DEC-P50 as amended)
 // }
 
+import { DEFAULT_READS_LEVEL, READS_LEVELS, normalizeReadsLevel } from "./readsLevel.js";
+
 let _pending = null;
 
 export const FULL_RECORD_ITEM = Object.freeze({ kind: "full_record", label: "Full record" });
@@ -33,10 +35,31 @@ export function takeAIScope() {
 
 export function peekAIScope() { return _pending; }
 
-/** Chip list for the "Reads:" strip: the specific items, or the single Full record chip. */
-export function scopeChips(items) {
+/**
+ * Which optional record slices a run reads, from the launcher scope and the
+ * reads level. Identity and safety slices are not represented here because
+ * they always ride. Specific launcher items narrow harder than any level:
+ * a panel scope reads that panel's labs and nothing else optional.
+ */
+export function slicesFor(scopeItems = [], level = DEFAULT_READS_LEVEL) {
+  const narrowing = (scopeItems || []).filter(i => i && (i.kind === "panel" || i.kind === "med_list" || i.kind === "symptom_entry"));
+  const narrowed = narrowing.length > 0;
+  const panelIds = narrowing.filter(i => i.kind === "panel").map(i => String(i.id));
+  return {
+    narrowed,
+    panelIds,
+    includeLabs: !narrowed || panelIds.length > 0,
+    includeVitals: !narrowed,
+    includeDocs: !narrowed && normalizeReadsLevel(level) === "full",
+  };
+}
+
+/** Chip list for the "Reads:" strip: the specific items, or the single level chip (Core record / Full record). */
+export function scopeChips(items, level = DEFAULT_READS_LEVEL) {
   const specific = (items || []).filter(i => i && i.kind !== "full_record");
-  return specific.length ? specific.map(i => ({ ...i, removable: true })) : [{ ...FULL_RECORD_ITEM, removable: false }];
+  if (specific.length) return specific.map(i => ({ ...i, removable: true }));
+  const lv = normalizeReadsLevel(level);
+  return [{ kind: "full_record", level: lv, label: READS_LEVELS[lv].label, removable: false }];
 }
 
 /** True when the scope narrows to specific items (anything but full record). */
