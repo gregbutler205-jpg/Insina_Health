@@ -79,8 +79,11 @@ export const SURFACE_MAX_TOKENS = {
   "documents.summarize":       1500, // Tab09
   "documents.findings":        2048, // Tab09
   "notes.summary":              700, // Tab10
-  "chat.standard":              1024, // Tab11 main chat, standard mode
-  "chat.advanced":              2048, // Tab11 main chat, advanced mode
+  // Claude 5 thinking tokens count against max_tokens. The chat budgets
+  // doubled (v1.64.1) after an Advanced-mode question on a full record spent
+  // its whole 2048 thinking and streamed no text at all.
+  "chat.standard":              2048, // Tab11 main chat, standard mode
+  "chat.advanced":              4096, // Tab11 main chat, advanced mode (the proxy cap)
   "chat.summary":               1400, // Tab11 conversation summary
   "extraction.docMeta":        1024, // Tab12 non-lab document metadata
   "extraction.labs":           4096, // Tab12 lab-report chunk extraction
@@ -105,6 +108,44 @@ function getAuthHeaders() {
   const token = getPilotToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
+
+/**
+ * One Server-Sent-Events line from a streaming /api/chat reply, classified for
+ * the chat surfaces. Thinking deltas, pings and block boundaries are noise to
+ * a transcript; text, the stop reason and error frames are not. Returns null
+ * for anything the caller can ignore.
+ *   { kind: "text",  text }    a text_delta
+ *   { kind: "stop",  reason }  message_delta carrying stop_reason
+ *   { kind: "error", message } an error frame (overloaded, api_error, ...)
+ * @param {string} line
+ */
+export function parseSseLine(line) {
+  if (typeof line !== "string" || !line.startsWith("data: ")) return null;
+  const data = line.slice(6).trim();
+  if (!data || data === "[DONE]") return null;
+  let parsed;
+  try { parsed = JSON.parse(data); } catch { return null; }
+  if (parsed?.type === "content_block_delta" && parsed.delta?.type === "text_delta" && typeof parsed.delta.text === "string") {
+    return { kind: "text", text: parsed.delta.text };
+  }
+  if (parsed?.type === "message_delta" && parsed.delta?.stop_reason) {
+    return { kind: "stop", reason: parsed.delta.stop_reason };
+  }
+  if (parsed?.type === "error") {
+    return { kind: "error", message: parsed.error?.type || "error" };
+  }
+  return null;
+}
+
+/** Stream ended with no text. Copy keyed on why, for the chat transcript. */
+export const EMPTY_REPLY_COPY = {
+  max_tokens: "The model used its whole answer budget thinking and wrote nothing back. Ask a narrower question, or try again.",
+  default:    "The AI service ended the reply before writing anything. Try again.",
+};
+export function emptyReplyMessage(stopReason) {
+  return EMPTY_REPLY_COPY[stopReason] || EMPTY_REPLY_COPY.default;
+}
+export const TRUNCATED_REPLY_NOTE = "_(The answer was cut off at its length limit.)_";
 
 /**
  * The text of a Messages response. Claude 5 models return a "thinking" block

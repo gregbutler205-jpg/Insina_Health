@@ -54,10 +54,53 @@ ok(responseText({ content: [{ type: "tool_use", name: "x" }, { type: "text" }] }
   ok(users.length === 0, `every non-streaming call site uses responseText (missing: ${users.join(", ") || "none"})`);
   const proxy = readFileSync(join(__dirname, "..", "proxy", "server.js"), "utf8");
   ok(!/content\?\.\[0\]\?\.text/.test(proxy) && proxy.includes('filter(b => b && b.type === "text")'), "the proxy's OCR route takes every text block, not the first block");
-  for (const f of ["lib/companionAI.js", "components/tabs/Tab11.jsx"]) {
-    ok(readFileSync(SRC(f), "utf8").includes('p.delta?.type === "text_delta"') || readFileSync(SRC(f), "utf8").includes('parsed.delta?.type === "text_delta"'),
-       `${f}: the streaming parser appends text deltas only (thinking deltas are ignored)`);
-  }
+  ok(readFileSync(SRC("lib/companionAI.js"), "utf8").includes('p.delta?.type === "text_delta"'),
+     "lib/companionAI.js: the streaming parser appends text deltas only (thinking deltas are ignored)");
+  const tab11 = readFileSync(SRC("components/tabs/Tab11.jsx"), "utf8");
+  ok(tab11.includes("parseSseLine(line)") && tab11.includes("emptyReplyMessage(stopReason)"),
+     "components/tabs/Tab11.jsx: the chat stream goes through parseSseLine and refuses an empty reply");
+}
+
+// ── 3. v1.64.1: a stream with thinking but no text is not an empty bubble ──
+// Captured 2026-09-11 from the live proxy: Opus 5 in Advanced Mode spent its
+// whole budget thinking on a full-record question and streamed no text. The
+// old loop appended an empty assistant turn and said nothing.
+{
+  const { parseSseLine, emptyReplyMessage, SURFACE_MAX_TOKENS, TRUNCATED_REPLY_NOTE } = await import("../src/lib/aiClient.js");
+  const thinkingOnly = [
+    'event: message_start',
+    'data: {"type":"message_start","message":{"id":"msg_x","type":"message","role":"assistant","content":[],"model":"claude-opus-5"}}',
+    'data: {"type":"content_block_start","index":0,"content_block":{"type":"thinking","thinking":""}}',
+    'data: {"type":"ping"}',
+    'data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":""}}',
+    'data: {"type":"content_block_delta","index":0,"delta":{"type":"signature_delta","signature":"abc"}}',
+    'data: {"type":"content_block_stop","index":0}',
+    'data: {"type":"message_delta","delta":{"stop_reason":"max_tokens","stop_sequence":null},"usage":{"output_tokens":120,"output_tokens_details":{"thinking_tokens":120}}}',
+    'data: {"type":"message_stop"}',
+    '',
+  ];
+  const events = thinkingOnly.map(parseSseLine).filter(Boolean);
+  ok(events.length === 1 && events[0].kind === "stop" && events[0].reason === "max_tokens",
+     "thinking-only stream: the only event that matters is the max_tokens stop (no text, no noise)");
+  ok(/thinking/.test(emptyReplyMessage("max_tokens")) && emptyReplyMessage("max_tokens") !== emptyReplyMessage(null),
+     "an empty reply that stopped on max_tokens gets the 'budget spent thinking' copy; a cut stream gets the generic copy");
+  const normal = [
+    'data: {"type":"content_block_start","index":0,"content_block":{"type":"thinking","thinking":""}}',
+    'data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"hidden"}}',
+    'data: {"type":"content_block_start","index":1,"content_block":{"type":"text","text":""}}',
+    'data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"Your EGD "}}',
+    'data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"note says..."}}',
+    'data: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1228}}',
+  ].map(parseSseLine).filter(Boolean);
+  ok(normal.filter(e => e.kind === "text").map(e => e.text).join("") === "Your EGD note says..." && normal.at(-1).reason === "end_turn",
+     "normal stream: text deltas concatenate in order, thinking text never leaks into the transcript, stop reason is end_turn");
+  ok(parseSseLine('data: {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}')?.kind === "error",
+     "an error frame mid-stream surfaces as an error instead of being swallowed");
+  ok(parseSseLine("data: [DONE]") === null && parseSseLine("event: ping") === null && parseSseLine("data: not json") === null && parseSseLine(undefined) === null,
+     "[DONE], event lines, malformed JSON and non-strings are ignored without throwing");
+  ok(SURFACE_MAX_TOKENS["chat.advanced"] === 4096 && SURFACE_MAX_TOKENS["chat.standard"] === 2048,
+     "chat budgets doubled so thinking has room: standard 2048, advanced 4096 (the proxy cap)");
+  ok(typeof TRUNCATED_REPLY_NOTE === "string" && TRUNCATED_REPLY_NOTE.length > 0, "a truncated (max_tokens with text) reply carries a visible cut-off note");
 }
 
 console.log(`\n${pass} passed, ${fail} failed (ai-response)`);

@@ -3,7 +3,7 @@ import AIModeOnboardingModal from "../AIModeOnboardingModal";
 import { CONSENT_VERSION } from "../../config/urgencyThresholds";
 import { applyBoldSafe, stripAiEmojis } from "../../lib/renderAiText.js";
 import { loadPdfjs } from "../../lib/pdfjs.js";
-import { callAI, MODEL_MAP } from "../../lib/aiClient.js";
+import { callAI, MODEL_MAP, parseSseLine, emptyReplyMessage, TRUNCATED_REPLY_NOTE } from "../../lib/aiClient.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 import { getIdentity } from "../../prompts/identity.js";
 import { buildSurfaceA } from "../../prompts/surfaceA.js";
@@ -702,6 +702,7 @@ export default function AIAnalysis({ onNavChange }) {
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer    = "";
+      let stopReason = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -710,18 +711,19 @@ export default function AIAnalysis({ onNavChange }) {
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";
         for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") continue;
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.type === "content_block_delta" && parsed.delta?.type === "text_delta") {
-              accum += parsed.delta.text;
-              setLiveText(accum);
-            }
-          } catch {}
+          const ev = parseSseLine(line);
+          if (!ev) continue;
+          if (ev.kind === "text") { accum += ev.text; setLiveText(accum); }
+          else if (ev.kind === "stop") stopReason = ev.reason;
+          else if (ev.kind === "error") throw new Error(`The AI service returned an error (${ev.message}). Try again.`);
         }
       }
+
+      // Claude 5 thinks before it writes and the thinking counts against
+      // max_tokens: a hard question on a full record can spend the whole
+      // budget and stream no text. Never post an empty bubble for that.
+      if (!accum.trim()) throw new Error(emptyReplyMessage(stopReason));
+      if (stopReason === "max_tokens") accum += "\n\n" + TRUNCATED_REPLY_NOTE;
 
       appendTurn(s, { role: "assistant", text: accum, mode });
       saveSession(s);

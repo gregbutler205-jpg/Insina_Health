@@ -12,6 +12,22 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.64.1 (2026-09-11)
+
+### Fixed
+- **AI Analysis answered with an empty bubble.** On the Claude 5 models the
+  thinking the model does before writing counts against the reply budget. A
+  hard question on a full record in Advanced Mode (Opus 5) spent the whole
+  2048-token budget thinking, streamed no text, and the chat posted a blank
+  reply and said nothing (the question still counted). Two changes: the chat
+  budgets doubled (Standard 2048, Advanced 4096, the proxy's cap) so thinking
+  has room; and a stream that ends with no text is now an error in the
+  transcript that says why ("used its whole answer budget thinking" or "ended
+  the reply before writing anything"). A reply that was cut off mid-answer
+  carries a visible note. Error frames mid-stream (overloaded, api_error)
+  surface instead of being swallowed. `npm run test:ai-response` pins the
+  parser against streams captured from the live proxy.
+
 ## v1.64.0 (2026-09-11)
 
 ### Changed
