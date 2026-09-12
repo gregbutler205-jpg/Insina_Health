@@ -12,6 +12,28 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.67.1 (2026-09-11)
+
+### Fixed
+- **Data migrations no longer run while the record is unreadable
+  (DEC-069).** A pre-encryption install (plaintext data, no vault yet) booted
+  with the storage interception installed but no key, so every `mi_*` read
+  came back empty and every write was dropped. The boot-time migrations ran
+  against that apparently empty record and stamped their version anyway:
+  the vital-schema normalization (v2) and the History Builder seeds (v4)
+  were skipped for good, and the imaging move (v3) deleted `mi_imaging`
+  outright after "verifying" an empty copy. Migration v5's own guard is what
+  exposed it. `runMigrations()` now defers whenever the interception is
+  installed and the vault is locked, and boot only migrates demo installs;
+  every other install migrates right after setup or unlock, as encrypted
+  installs already did. `npm run test:locked-migrations` pins it. An
+  imaging list lost this way is only recoverable from a Drive or folder
+  backup made before the upgrade.
+- **Installs already affected are repaired on the next unlock.** Migration
+  v6 re-runs the vital-schema normalization, the imaging move and the
+  History Builder seeds once; each skips anything already in shape, so an
+  install that was never affected sees no change.
+
 ## v1.67.0 (2026-09-11)
 
 ### Changed

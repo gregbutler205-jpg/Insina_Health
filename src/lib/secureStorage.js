@@ -59,6 +59,15 @@ function isCiphertextShape(raw) {
 
 export function hasVault() { return nativeGet(VAULT_KEY) !== null; }
 export function isUnlocked() { return dek !== null; }
+/**
+ * True when code that reads AND writes managed keys (the version-gated data
+ * migrations) can actually see the record: the interception is not installed
+ * (demo installs keep plaintext storage) or the vault is unlocked. While
+ * installed-but-locked every managed read is null and every managed write is
+ * dropped, so a migration would run against an apparently empty record, stamp
+ * its version anyway, and never run again (DEC-069).
+ */
+export function canReadManagedKeys() { return !installed || dek !== null; }
 
 /**
  * Demo mode: the fictional dataset loaded with NO vault (public demo origin).

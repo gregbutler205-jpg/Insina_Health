@@ -1,12 +1,12 @@
 {
   "name": "intellitrax",
   "private": true,
-  "version": "1.67.0",
+  "version": "1.67.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "prebuild": "npm run test:all",
-    "test:all": "npm run test:thresholds && npm run test:onboarding && npm run test:advisory && npm run test:vault-restore && npm run test:emergency-card && npm run test:ai-filter && npm run test:question-rules && npm run test:ai-session && npm run test:appt-tombstones && npm run test:record-tombstones && npm run test:record-query && npm run test:daily-limit && npm run test:demo-seeder && npm run test:dashboard-sync && npm run test:prep-marks && npm run test:drive-reports && npm run test:profile-sync && npm run test:print-csp && npm run test:lab-batch && npm run test:ai-session-shell && npm run test:field-formats && npm run test:condition-suggest && npm run test:ai-launchers && npm run test:procedure-suggest && npm run test:dashboard-feed && npm run test:print-shell && npm run test:history-builder && npm run test:ai-response && npm run test:chat-key-migration",
+    "test:all": "npm run test:thresholds && npm run test:onboarding && npm run test:advisory && npm run test:vault-restore && npm run test:emergency-card && npm run test:ai-filter && npm run test:question-rules && npm run test:ai-session && npm run test:appt-tombstones && npm run test:record-tombstones && npm run test:record-query && npm run test:daily-limit && npm run test:demo-seeder && npm run test:dashboard-sync && npm run test:prep-marks && npm run test:drive-reports && npm run test:profile-sync && npm run test:print-csp && npm run test:lab-batch && npm run test:ai-session-shell && npm run test:field-formats && npm run test:condition-suggest && npm run test:ai-launchers && npm run test:procedure-suggest && npm run test:dashboard-feed && npm run test:print-shell && npm run test:history-builder && npm run test:ai-response && npm run test:chat-key-migration && npm run test:locked-migrations",
     "build": "node scripts/build.mjs",
     "build:demo": "node scripts/build-demo.mjs",
     "preview": "vite preview",
@@ -39,6 +39,7 @@
     "test:history-builder": "node scripts/testHistoryBuilder.mjs",
     "test:ai-response": "node scripts/testAiResponse.mjs",
     "test:chat-key-migration": "node scripts/testChatKeyMigration.mjs",
+    "test:locked-migrations": "node scripts/testLockedMigrations.mjs",
     "test:a11y": "node scripts/a11yAxe.mjs"
   },
   "dependencies": {

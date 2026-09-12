@@ -44,7 +44,7 @@ ok(!isManagedKey("insina_ai_mode") && !isManagedKey("insina_ai_daily"), "insina_
 // ── Rename ───────────────────────────────────────────────────────────────────
 reset({ insina_ai_messages: THREADS, insina_ai_log: LOG, insina_ai_session: '{"conv":1}' });
 runMigrations();
-ok(currentSchemaVersion() === 5, "schema version reaches 5");
+ok(currentSchemaVersion() >= 5, "schema version reaches 5 (or later)");
 ok(localStorage.getItem("mi_ai_chat_legacy") === THREADS, "threads land under mi_ai_chat_legacy byte-for-byte");
 ok(localStorage.getItem("mi_ai_log") === LOG, "audit log lands under mi_ai_log");
 ok(localStorage.getItem("insina_ai_messages") === null && localStorage.getItem("insina_ai_log") === null, "old content keys are removed");

@@ -4,7 +4,7 @@ import App from './App.jsx'
 import CompanionApp from './components/companion/CompanionApp.jsx'
 import { runMigrations } from './lib/migrations.js'
 import { runTripwireEvaluation } from './lib/tripwire.js'
-import { installInterception, hasVault, isDemoMode } from './lib/secureStorage.js'
+import { installInterception, isDemoMode } from './lib/secureStorage.js'
 import './index.css'
 
 // P-02: install the localStorage interception before anything else touches
@@ -19,13 +19,16 @@ if (!isDemoMode()) installInterception()
 // A-08: run schema migrations once, synchronously, before either entry point
 // renders — both the full app and the companion read/write the same mi_*
 // record, so this must happen above the isCompanion branch, not inside it.
-// P-02/A-12: ONLY when no vault exists (legacy plaintext installs, first
-// run). With a vault present the record is locked here, every managed key
-// reads null, and a data migration (A-12's mi_readings normalization
-// onward) would silently no-op yet still stamp its version — permanently
-// skipping itself. Encrypted installs migrate in LockScreen's afterUnlock()
-// instead, once the record is actually readable.
-if (!hasVault()) runMigrations()
+// P-02/DEC-069: ONLY for demo installs, the one case whose record is
+// readable here. Every other install has the interception installed and no
+// DEK yet (a real vault, or a legacy plaintext install that has not created
+// one), so every managed key reads null and every managed write is dropped:
+// a data migration would silently no-op yet still stamp its version, and v3
+// would delete mi_imaging outright. Those installs migrate in LockScreen's
+// afterUnlock() (and the companion's Lock.finishUnlock()) instead, once the
+// record is actually readable; runMigrations() itself also refuses to run
+// while locked, so this guard is the explicit statement, not the only one.
+if (isDemoMode()) runMigrations()
 
 // A-01: importing tripwire.js registers its mi-data-synced listener (module
 // load side effect) so it evaluates on every future lab write regardless of

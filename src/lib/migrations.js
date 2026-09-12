@@ -9,6 +9,7 @@
 // real migrations to land on these rails.
 
 import { appendAudit } from "../rie/auditLog.js";
+import { canReadManagedKeys } from "./secureStorage.js";
 
 const VERSION_KEY     = "mi_schema_version";
 const INTERRUPTED_KEY = "mi_migration_interrupted";
@@ -208,6 +209,14 @@ const MIGRATIONS = [
       localStorage.removeItem("insina_ai_session");
     },
   },
+  {
+    version: 6,
+    major: false, // re-applies earlier additive migrations; nothing new is reshaped or removed
+    description: "DEC-069 repair: re-run the idempotent v2 (vital-schema normalization), v3 (imaging move) and v4 (History Builder seeds, document tier stamp) bodies once. Before v1.67.1 a boot with the interception installed but no key stamped those versions against an unreadable record without applying them; each body skips anything already migrated, so an install that was never affected sees no change.",
+    run() {
+      for (const v of [2, 3, 4]) MIGRATIONS.find(m => m.version === v).run();
+    },
+  },
   // Future migrations (A-07 blob-store move, etc.) append here, in order,
   // each bumping `version` by 1.
 ];
@@ -231,6 +240,14 @@ export function runMigrations() {
   } catch { /* storage unavailable — nothing to purge */ }
 
   let current = getVersion();
+  // DEC-069: never run a version-gated migration while the record is
+  // unreadable (interception installed, vault locked). In that state every
+  // managed read is null and every managed write is dropped, so a migration
+  // would run against an apparently empty record, stamp its version anyway,
+  // and never run again; one that removes its source key after a "verified"
+  // move (v3) would delete real plaintext. LockScreen.afterUnlock() and the
+  // companion's Lock.finishUnlock() call this again once the DEK is live.
+  if (!canReadManagedKeys()) return { ran: 0, version: current, deferred: true };
   const pending = MIGRATIONS.filter(m => m.version > current).sort((a, b) => a.version - b.version);
   if (pending.length === 0) return { ran: 0, version: current };
 
