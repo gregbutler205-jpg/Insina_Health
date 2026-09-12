@@ -12,6 +12,24 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.67.0 (2026-09-11)
+
+### Changed
+- **Suggested conditions: one card per condition, cross-referenced by
+  meaning (DEC-068).** Greg saw the same condition suggested more than once and
+  "Immunosuppressed" suggested while "Immunosuppressed due to medication" was
+  already listed. Four changes: a specific condition (Type 2 diabetes)
+  suppresses its generic family name (Diabetes mellitus) whether it is
+  suggested or already listed, and a specific one found while only the generic
+  is listed is labelled "more specific than"; the cross-reference now matches
+  whole words after ignoring qualifiers such as "due to medication",
+  "post-transplant" and "status" (and "immunosuppression" is a recognized
+  term); the same document is counted once even when it lives in Documents,
+  Source Documents and Medical Records; and each card has a third button,
+  **Same as one I have**, which saves the suggested wording as another name for
+  a condition you pick, so it never comes back. Condition rows show their other
+  names. `npm run test:condition-suggest` pins all four.
+
 ## v1.66.0 (2026-09-11)
 
 ### Added

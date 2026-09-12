@@ -2129,3 +2129,21 @@ Top bar, left to right: menu toggle, Emergency, search (icon), date and time, te
 
 **Related:** DEC-P50, DEC-066 (a proxy-side router could later use the level as a hint), OPEN-17.
 
+---
+
+## DEC-068: Suggested conditions are one card per condition and the patient can say "same as one I have"
+
+**Status:** Settled (Greg, in chat, 2026-09-11: "3", accepting the four-part proposal)
+
+**Source.** Chat, 2026-09-11. Greg: items showing up multiple times on Suggested Conditions; "Immunosuppressed" suggested while the list carries "Immunosuppressed due to medication". "How should that be handled?"
+
+**Decision.**
+1. Family collapse. The dictionary's generic entries (Hepatitis, Diabetes mellitus, Arthritis) are parents of their specific entries. A specific condition, suggested or already listed, suppresses the parent. A specific one found while only the parent is listed stays suggested and is labelled as a refinement.
+2. Cross-reference by meaning. A listed condition is matched to dictionary entries on whole words after normalizing (lowercase, punctuation dropped, qualifiers ignored: "due to medication", "status", "history of", "post-transplant", "controlled", "stable", "resolved", "in remission"). Aliases on the row count too.
+3. "Same as one I have." A third action on each suggestion card. The patient picks the existing condition; the suggested wording is saved as an alias on that row (`aliases`, a new optional field; nothing else on the row changes) and the suggestion is tombstoned with the link. This is the only path by which the suggestion engine writes `mi_conditions`, and it runs only on the patient's click.
+4. One document, counted once: source lines sharing a title and date across stores merge.
+
+**Rationale.** The scan is a deterministic text-mention pass (v1.57.0 founder decision); it organizes what is written and never decides what a diagnosis means. Three names for one condition (the patient's wording, a chart's wording, the History Builder's medication-derived wording) will always exceed any dictionary, so the patient makes the last call and the app remembers it.
+
+**Related:** v1.57.0 condition suggestions, DEC-P53 (staged items from the History Builder use the same condition rows).
+

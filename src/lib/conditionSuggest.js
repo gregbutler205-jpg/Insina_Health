@@ -103,7 +103,7 @@ export const CONDITION_DICTIONARY = [
   { id: "rejection",          name: "Transplant rejection episode",    terms: ["acute rejection", "transplant rejection", "acute cellular rejection", "graft rejection"] },
   { id: "graft-dysfunction",  name: "Graft dysfunction",               terms: ["graft dysfunction", "graft failure"] },
   { id: "biliary-stricture",  name: "Biliary stricture",               terms: ["biliary stricture", "bile duct stricture", "anastomotic stricture"] },
-  { id: "immunosuppression",  name: "Immunosuppressed status",         terms: ["immunosuppressed", "immunocompromised", "on immunosuppression"] },
+  { id: "immunosuppression",  name: "Immunosuppressed status",         terms: ["immunosuppressed", "immunocompromised", "on immunosuppression", "immunosuppression"] },
 ];
 
 // v1.59.0: the matcher and source collection moved to recordMentions.js so the
@@ -119,17 +119,47 @@ export function matchConditionsInText(text) {
 /** The record text sources the scan reads (see recordMentions.js for exclusions). */
 export function collectScanSources() { return collectRecordSources(); }
 
+// ── Families (Greg, 2026-09-11) ──────────────────────────────────────────────
+// A generic dictionary entry and a specific one for the same condition
+// ("Diabetes mellitus" and "Type 2 diabetes") must not both be suggested.
+// child id -> parent id. A suggested or listed child suppresses the parent;
+// a listed parent leaves the child suggested but marked as a refinement.
+export const CONDITION_PARENT = Object.freeze({
+  "hep-b": "hepatitis", "hep-c": "hepatitis", "autoimmune-hep": "hepatitis",
+  "diabetes-1": "diabetes", "diabetes-2": "diabetes",
+  "osteoarthritis": "arthritis", "rheumatoid": "arthritis",
+});
+export function dictionaryEntry(id) { return CONDITION_DICTIONARY.find(e => e.id === id) || null; }
+
 // ── Exclusions ────────────────────────────────────────────────────────────────
-/** Dictionary ids already represented in mi_conditions (any status). */
-export function existingConditionIds() {
+// Qualifiers a patient or a chart adds around a condition name; they never
+// change which condition it is, so they are ignored when cross-referencing.
+const NAME_QUALIFIERS = /\b(due to (?:a |the )?medications?|due to (?:a |the )?meds?|status|history of|hx of|h\/o|post[- ]transplant|controlled|uncontrolled|stable|resolved|in remission)\b/g;
+/** Lowercase, punctuation to spaces, qualifiers removed, whitespace collapsed. */
+export function normalizeConditionName(name) {
+  return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(NAME_QUALIFIERS, " ").replace(/\s+/g, " ").trim();
+}
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Whole-word match of a dictionary term inside a normalized name. */
+function nameHasTerm(norm, term) {
+  const t = normalizeConditionName(term);
+  return !!t && new RegExp(`(^|\\s)${escapeRe(t)}(\\s|$)`).test(norm);
+}
+/** Dictionary ids a single condition row represents: its name and its aliases. */
+export function conditionEntryIds(cond) {
   const ids = new Set();
-  for (const c of safeArr("mi_conditions")) {
-    const nm = (c.name || "").toLowerCase();
-    if (!nm) continue;
+  const names = [cond?.name, ...(Array.isArray(cond?.aliases) ? cond.aliases : [])].map(normalizeConditionName).filter(Boolean);
+  for (const norm of names) {
     for (const entry of CONDITION_DICTIONARY) {
-      if (entry.terms.some(t => nm.includes(t.toLowerCase())) || entry.name.toLowerCase() === nm) ids.add(entry.id);
+      if (normalizeConditionName(entry.name) === norm || entry.terms.some(t => nameHasTerm(norm, t))) ids.add(entry.id);
     }
   }
+  return ids;
+}
+/** Dictionary ids already represented in mi_conditions (any status), by name or alias. */
+export function existingConditionIds() {
+  const ids = new Set();
+  for (const c of safeArr("mi_conditions")) for (const id of conditionEntryIds(c)) ids.add(id);
   return ids;
 }
 
@@ -139,6 +169,29 @@ export function dismissSuggestion(sug) {
   const list = readDismissed().filter(t => t.condId !== sug.condId);
   list.push({ condId: sug.condId, name: sug.name, ts: Date.now() });
   try { localStorage.setItem(DISMISSED_KEY, JSON.stringify(list.slice(-DISMISSED_MAX))); } catch {}
+  const remaining = readSuggestions().filter(s => s.condId !== sug.condId);
+  writeSuggestions(remaining);
+  return remaining;
+}
+
+/**
+ * "Same as one I have" (Greg, 2026-09-11): the suggested name becomes an alias
+ * of an existing condition row, so it cross-references from now on, and the
+ * suggestion is tombstoned with the link. Nothing else on the row changes.
+ * Returns the remaining suggestions, or null when the condition is not found.
+ */
+export function linkSuggestionToCondition(sug, conditionId) {
+  const list = safeArr("mi_conditions");
+  const idx = list.findIndex(c => String(c?.id) === String(conditionId));
+  if (idx < 0) return null;
+  const row = list[idx];
+  const aliases = Array.isArray(row.aliases) ? row.aliases.slice() : [];
+  if (!aliases.some(a => normalizeConditionName(a) === normalizeConditionName(sug.name))) aliases.push(sug.name);
+  list[idx] = { ...row, aliases };
+  try { localStorage.setItem("mi_conditions", JSON.stringify(list)); } catch {}
+  const dismissed = readDismissed().filter(t => t.condId !== sug.condId);
+  dismissed.push({ condId: sug.condId, name: sug.name, ts: Date.now(), sameAs: row.id, sameAsName: row.name });
+  try { localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed.slice(-DISMISSED_MAX))); } catch {}
   const remaining = readSuggestions().filter(s => s.condId !== sug.condId);
   writeSuggestions(remaining);
   return remaining;
@@ -177,10 +230,22 @@ export function runConditionScan() {
       if (existing.has(hit.condId) || dismissed.has(hit.condId)) continue;
       if (!byCond.has(hit.condId)) byCond.set(hit.condId, { condId: hit.condId, name: hit.name, sources: [] });
       const bucket = byCond.get(hit.condId);
-      if (bucket.sources.length < 8 && !bucket.sources.some(s => s.store === src.store && s.refId === src.refId)) {
+      // One document, counted once: the same note can live in Documents and
+      // Source Documents (and be attached to a Medical Record) under one title
+      // and date. Different stores, same evidence.
+      const sameDoc = (s) => (s.store === src.store && s.refId === src.refId) ||
+        (!!src.title && s.title === src.title && (s.date || "") === (src.date || ""));
+      if (bucket.sources.length < 8 && !bucket.sources.some(sameDoc)) {
         bucket.sources.push({ store: src.store, refId: src.refId, title: src.title, date: src.date, snippet: hit.snippet });
       }
     }
+  }
+  // Family collapse: a specific condition (suggested here or already listed)
+  // suppresses its generic parent; a listed parent marks the child as a
+  // refinement of what the list already says.
+  for (const [childId, parentId] of Object.entries(CONDITION_PARENT)) {
+    if (byCond.has(childId) || existing.has(childId)) byCond.delete(parentId);
+    if (byCond.has(childId) && existing.has(parentId)) byCond.get(childId).refines = dictionaryEntry(parentId)?.name || parentId;
   }
   const suggestions = [...byCond.values()].sort((a, b) => b.sources.length - a.sources.length || a.name.localeCompare(b.name));
   writeSuggestions(suggestions);

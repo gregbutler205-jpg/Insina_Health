@@ -6,7 +6,7 @@ import { takePendingSelect } from "../../lib/searchSelect.js";
 import { tombstoneRecord } from "../../lib/recordTombstones.js";
 // v1.57.0: calendar-sync-style condition suggestions — a deterministic
 // text-mention scan over the record; nothing enters mi_conditions unreviewed.
-import { runConditionScan, readSuggestions, dismissSuggestion, resolveSuggestion, lastScanDay, todayISO } from "../../lib/conditionSuggest.js";
+import { runConditionScan, readSuggestions, dismissSuggestion, resolveSuggestion, linkSuggestionToCondition, lastScanDay, todayISO } from "../../lib/conditionSuggest.js";
 
 const STATUS_CFG = {
   active:   { color: "#f87171", bg: "rgba(239,68,68,.10)",   border: "rgba(239,68,68,.25)",   label: "Active"   },
@@ -262,6 +262,19 @@ export default function ConditionsTab() {
   const handleDismissSuggestion = (sug) => {
     setSuggestions(dismissSuggestion(sug));
   };
+  // Greg, 2026-09-11: "Same as one I have" links a suggested wording to a
+  // condition already on the list (saved as an alias) so it never resurfaces.
+  const [linkingSug, setLinkingSug] = useState(null);   // condId of the card showing the picker
+  const [linkTarget, setLinkTarget] = useState("");
+  const handleLinkSuggestion = (sug) => {
+    const remaining = linkSuggestionToCondition(sug, linkTarget);
+    if (remaining === null) return;
+    setSuggestions(remaining);
+    setConditions(load());
+    setLinkingSug(null); setLinkTarget("");
+    const target = conditions.find(c => String(c.id) === String(linkTarget));
+    setSavedMsg(`"${sug.name}" is now another name for ${target?.name || "that condition"}.`);
+  };
   const toggleExpanded = (id) => setExpandedIds(prev => {
     const next = new Set(prev);
     next.has(id) ? next.delete(id) : next.add(id);
@@ -384,15 +397,36 @@ export default function ConditionsTab() {
             </div>
             <div style={{ fontSize:12, color:"#98afc4", fontFamily:"'Sora',sans-serif", marginBottom:14, lineHeight:1.5 }}>
               These condition names appear in your records but aren't on your Conditions list. Nothing is added until you review it: 
-              Confirm to add one (you can edit details first), or Dismiss it and it won't be suggested again.
+              Confirm to add one (you can edit details first), Dismiss it so it isn't suggested again, or mark it as the same as a condition you already have.
             </div>
             {suggestions.map(sug => (
               <div key={sug.condId} style={{ background:"#0b1220", border:"1px solid rgba(245,158,11,.18)", borderRadius:10, padding:"12px 14px", marginBottom:8 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-                  <div style={{ fontSize:14, fontWeight:600, color:"#dde8f5", flex:1, minWidth:160 }}>{sug.name}</div>
+                  <div style={{ flex:1, minWidth:160 }}>
+                    <div style={{ fontSize:14, fontWeight:600, color:"#dde8f5" }}>{sug.name}</div>
+                    {sug.refines && <div style={{ fontSize:12, color:"#a8c4dc", marginTop:2 }}>More specific than {sug.refines}, which is already on your list.</div>}
+                  </div>
                   <button onClick={() => openConfirmSuggestion(sug)} style={{ padding:"6px 14px", background:"rgba(16,185,129,.12)", border:"1px solid rgba(16,185,129,.35)", borderRadius:8, color:"#2dd4a0", fontFamily:"'Sora',sans-serif", fontSize:12, fontWeight:600, cursor:"pointer" }}>Confirm &amp; review</button>
                   <button onClick={() => handleDismissSuggestion(sug)} style={{ padding:"6px 14px", background:"transparent", border:"1px solid #1a2f4a", borderRadius:8, color:"#b0c4d8", fontFamily:"'Sora',sans-serif", fontSize:12, cursor:"pointer" }}>Dismiss</button>
+                  {conditions.length > 0 && (
+                    <button onClick={() => { setLinkingSug(linkingSug === sug.condId ? null : sug.condId); setLinkTarget(""); }} aria-expanded={linkingSug === sug.condId}
+                      style={{ padding:"6px 14px", background:"transparent", border:"1px solid #1a2f4a", borderRadius:8, color:"#b0c4d8", fontFamily:"'Sora',sans-serif", fontSize:12, cursor:"pointer" }}>Same as one I have</button>
+                  )}
                 </div>
+                {linkingSug === sug.condId && (
+                  <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginTop:10, padding:"10px 12px", background:"#07090f", border:"1px solid #1c2a40", borderRadius:8 }}>
+                    <label htmlFor={`same-as-${sug.condId}`} style={{ fontSize:12, color:"#c4d8ee" }}>Which condition on your list is this?</label>
+                    <select id={`same-as-${sug.condId}`} value={linkTarget} onChange={e => setLinkTarget(e.target.value)}
+                      style={{ minHeight:36, padding:"4px 8px", background:"#0b1220", color:"#dde8f5", border:"1px solid #1c2a40", borderRadius:6, fontSize:13, fontFamily:"'Sora',sans-serif" }}>
+                      <option value="">Choose one</option>
+                      {conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                    <button disabled={!linkTarget} onClick={() => handleLinkSuggestion(sug)}
+                      style={{ padding:"6px 14px", background: linkTarget ? "rgba(79,142,247,.15)" : "transparent", border:"1px solid rgba(79,142,247,.4)", borderRadius:8, color: linkTarget ? "#9ecbff" : "#6f8aa5", fontFamily:"'Sora',sans-serif", fontSize:12, fontWeight:600, cursor: linkTarget ? "pointer" : "default" }}>Link</button>
+                    <button onClick={() => { setLinkingSug(null); setLinkTarget(""); }} style={{ padding:"6px 10px", background:"transparent", border:"none", color:"#98afc4", fontFamily:"'Sora',sans-serif", fontSize:12, cursor:"pointer" }}>Cancel</button>
+                    <div style={{ flexBasis:"100%", fontSize:11, color:"#8299ad", fontFamily:"'DM Mono',monospace" }}>The name from your records is saved as another name for that condition. Nothing else changes.</div>
+                  </div>
+                )}
                 <div style={{ marginTop:8 }}>
                   {sug.sources.slice(0, 3).map((s, i) => (
                     <div key={i} style={{ fontSize:12, color:"#98afc4", fontFamily:"'DM Mono',monospace", lineHeight:1.6, marginBottom:2 }}>
@@ -467,6 +501,9 @@ export default function ConditionsTab() {
                   <div style={{ flex:1 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
                       <span style={{ fontSize:15, fontWeight:600, color:"#c4d8ee" }}>{c.name}</span>
+                      {Array.isArray(c.aliases) && c.aliases.length > 0 && (
+                        <span style={{ fontSize:12, color:"#8299ad", fontFamily:"'DM Mono',monospace" }} title="Other names for this condition found in your records">also: {c.aliases.join(", ")}</span>
+                      )}
                       {c.icd10 && <span style={{ fontSize:12, color:"#a0b4c8", fontFamily:"'DM Mono',monospace", background:"#07090f", border:"1px solid #1c2a40", borderRadius:4, padding:"1px 6px" }}>{c.icd10}</span>}
                       <span style={{ fontSize:12, background:s.bg, border:`1px solid ${s.border}`, borderRadius:12, padding:"2px 8px", color:s.color, fontFamily:"'DM Mono',monospace" }}>{s.label}</span>
                       <span style={{ fontSize:12, color:sev.color, fontFamily:"'DM Mono',monospace" }}>▪ {c.severity.charAt(0).toUpperCase()+c.severity.slice(1)}</span>

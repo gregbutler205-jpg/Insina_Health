@@ -32,6 +32,7 @@ const {
   matchConditionsInText, collectScanSources, runConditionScan,
   readSuggestions, dismissSuggestion, resolveSuggestion, readDismissed,
   existingConditionIds, CONDITION_DICTIONARY,
+  normalizeConditionName, conditionEntryIds, linkSuggestionToCondition, CONDITION_PARENT,
 } = await import("../src/lib/conditionSuggest.js");
 
 let pass = 0, fail = 0;
@@ -172,8 +173,67 @@ const ids = (list) => list.map(s => s.condId);
   ok(tab15.includes("setConfirmingSug(null)") && tab15.includes("dismissSuggestion(sug)"),
     "cancel clears the pending confirm; Dismiss tombstones");
   const lib = readFileSync(SRC("lib/conditionSuggest.js"), "utf8");
-  ok(lib.includes('"mi_condition_suggestions"') && !lib.includes('setItem("mi_conditions"'),
-    "the engine owns its own store and never writes mi_conditions");
+  const scanBody = lib.slice(lib.indexOf("export function runConditionScan"), lib.indexOf("\n}\n", lib.indexOf("export function runConditionScan")));
+  const dismissBody = lib.slice(lib.indexOf("export function dismissSuggestion"), lib.indexOf("\n}\n", lib.indexOf("export function dismissSuggestion")));
+  ok(lib.includes('"mi_condition_suggestions"') && !scanBody.includes("mi_conditions\"") && !dismissBody.includes("mi_conditions\"") && (lib.match(/setItem\("mi_conditions"/g) || []).length === 1,
+    "the engine owns its own store; scan and dismiss never write mi_conditions; only the patient's Same-as link does (one write site)");
+
+// ── Greg, 2026-09-11: one card per condition, cross-referenced by meaning ────
+{
+  // 1. Cross-reference ignores qualifiers and matches whole words
+  ok(normalizeConditionName("Immunosuppression due to medication") === "immunosuppression", "qualifier 'due to medication' is ignored when cross-referencing");
+  ok(normalizeConditionName("Post-transplant immunosuppression") === "immunosuppression", "'post-transplant' is ignored too (the History Builder's wording)");
+  for (const nm of ["Immunosuppressed", "Immunosuppressed due to medication", "Immunosuppression due to medication", "Post-transplant immunosuppression", "Immunocompromised state"]) {
+    ok(conditionEntryIds({ name: nm }).has("immunosuppression"), `"${nm}" on the list is recognized as the immunosuppression entry`);
+  }
+  ok(!conditionEntryIds({ name: "Bronchitis" }).has("copd"), "whole-word: 'Bronchitis' alone is not COPD (the term is 'chronic bronchitis')");
+  ok(!conditionEntryIds({ name: "Prostate cancer" }).has("bph"), "'Prostate cancer' is not the BPH entry");
+  ok(conditionEntryIds({ name: "Something unusual", aliases: ["Hepatic encephalopathy"] }).has("encephalopathy"), "an alias on a condition row counts for cross-referencing");
+
+  // 2. Family collapse
+  localStorage.clear();
+  localStorage.setItem("mi_notes", JSON.stringify([{ id: "n1", title: "Visit", date: "2026-08-01", sections: [{ body: "Assessment: type 2 diabetes. Patient is diabetic; continue metformin." }] }]));
+  let r = runConditionScan();
+  ok(ids(r.suggestions).includes("diabetes-2") && !ids(r.suggestions).includes("diabetes"), "a note mentioning both 'type 2 diabetes' and 'diabetic' suggests Type 2 diabetes once, not Diabetes mellitus as well");
+  localStorage.setItem("mi_conditions", JSON.stringify([{ id: 1, name: "Diabetes mellitus", status: "active" }]));
+  r = runConditionScan();
+  ok(ids(r.suggestions).includes("diabetes-2") && r.suggestions.find(s => s.condId === "diabetes-2").refines === "Diabetes mellitus", "with the generic on the list, the specific is still suggested and marked as a refinement of it");
+  localStorage.setItem("mi_conditions", JSON.stringify([{ id: 1, name: "Type 2 diabetes", status: "active" }]));
+  localStorage.setItem("mi_notes", JSON.stringify([{ id: "n1", title: "Visit", date: "2026-08-01", sections: [{ body: "Patient is diabetic; continue metformin." }] }]));
+  r = runConditionScan();
+  ok(!ids(r.suggestions).includes("diabetes"), "with the specific on the list, a generic mention is not suggested");
+  ok(Object.values(CONDITION_PARENT).every(p => CONDITION_DICTIONARY.some(e => e.id === p)) && Object.keys(CONDITION_PARENT).every(c => CONDITION_DICTIONARY.some(e => e.id === c)), "every family pair names real dictionary entries");
+
+  // 3. One document, counted once
+  localStorage.clear();
+  localStorage.setItem("mi_documents", JSON.stringify([{ id: "d1", title: "Clinic note 2026-08-01", date: "2026-08-01", notes: "Dx: ascites" }]));
+  localStorage.setItem("mi_ref_docs", JSON.stringify([{ id: "rd1", name: "Clinic note 2026-08-01", studyDate: "2026-08-01", docType: "Clinical Notes", text: "Dx: ascites, managed with diuretics" }]));
+  r = runConditionScan();
+  const asc = r.suggestions.find(s => s.condId === "ascites");
+  ok(asc && asc.sources.length === 1, "the same note in Documents and Source Documents is one source line, not two");
+
+  // 4. Same as one I have
+  localStorage.clear();
+  localStorage.setItem("mi_conditions", JSON.stringify([{ id: 7, name: "Weak immune system (transplant meds)", status: "active" }]));
+  localStorage.setItem("mi_notes", JSON.stringify([{ id: "n1", title: "Visit", date: "2026-08-01", sections: [{ body: "Patient is immunosuppressed." }] }]));
+  r = runConditionScan();
+  const sug = r.suggestions.find(s => s.condId === "immunosuppression");
+  ok(!!sug, "a wording no dictionary catches is suggested first");
+  const remaining = linkSuggestionToCondition(sug, 7);
+  const row = JSON.parse(localStorage.getItem("mi_conditions"))[0];
+  ok(Array.isArray(remaining) && !remaining.some(s => s.condId === "immunosuppression"), "linking retires the suggestion");
+  ok(row.aliases.length === 1 && row.aliases[0] === "Immunosuppressed status" && row.name === "Weak immune system (transplant meds)", "the suggested name is saved as an alias; the row's own name is untouched");
+  ok(readDismissed().some(t => t.condId === "immunosuppression" && t.sameAs === 7), "the tombstone records which condition it was linked to");
+  ok(!ids(runConditionScan().suggestions).includes("immunosuppression"), "a rescan does not bring it back");
+  ok(linkSuggestionToCondition(sug, 999) === null, "linking to a condition that does not exist changes nothing and reports it");
+  const t15 = readFileSync(SRC("components/tabs/Tab15.jsx"), "utf8");
+  ok(t15.includes(">Same as one I have</button>") && t15.includes("handleLinkSuggestion(sug)") && t15.includes('<option value="">Choose one</option>'),
+    "the Conditions screen offers Same as one I have with a picker of the patient's own conditions");
+  ok(t15.includes("More specific than {sug.refines}, which is already on your list.") && t15.includes("also: {c.aliases.join(\", \")}"),
+    "a refinement is labelled on its card and a condition row shows its other names");
+  linkSuggestionToCondition(sug, 7);
+  ok(JSON.parse(localStorage.getItem("mi_conditions"))[0].aliases.length === 1, "linking twice does not duplicate the alias");
+}
 }
 
 console.log(`\n${pass} passed, ${fail} failed (condition-suggest)`);
