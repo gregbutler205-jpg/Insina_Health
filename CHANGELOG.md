@@ -12,6 +12,14 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.65.1 (2026-09-11)
+
+### Changed
+- **Appointment cards in Your updates open the appointment.** The card's
+  button was the "Prepare for this visit" AI launcher; it is now "View
+  appointment" and lands on that appointment (Greg, 2026-09-11). Prepare for
+  this visit is still offered on the appointment itself.
+
 ## v1.65.0 (2026-09-11)
 
 ### Added

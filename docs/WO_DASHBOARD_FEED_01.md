@@ -69,7 +69,7 @@ One column, maximum width 720px, below the quick actions. Heading "Your updates"
 
 **Display.** Five cards, then a "View all {n}" toggle. Cards of kind flag, review, and result use the amber tint and border; appt and refill use the plain card style. Each card: icon, title, date in mono, one line of body text, one primary action button. Body and title text for flags is the engine's text, verbatim, truncated only with an ellipsis if it exceeds two lines, with the full text on the flag's own screen.
 
-**Actions per kind.** flag: the engine's action text if it provides one, else "View"; plus an Acknowledge button (4.9). review: "Review {n} items". result: "View results". appt: "Prepare for this visit" if a consultation prep output exists for that provider type, else "View". refill: "Mark as refilled" wired to the existing refill logging if present, else "View medication".
+**Actions per kind.** flag: the engine's action text if it provides one, else "View"; plus an Acknowledge button (4.9). review: "Review {n} items". result: "View results". appt: "View appointment", opening that appointment (Greg, 2026-09-11: the card links to the appointment; "Prepare for this visit" lives on the appointment itself). refill: "Mark as refilled" wired to the existing refill logging if present, else "View medication".
 
 **Dismiss.** Every card except flag has an X (44px hit area, `aria-label="Dismiss"`). Dismissing hides the card for this record until the underlying item changes (new date, new result, count change). Store dismissals in the patient record under a `dashboardDismissals` key with the item's stable id and a timestamp. Dismissing never alters the underlying item.
 

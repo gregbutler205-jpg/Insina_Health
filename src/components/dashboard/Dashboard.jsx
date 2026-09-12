@@ -204,13 +204,9 @@ export default function Dashboard({ readings = [], onNav, onLogVitals, lastSyncT
                 </div>
                 {item.body && <div className="dash-clamp2" style={{ fontSize: 14, color: T.text2, lineHeight: 1.5, marginTop: 8 }}>{item.body}</div>}
                 <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-                  {item.kind === "appt" && AI_FEATURES_ENABLED ? (
-                    <AILauncher label="Prepare for this visit"
-                      scope={{ source: "appointment", items: [{ kind: "appointment", id: String(item.appointment?.id ?? item.id), label: `Visit: ${item.appointment?.provider || item.title}, ${formatDateUS(item.date)}`, date: item.date }] }}
-                      onNavigate={() => onNav("ai")} style={{ minHeight: 44, borderRadius: 10, padding: "0 12px", fontSize: 14 }} />
-                  ) : (
-                    <button className={`dash-btn ${isFlag ? "primary" : ""}`} style={{ padding: "0 12px" }} onClick={() => view(item)}>{item.action}</button>
-                  )}
+                  {/* Greg, 2026-09-11: an appointment card opens the appointment itself.
+                      "Prepare for this visit" stays on the appointment (Tab14). */}
+                  <button className={`dash-btn ${isFlag ? "primary" : ""}`} style={{ padding: "0 12px" }} onClick={() => view(item)}>{item.action}</button>
                   {isFlag && (
                     <button className="dash-btn" style={{ padding: "0 12px" }} onClick={() => acknowledge(item)}><Check size={16} aria-hidden="true" /> Acknowledge</button>
                   )}

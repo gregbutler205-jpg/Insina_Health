@@ -217,7 +217,7 @@ export function upcomingAppointments(now = new Date()) {
       kind: "appt", id: `appt:${a.id}`, fingerprint: `${a.date}|${a.time || ""}|${a.provider || ""}`, date: a.date, when: a.date,
       title: a.title || a.provider || "Appointment",
       body: `${longDate(a.date)}${a.time ? ` at ${a.time}` : ""}${a.provider ? ` with ${a.provider}` : ""}${a.facility ? `, ${a.facility}` : ""}.`,
-      action: "View", nav: "appointments", select: { category: "appointments", title: a.title || a.provider || "" }, appointment: a,
+      action: "View appointment", nav: "appointments", select: { category: "appointments", title: a.title || a.provider || "" }, appointment: a,
     }));
 }
 

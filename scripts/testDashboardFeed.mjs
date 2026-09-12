@@ -144,6 +144,12 @@ function seedBusy() {
   const appt = buildFeed(NOW).items.find(i => i.kind === "appt");
   dismissFeedItem(appt);
   ok(!buildFeed(NOW).items.some(i => i.id === appt.id), "a dated card can be dismissed");
+  ok(appt.action === "View appointment" && appt.nav === "appointments" && appt.select?.category === "appointments",
+    "an appointment card opens the appointment (Greg, 2026-09-11), not consultation prep");
+  {
+    const dash = readFileSync(new URL("../src/components/dashboard/Dashboard.jsx", import.meta.url), "utf8");
+    ok(!dash.includes('label="Prepare for this visit"'), "the feed card carries no Prepare for this visit launcher");
+  }
   const appts = JSON.parse(localStorage.getItem("mi_appointments"));
   ok(appts.find(a => a.id === 1).status === "upcoming", "dismissing never alters the appointment");
   ok(readDismissals().every(d => d.id && d.fingerprint && d.dismissedAt), `dismissals under ${DISMISSALS_KEY} carry id, fingerprint, and timestamp`);
