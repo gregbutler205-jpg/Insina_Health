@@ -172,7 +172,7 @@ const ids = (list) => list.map(s => s.condId);
     "saving a confirmed suggestion retires its card through the normal Add Condition modal");
   ok(tab15.includes("setConfirmingSug(null)") && tab15.includes("dismissSuggestion(sug)"),
     "cancel clears the pending confirm; Dismiss tombstones");
-  const lib = readFileSync(SRC("lib/conditionSuggest.js"), "utf8");
+  const lib = readFileSync(SRC("lib/conditionSuggest.js"), "utf8").replace(/\r\n/g, "\n"); // CRLF-safe: the block slices below split on LF
   const scanBody = lib.slice(lib.indexOf("export function runConditionScan"), lib.indexOf("\n}\n", lib.indexOf("export function runConditionScan")));
   const dismissBody = lib.slice(lib.indexOf("export function dismissSuggestion"), lib.indexOf("\n}\n", lib.indexOf("export function dismissSuggestion")));
   ok(lib.includes('"mi_condition_suggestions"') && !scanBody.includes("mi_conditions\"") && !dismissBody.includes("mi_conditions\"") && (lib.match(/setItem\("mi_conditions"/g) || []).length === 1,
