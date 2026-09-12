@@ -1729,6 +1729,15 @@ reopened), DEC-022 (AI-generated labeling), S-07 (document delimiting), OPEN-9 /
   A pre-existing target absorbs the source array; a target that fails to persist leaves the
   source in place and the version un-bumped (retry next boot). Pinned by
   `scripts/testChatKeyMigration.mjs`.
+- **OPEN-18 (Greg, 2026-09-11, tabled for a future update):** Medical Records (Tab03, `mi_records`,
+  a hand-typed encounter log with optional attachment) and Documents (Tab09, `mi_documents` +
+  `mi_ref_docs`, the uploaded file library that feeds extraction and the AI) overlap: both carry lab
+  report, imaging and procedure categories, and an uploaded discharge summary is reasonably expected
+  under Medical Records too. Candidate shape: one Records screen with the document library as the
+  backbone and a file-less typed entry for remembered encounters; the two stores stay separate
+  underneath because the AI context, History Builder, Drive sync and Search read them by name.
+  Touches DEC-056 (both modules kept reachable on purpose). Greg: "leave it open but don't fix it
+  now." Needs a work order first.
 
 ---
 
