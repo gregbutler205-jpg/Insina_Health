@@ -12,6 +12,28 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.68.0 (2026-09-12)
+
+### Changed
+- **Landing page aligned with the pitch deck's positioning (DEC-070 to
+  DEC-074).** The hero gains the product framework line "Organize. Educate.
+  Prepare." above the headline and the positioning line "Built for people
+  managing complex care across multiple specialists, beginning with liver
+  disease." beneath it; the headline and the informational-tool disclaimer
+  are unchanged. The hand-built laptop and phone mockups are replaced by one
+  product image (AVIF/WebP at 1x and 2x, PNG fallback, no alpha, largest
+  variant 168 KB) with the caption "Illustrative interface. Fictional
+  patient data." Every primary button reads "Request Early Access" (was
+  "Join the Waiting List") with "Access is limited and invited." beneath the
+  For Patients one; the mailto subject is now "Early access request". A
+  short founder section, "Built from lived experience", sits after "You
+  control your data". Page title, description and social metadata carry the
+  same framing and keep the not-a-medical-device clause. Safety and privacy
+  copy byte-identical; zero em dashes. Known cosmetic in the image, shipped
+  as-is: the laptop greeting and its updates panel disagree, and the date
+  reads 2025.
+- **Test:** the condition-suggest suite reads its source CRLF-safe.
+
 ## v1.67.1 (2026-09-11)
 
 ### Fixed
