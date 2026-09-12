@@ -209,6 +209,14 @@ const MIGRATIONS = [
       localStorage.removeItem("insina_ai_session");
     },
   },
+  {
+    version: 6,
+    major: false, // re-applies earlier additive migrations; nothing new is reshaped or removed
+    description: "DEC-069 repair: re-run the idempotent v2 (vital-schema normalization), v3 (imaging move) and v4 (History Builder seeds, document tier stamp) bodies once. Before v1.67.1 a boot with the interception installed but no key stamped those versions against an unreadable record without applying them; each body skips anything already migrated, so an install that was never affected sees no change.",
+    run() {
+      for (const v of [2, 3, 4]) MIGRATIONS.find(m => m.version === v).run();
+    },
+  },
   // Future migrations (A-07 blob-store move, etc.) append here, in order,
   // each bumping `version` by 1.
 ];

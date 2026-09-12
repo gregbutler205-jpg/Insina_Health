@@ -52,7 +52,7 @@ seedLegacyInstall();
 ok(secureStorage.canReadManagedKeys(), "without the interception the record is readable");
 {
   const r = runMigrations();
-  ok(!r.deferred && currentSchemaVersion() === 5, "plaintext install without the interception migrates at boot (version 5)");
+  ok(!r.deferred && currentSchemaVersion() === 6, "plaintext install without the interception migrates at boot (version 6)");
 }
 
 // ── Interception installed, vault locked: defer, touch nothing ──────────────
@@ -75,7 +75,7 @@ await secureStorage.setupVaultAndMigrate("test passphrase for locked migrations"
 ok(secureStorage.canReadManagedKeys(), "after vault setup the record is readable");
 {
   const r = runMigrations();
-  ok(!r.deferred && currentSchemaVersion() === 5, "the same migrations now apply in full (version 5)");
+  ok(!r.deferred && currentSchemaVersion() === 6, "the same migrations now apply in full (version 6)");
   const readings = JSON.parse(localStorage.getItem("mi_readings"));
   ok(readings[0].date === "2026-07-01" && readings[0].id && readings[0].enteredAt, "v2 normalized the reading (canonical date, id, enteredAt)");
   const diagnostics = JSON.parse(localStorage.getItem("mi_diagnostics") || "[]");
@@ -85,6 +85,24 @@ ok(secureStorage.canReadManagedKeys(), "after vault setup the record is readable
   ok(localStorage.getItem("mi_history_builder") !== null && localStorage.getItem("mi_attestations") !== null, "v4 seeded the History Builder keys");
   await secureStorage.flushPendingWrites();
   ok(raw("mi_diagnostics") !== null && raw("mi_diagnostics") !== localStorage.getItem("mi_diagnostics"), "migrated data is stored as ciphertext, not plaintext");
+}
+
+// ── v6 repair: an install stamped v5 while locked gets v2/v4 applied once ───
+{
+  localStorage.setItem("mi_schema_version", "5");
+  localStorage.setItem("mi_readings", OLD_READINGS);
+  localStorage.setItem("mi_documents", JSON.stringify([{ id: "d2", name: "Unstamped" }]));
+  localStorage.removeItem("mi_history_builder");
+  localStorage.removeItem("mi_attestations");
+  const r = runMigrations();
+  ok(r.ran === 1 && currentSchemaVersion() === 6, "v6 runs once for an install stamped at v5");
+  const readings = JSON.parse(localStorage.getItem("mi_readings"));
+  ok(readings[0].date === "2026-07-01" && readings[0].id && readings[0].enteredAt, "v6 repair normalizes readings that v2 missed");
+  ok(JSON.parse(localStorage.getItem("mi_documents"))[0].tier === "archive", "v6 repair stamps document tiers that v4 missed");
+  ok(localStorage.getItem("mi_history_builder") !== null && localStorage.getItem("mi_attestations") !== null, "v6 repair plants the History Builder seeds that v4 missed");
+  const before = JSON.stringify([...localStorage._m.entries()].filter(([k]) => k !== "mi_rie_audit").sort());
+  runMigrations();
+  ok(JSON.stringify([...localStorage._m.entries()].filter(([k]) => k !== "mi_rie_audit").sort()) === before, "a second run after v6 changes nothing");
 }
 
 // ── Static pins: boot only migrates demo installs ───────────────────────────

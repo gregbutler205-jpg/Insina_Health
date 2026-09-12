@@ -29,6 +29,10 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
   installs already did. `npm run test:locked-migrations` pins it. An
   imaging list lost this way is only recoverable from a Drive or folder
   backup made before the upgrade.
+- **Installs already affected are repaired on the next unlock.** Migration
+  v6 re-runs the vital-schema normalization, the imaging move and the
+  History Builder seeds once; each skips anything already in shape, so an
+  install that was never affected sees no change.
 
 ## v1.67.0 (2026-09-11)
 
