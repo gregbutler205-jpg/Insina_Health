@@ -179,12 +179,24 @@ function seedBusy() {
 {
   const readings = [
     { date: plus(-1), bp_s: 143, bp_d: 78, weight: 218.1, temp: 98.2, ts: new Date(NOW.getTime() - 86400000).toISOString() },
-    { date: plus(-9), bp_s: 120, bp_d: 70, weight: 219 },
+    { date: plus(-9), bp_s: 120, bp_d: 70, weight: 219, glucose: 131 },
   ];
   const v = currentVitals(readings);
-  ok(v.map(x => x.id).join(",") === "bp,weight,temp", "three vitals only: blood pressure, weight, temperature");
+  ok(v.map(x => x.id).join(",") === "bp,weight,temp,glucose", "four vitals: blood pressure, weight, temperature, glucose (Greg, 2026-09-11; DEC-051 amended)");
   ok(v[0].value === "143/78" && v[0].flagged === true, "BP 143/78 uses the existing high rule");
   ok(v[1].value === "218.1" && v[1].flagged === false && v[2].value === "98.2" && v[2].flagged === false, "weight and temperature carry the latest values");
+  ok(v[3].value === "131" && v[3].unit === "mg/dL" && v[3].date === plus(-9) && v[3].flagged === true, "glucose takes the latest reading that has one and flags above 125");
+  ok(currentVitals([{ date: plus(-1), glucose: 110 }])[3].flagged === false && currentVitals([{ date: plus(-1), glucose: 65 }])[3].flagged === true,
+    "glucose 110 is not flagged (the amber band is not a flag here); 65 is flagged as low");
+  ok(currentVitals([])[3].value === null && currentVitals([])[3].date === null, "no glucose reading: empty tile");
+  {
+    const dash = readFileSync(new URL("../src/components/dashboard/Dashboard.jsx", import.meta.url), "utf8");
+    ok(dash.includes('<button key={v.id} type="button" className={`dash-vital') && dash.includes('setPendingSelect("vitals", v.id); onNav("vitals");'),
+      "each vitals tile is a button that opens the Vitals screen with that vital selected");
+    ok(dash.includes("View history`}"), "tiles carry an accessible name that says what they open");
+    const t06 = readFileSync(new URL("../src/components/tabs/Tab06.jsx", import.meta.url), "utf8");
+    ok(t06.includes('takePendingSelect("vitals")') && t06.includes("if (pending && VITALS.some(v => v.id === pending)) setSelectedId(pending);") && t06.includes('window.addEventListener("insina-pending-select", apply)'), "the Vitals screen selects the handed-off vital on mount, falling back to blood pressure");
+  }
   localStorage.clear();
   set("mi_last_weekly_backup", NOW.toISOString());
   set("mi_labs", [{ name: "Sodium", value: 139, flag: false, date: plus(-2) }, { name: "Potassium", value: 6.4, flag: true, date: plus(-3) }]);

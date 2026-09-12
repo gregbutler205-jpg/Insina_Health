@@ -269,12 +269,17 @@ export function currentVitals(readings = []) {
   const bp = readings.find(r => r && r.bp_s != null && r.bp_d != null);
   const wt = readings.find(r => r && r.weight != null);
   const tp = readings.find(r => r && r.temp != null);
+  const gl = readings.find(r => r && r.glucose != null);
   const bpHigh = !!bp && (bp.flag === true || Number(bp.bp_s) >= 140 || Number(bp.bp_d) >= 90);
   const tempOff = !!tp && (Number(tp.temp) > 99.5 || Number(tp.temp) < 97);
+  // Glucose flags on the Vitals screen's High (>125) and Low (<70) rule; the
+  // amber "pre-diabetic" band there is not a flag here (red is for out of range).
+  const glucoseOff = !!gl && (Number(gl.glucose) > 125 || Number(gl.glucose) < 70);
   return [
     { id: "bp", label: "Blood pressure", value: bp ? `${bp.bp_s}/${bp.bp_d}` : null, unit: "mmHg", date: bp?.date || null, flagged: bpHigh },
     { id: "weight", label: "Weight", value: wt ? String(wt.weight) : null, unit: "lbs", date: wt?.date || null, flagged: false },
     { id: "temp", label: "Temperature", value: tp ? String(tp.temp) : null, unit: "°F", date: tp?.date || null, flagged: tempOff },
+    { id: "glucose", label: "Glucose", value: gl ? String(gl.glucose) : null, unit: "mg/dL", date: gl?.date || null, flagged: glucoseOff }, // Greg, 2026-09-11 (DEC-051 amended)
   ];
 }
 

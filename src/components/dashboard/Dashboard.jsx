@@ -32,7 +32,7 @@ const T = {
 const KIND_ICON = { flag: TriangleAlert, review: FileText, result: FlaskConical, appt: Calendar, refill: Pill };
 // Vitals keep the existing dashboard coloring: resting BP is dark orange (red is
 // reserved for a flagged reading), weight purple, temperature amber.
-const VITAL_COLOR = { bp: "#ea580c", weight: "#a78bfa", temp: "#f59e0b" };
+const VITAL_COLOR = { bp: "#ea580c", weight: "#a78bfa", temp: "#f59e0b", glucose: "#7eb8d8" };
 
 const CSS = `
   .dash-btn { min-height: 44px; border-radius: 10px; border: 1.5px solid ${T.border}; background: ${T.raised}; color: ${T.text}; font-size: 14px; font-weight: 600; font-family: ${SANS}; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; cursor: pointer; }
@@ -45,14 +45,18 @@ const CSS = `
   .dash-tile:hover { border-color: ${T.accent}; color: ${T.text}; }
   .dash-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
   .dash-grid { display: grid; grid-template-columns: minmax(0, 720px) 300px; gap: 24px; align-items: start; }
-  .dash-vitals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .dash-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .dash-vital { text-align: left; font-family: ${SANS}; cursor: pointer; background: ${T.card}; border: 1px solid ${T.border}; border-radius: 12px; padding: 12px 12px 10px; color: ${T.text}; min-height: 44px; }
+  .dash-vital:hover { background: ${T.raised}; }
+  .dash-vital:focus-visible { outline: 2px solid ${T.accent}; outline-offset: 2px; }
+  .dash-vital.flagged { border-color: rgba(248,113,113,.35); }
   .dash-clamp2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .dash-badge { background: ${T.warn}; color: ${T.ink}; font-size: 12px; font-weight: 700; border-radius: 999px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; font-family: ${SANS}; }
   @media (max-width: 900px) {
     .dash-tiles { grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .dash-tile { font-size: 12px; padding: 8px 4px; letter-spacing: -0.2px; }
     .dash-grid { grid-template-columns: 1fr; }
-    .dash-vitals { grid-template-columns: 1fr; }
+    .dash-vitals { grid-template-columns: repeat(2, 1fr); }
   }
 `;
 
@@ -223,15 +227,19 @@ export default function Dashboard({ readings = [], onNav, onLogVitals, lastSyncT
 
           {/* 4.7 vitals */}
           <h2 style={{ fontSize: 20, fontWeight: 600, margin: "28px 0 12px" }}>Current vitals</h2>
+          {/* Greg, 2026-09-11 (DEC-051 amended): four tiles including glucose, each a
+              button that opens the Vitals screen with that vital's history selected. */}
           <div className="dash-vitals">
             {vitals.map(v => (
-              <div key={v.id} style={{ background: T.card, border: `1px solid ${v.flagged ? "rgba(248,113,113,.35)" : T.border}`, borderRadius: 12, padding: "12px 12px 10px" }}>
+              <button key={v.id} type="button" className={`dash-vital${v.flagged ? " flagged" : ""}`}
+                aria-label={`${v.label}: ${v.value == null ? "no reading yet" : `${v.value} ${v.unit}`}. View history`}
+                onClick={() => { setPendingSelect("vitals", v.id); onNav("vitals"); }}>
                 <div style={{ fontSize: 13, color: T.muted, marginBottom: 6 }}>{v.label}</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: v.value == null ? T.faint : v.flagged ? T.danger : VITAL_COLOR[v.id], lineHeight: 1, fontFamily: MONO }}>
                   {v.value == null ? "–" : v.value}{v.value != null && <span style={{ fontSize: 12, fontWeight: 500, marginLeft: 3 }}>{v.unit}</span>}
                 </div>
                 <div style={{ fontSize: 12, color: T.faint, marginTop: 6, fontFamily: MONO }}>{v.date ? formatDateUS(v.date) : "No reading yet"}</div>
-              </div>
+              </button>
             ))}
           </div>
           <button className="dash-btn ghost" style={{ marginTop: 10, width: "100%" }} onClick={() => onNav("vitals")}>All vitals and trends <ChevronRight size={16} aria-hidden="true" /></button>

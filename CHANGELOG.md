@@ -12,6 +12,16 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.66.0 (2026-09-11)
+
+### Added
+- **Glucose on the dashboard, and vitals tiles that open their history.**
+  Current vitals now shows four tiles: blood pressure, weight, temperature,
+  and glucose (Greg, 2026-09-11; DEC-051 amended). Glucose flags red above
+  125 or below 70 mg/dL, the Vitals screen's out-of-range rule. Every tile is
+  a button: it opens the Vitals screen with that vital's history selected.
+  `npm run test:dashboard-feed` pins the tiles and the hand-off.
+
 ## v1.65.2 (2026-09-11)
 
 ### Fixed

@@ -7,6 +7,7 @@ import { getStore, setStore } from "../../store.js";
 import { mkReading, saveReading, getFieldHistory, defaultVitalFlag } from "../../lib/vitals.js";
 import { formatDateUS } from "../../lib/displaySafe.js";
 import { checkVitalReading, checkVitalCrossFields } from "../../lib/plausibility.js";
+import { takePendingSelect } from "../../lib/searchSelect.js";
 
 // UI-4: one shared mapping from a vital-card id to the mi_readings field it
 // reads — "latest"/"previous" must be looked up per field, not per record,
@@ -505,7 +506,22 @@ function PlausibilityGate({ pending, onConfirm, onSuggestion, onCancel }) {
 export default function App({ onNavChange }) {
   const [activeNav, setActiveNav] = useState("vitals");
   const handleNav = (id) => { if (id !== "vitals") { onNavChange?.(id); } else { setActiveNav(id); } };
+  // A dashboard vitals tile hands off the vital to open (Greg, 2026-09-11)
+  // through the same transient handoff the search popup uses.
   const [selectedId, setSelectedId] = useState("bp");
+  // Same shape as the other screens: apply on mount (navigated here) and on
+  // the event (already the visible tab). An effect, not a state initializer:
+  // StrictMode runs initializers twice and the first run would consume the
+  // one-shot hand-off.
+  useEffect(() => {
+    const apply = () => {
+      const pending = takePendingSelect("vitals");
+      if (pending && VITALS.some(v => v.id === pending)) setSelectedId(pending);
+    };
+    apply();
+    window.addEventListener("insina-pending-select", apply);
+    return () => window.removeEventListener("insina-pending-select", apply);
+  }, []);
   const [timeRange, setTimeRange] = useState(1);
   const [showLog, setShowLog] = useState(false);
   const [manualReadings, setManualReadings] = useState(() => getStore('readings') ?? []);

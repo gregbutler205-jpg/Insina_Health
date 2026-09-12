@@ -1894,7 +1894,7 @@ outside this entry and waits on DEC-TBD-03.
 2. Emergency strip (conditional, see DEC-054).
 3. Five quick action tiles: Log vitals, Medications (refill count badge), Appointments (count badge, next 14 days), Symptoms, Reports.
 4. One column, "Your updates" (DEC-052), capped at 720px wide.
-5. Current vitals: blood pressure, weight, temperature only, with a link to all vitals and trends.
+5. Current vitals: blood pressure, weight, temperature only, with a link to all vitals and trends. **Amended (Greg, in chat, 2026-09-11; v1.66.0):** glucose is the fourth tile, and every tile is a button that opens the Vitals screen with that vital's history selected. Glucose flags on the Vitals screen's out-of-range rule (above 125 or below 70 mg/dL).
 6. Right rail: Who to call (DEC-055), Insina AI panel with preset questions.
 
 Removed from the dashboard: the nine-card vitals row, the full care team, lab flags with no attached action, the Emergency card tile (reachable via the top-bar Emergency button, the sidebar, and Reports).
