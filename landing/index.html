@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <!-- Content-Security-Policy (AUDIT_SEC_02 F-08). GitHub Pages can't set response
-     headers, so this meta tag is the enforcement point — same model as /app/.
+     headers, so this meta tag is the enforcement point, the same model as /app/.
      script-src 'self' only (all JS is external in /assets/landing.js; no inline
      scripts). style-src 'unsafe-inline' is accepted debt: the page uses an inline
      <style> block and inline style="" attributes. fonts.googleapis.com (CSS) and
@@ -11,14 +11,17 @@
      makes no script-driven network calls. No frames, no plugins. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Insina Health · Your health, organized</title>
-<meta name="description" content="Insina Health brings your medical history from every provider together in one secure place that only you control. An informational tool for patients managing complex care. Not a medical device." />
-<meta property="og:title" content="Insina Health · Your health, organized" />
-<meta property="og:description" content="Your entire medical record, in one place that only you control. Informational tool, not a medical device." />
+<title>Insina Health · Organize. Educate. Prepare.</title>
+<meta name="description" content="One place for your health record, built for complex care across specialists, beginning with liver disease. An informational tool, not a medical device." />
+<meta property="og:title" content="Insina Health · Organize. Educate. Prepare." />
+<meta property="og:description" content="Built for people managing complex care across multiple specialists, beginning with liver disease. Your record, in one place only you control. Informational tool, not a medical device." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Built for people managing complex care across multiple specialists, beginning with liver disease. Your record, in one place only you control. Informational tool, not a medical device." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://insinahealth.com/" />
 <meta name="theme-color" content="#ffffff" />
 <link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preload" as="image" type="image/avif" imagesrcset="/assets/hero-app.avif 672w, /assets/hero-app-2x.avif 1344w" imagesizes="(max-width: 1180px) min(672px, calc(100vw - 56px)), 672px" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0,1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -31,10 +34,6 @@
   --banner-bg:#e9f1fc; --banner-border:#cddcf2;
   --success:#0f9d6c; --warning:#d97a06; --danger:#b0403c;
   --footer:#0a1628;
-  /* dark app palette (device mockups) */
-  --d-bg:#07090f; --d-side:#080c14; --d-card:#0b1220; --d-b:#0d1a28; --d-b2:#111e30;
-  --d-text:#dde8f5; --d-text2:#c4d8ee; --d-sub:#7eb8d8; --d-dim:#3d5a7a; --d-ghost:#2d4d6a; --d-faint:#1e3550;
-  --d-blue:#4f8ef7; --d-purple:#a78bfa; --d-green:#10b981; --d-amber:#f59e0b; --d-red:#ef4444;
   --mono:'DM Mono',monospace; --serif:'DM Serif Display',serif; --sans:'Sora',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -62,6 +61,8 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 .navlink{font-size:14.5px;font-weight:500;color:var(--body);transition:color .15s}
 .navlink:hover{color:var(--blue)}
 .head-actions{display:flex;gap:10px;margin-left:6px}
+/* The longer early-access label wrapped to two lines beside the nav; below 920px the nav is hidden and the buttons wrap as before. */
+@media (min-width:921px){.head-actions .btn-p,.head-actions .btn-o,.head-actions .btn-si{white-space:nowrap}}
 
 /* buttons */
 .btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;font-family:var(--sans);font-weight:600;font-size:13.5px;padding:12px 22px;border-radius:10px;transition:background .2s,transform .2s}
@@ -70,7 +71,7 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 .btn-o:hover{background:var(--blue-tint)}
 .btn-p.sm{padding:9px 16px;font-size:14.5px}
 .btn-o.sm{padding:8px 15px;font-size:14.5px}
-/* Sign In — app entry point, far right. Deliberately neutral so it doesn't
+/* Sign In: app entry point, far right. Deliberately neutral so it doesn't
    compete with the blue primary CTA next to it. */
 .btn-si{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--blue);border:1.5px solid var(--blue);font-family:var(--sans);font-weight:600;font-size:14.5px;padding:8px 16px;border-radius:10px;transition:background .2s,border-color .2s,color .2s}
 .btn-si:hover{background:var(--tint);border-color:var(--blue);color:var(--blue)}
@@ -88,8 +89,10 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 .hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#f2f7fe 0%,#ffffff 78%);border-bottom:1px solid var(--border)}
 .hero .container{padding-top:176px;padding-bottom:84px}
 .has-vault .hero .container{padding-top:216px}
-.hero-grid{display:grid;grid-template-columns:1fr 700px;gap:40px;align-items:center}
+.hero-grid{display:grid;grid-template-columns:1fr 672px;gap:40px;align-items:center}
+.hero-grid>div{min-width:0}
 .h1{font-family:var(--serif);font-weight:400;font-size:52px;color:var(--navy);letter-spacing:-1px;line-height:1.12}
+.hero-frame{font-family:var(--serif);font-style:italic;font-size:21px;color:var(--blue);line-height:1.4;margin-bottom:14px}
 .hero-sub{font-family:var(--serif);font-style:italic;font-size:21px;color:var(--blue);line-height:1.4;margin-top:18px}
 .hero-body{font-size:15px;color:var(--body);line-height:1.7;max-width:440px;margin-top:18px}
 .trio{display:flex;margin-top:34px}
@@ -98,111 +101,10 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 .trio .ic{width:30px;height:30px;color:var(--navy)}
 .trio span{font-size:12px;color:var(--body);line-height:1.45}
 
-/* device stage */
-.stage{position:relative;width:700px;height:448px}
-.lap{position:absolute;top:0;left:0}
-.lap-bezel{background:#10151f;border:1px solid #29334a;border-radius:16px;padding:9px;box-shadow:0 30px 70px rgba(16,29,53,.35)}
-.lap-screen{width:600px;height:375px;border-radius:9px;overflow:hidden;background:var(--d-bg)}
-.lap-shot{width:100%;height:100%;object-fit:cover;object-position:left top;display:block}
-.lap-inner{width:1200px;height:750px;transform:scale(.5);transform-origin:top left;display:flex;font-family:var(--sans);color:var(--d-text2)}
-.lap-base{width:700px;height:13px;margin-left:-41px;background:linear-gradient(#dfe4ec,#aeb6c4);border-radius:0 0 14px 14px;position:relative}
-.lap-base::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:92px;height:5px;background:#98a1b1;border-radius:0 0 8px 8px}
-.pulse{width:6px;height:6px;border-radius:50%;background:var(--d-green);box-shadow:0 0 7px var(--d-green);animation:pulse 2s infinite;flex-shrink:0;display:inline-block}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* sidebar */
-.side{width:200px;min-width:200px;background:var(--d-side);border-right:1px solid var(--d-b);display:flex;flex-direction:column}
-.side-logo{padding:16px 16px 13px;border-bottom:1px solid var(--d-b)}
-.side-logo .row{display:flex;align-items:center;gap:8px}
-.side-logo img{height:21px}
-.side-logo .nm{font-size:14px;font-weight:700;color:var(--d-text)}
-.side-logo .nm b{color:var(--d-blue);font-weight:700}
-.side-logo .tag{font-size:6.5px;color:var(--d-faint);letter-spacing:2px;font-family:var(--mono);margin-top:5px}
-.side-patient{padding:11px 16px;border-bottom:1px solid var(--d-b)}
-.side-patient .lb{font-size:7.5px;color:var(--d-faint);font-family:var(--mono);margin-bottom:3px}
-.side-patient .nm{font-size:11.5px;font-weight:600;color:var(--d-text2)}
-.side-patient .st{font-size:9px;color:var(--d-ghost);margin-top:1px}
-.snav{flex:1;padding:8px 0}
-.sgroup{padding:5px 16px 3px;font-size:7px;color:#142030;font-family:var(--mono);letter-spacing:1.5px}
-.sgroup+ .sni{margin-top:0}
-.sgroup.g2{padding-top:8px}
-.sni{display:flex;align-items:center;gap:9px;padding:5px 16px;font-size:11px;color:var(--d-dim);border-left:2px solid transparent}
-.sni .gi{width:13px;text-align:center;font-size:11px}
-.sni.active{color:var(--d-blue);background:rgba(79,142,247,.08);border-left-color:var(--d-blue)}
-.sni .aitag{margin-left:auto;font-size:7px;background:var(--d-blue);color:#fff;padding:1px 5px;border-radius:8px;font-family:var(--mono)}
-.sfoot{padding:10px 16px;border-top:1px solid var(--d-b);display:flex;align-items:center;gap:6px;font-size:8px;color:#1e4030;font-family:var(--mono)}
-/* main */
-.lmain{flex:1;display:flex;flex-direction:column}
-.topbar{height:44px;background:var(--d-side);border-bottom:1px solid var(--d-b);display:flex;align-items:center;padding:0 22px;gap:14px}
-.topbar .dt{font-size:9.5px;color:var(--d-ghost);font-family:var(--mono);flex:1}
-.tb-pill{font-size:9px;color:var(--d-ghost);font-family:var(--mono);background:var(--d-card);border:1px solid var(--d-b2);padding:4px 10px;border-radius:5px}
-.avatar{width:24px;height:24px;background:linear-gradient(135deg,var(--d-blue),var(--d-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
-.lcontent{flex:1;padding:20px 22px}
-.greet{font-family:var(--serif);font-size:23px;color:var(--d-text);letter-spacing:-.4px}
-.gsub{font-size:9.5px;color:var(--d-ghost);font-family:var(--mono);margin:3px 0 16px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:15px}
-.stat{background:var(--d-card);border:1px solid var(--d-b2);border-radius:12px;padding:14px 16px}
-.stat .bar{width:24px;height:3px;border-radius:2px;margin-bottom:10px}
-.stat .v{font-size:21px;font-weight:700;color:var(--d-text);letter-spacing:-.5px;line-height:1;margin-bottom:4px}
-.stat .l{font-size:9.5px;font-weight:600;color:var(--d-sub);margin-bottom:2px}
-.stat .s{font-size:8.5px;color:var(--d-ghost);font-family:var(--mono)}
-.mid{display:grid;grid-template-columns:1fr 1fr 218px;gap:11px;margin-bottom:15px}
-.mlabel{font-size:8px;letter-spacing:1.5px;color:var(--d-faint);font-family:var(--mono);margin-bottom:8px}
-.urow{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;background:var(--d-card);border:1px solid var(--d-b2);margin-bottom:6px}
-.urow .ud{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.urow .un{font-size:10.5px;font-weight:500;color:var(--d-text2)}
-.urow .up{font-size:8px;color:var(--d-ghost);font-family:var(--mono);margin-top:1px}
-.urow .ut{font-size:9.5px;font-family:var(--mono);font-weight:600;margin-left:auto}
-.arow{display:flex;align-items:flex-start;gap:8px;padding:8px 11px;border-radius:9px;background:var(--d-card);border:1px solid var(--d-b2);margin-bottom:6px}
-.arow .at{flex:1;font-size:9.5px;color:#a8c4dc;line-height:1.4}
-.arow .am{font-size:8px;color:var(--d-faint);font-family:var(--mono);flex-shrink:0}
-.aipanel{background:var(--d-card);border:1px solid var(--d-b2);border-radius:12px;padding:12px}
-.aipanel .hint{font-size:8.5px;color:var(--d-ghost);font-family:var(--mono);margin-bottom:9px;line-height:1.5}
-.aibtn{display:flex;align-items:center;gap:7px;padding:8px 10px;margin-bottom:7px;background:linear-gradient(135deg,rgba(79,142,247,.15),rgba(167,139,250,.1));border:1px solid rgba(79,142,247,.3);border-radius:8px;color:var(--d-sub);font-size:9px}
-.aibtn b{color:var(--d-blue);font-weight:400}
-.aibtn.dash{border-style:dashed;margin-bottom:0}
-.vitals{background:var(--d-card);border:1px solid var(--d-b2);border-radius:12px;padding:13px 16px}
-.vitals .vh{display:flex;justify-content:space-between;margin-bottom:9px}
-.vitals .vh .va{font-size:8.5px;color:var(--d-blue);font-family:var(--mono)}
-.vgrid{display:grid;grid-template-columns:70px 90px 45px 55px}
-.vhead{padding-bottom:6px;border-bottom:1px solid var(--d-b);font-size:7.5px;color:var(--d-faint);font-family:var(--mono);letter-spacing:1px}
-.vrow{padding:7px 0;border-bottom:1px solid var(--d-b);font-size:10px}
-.vrow .vd{color:var(--d-ghost);font-family:var(--mono)}
-.vrow .vb{font-weight:600;color:var(--d-text2)}
-.vrow .vb.flag{color:var(--d-red)}
-.vrow .vhr{color:var(--d-sub)}
-.vrow .vo{color:var(--d-green)}
-
-/* phone */
-.phone{position:absolute;right:-6px;bottom:-18px;width:172px;background:#10151f;border:1px solid #29334a;border-radius:28px;padding:7px;box-shadow:0 26px 60px rgba(16,29,53,.45);z-index:2}
-.ph-screen{background:var(--d-bg);border-radius:22px;overflow:hidden;padding:8px 10px 0;height:336px;display:flex;flex-direction:column;font-family:var(--sans)}
-.ph-status{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.ph-status .tm{font-size:8px;color:var(--d-sub);font-family:var(--mono)}
-.ph-island{width:46px;height:13px;background:#10151f;border-radius:8px}
-.ph-sig{display:flex;gap:3px;align-items:center}
-.ph-sig i{display:block;width:9px;height:5px;background:var(--d-ghost);border-radius:1px}
-.ph-sig b{display:block;width:13px;height:6px;border:1px solid var(--d-ghost);border-radius:2px}
-.ph-greet{font-family:var(--serif);font-size:15px;color:var(--d-text)}
-.ph-date{font-size:6.5px;color:var(--d-ghost);font-family:var(--mono);margin:1px 0 9px}
-.ph-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
-.ph-tile{background:var(--d-card);border:1px solid var(--d-b2);border-radius:10px;padding:7px 9px}
-.ph-tile .v{font-size:13px;font-weight:700;color:var(--d-text)}
-.ph-tile .l{font-size:6.5px;color:var(--d-sub);font-family:var(--mono);margin-top:1px}
-.ph-mlabel{font-size:6.5px;letter-spacing:1.5px;color:var(--d-faint);font-family:var(--mono);margin-bottom:5px}
-.ph-list{background:var(--d-card);border:1px solid var(--d-b2);border-radius:10px;padding:2px 9px;margin-bottom:9px}
-.ph-med{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--d-b)}
-.ph-med:last-child{border-bottom:none}
-.ph-med .mn{font-size:8.5px;font-weight:500;color:var(--d-text2)}
-.ph-med .md{font-size:6.5px;color:var(--d-ghost);font-family:var(--mono)}
-.ph-chk{margin-left:auto;width:13px;height:13px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ph-chk.done{border:1.4px solid var(--d-green);background:rgba(16,185,129,.15);color:var(--d-green)}
-.ph-chk.due{border:1.4px solid var(--d-amber)}
-.ph-appt{background:var(--d-card);border:1px solid var(--d-b2);border-radius:10px;padding:7px 9px;display:flex;align-items:center;gap:7px}
-.ph-appt .ad{width:6px;height:6px;border-radius:50%;background:var(--d-blue);box-shadow:0 0 6px rgba(79,142,247,.5);flex-shrink:0}
-.ph-appt .an{font-size:8.5px;font-weight:500;color:var(--d-text2)}
-.ph-appt .am{font-size:6.5px;color:var(--d-ghost);font-family:var(--mono)}
-.ph-tabs{margin:9px -10px 0;margin-top:auto;border-top:1px solid var(--d-b);padding:7px 0 9px;display:flex;justify-content:space-around}
-.ph-tabs span{font-size:11px;color:var(--d-dim)}
-.ph-tabs span.on{color:var(--d-blue)}
+/* hero product image (replaces the rendered device mockups) */
+.hero-shot{width:100%;max-width:672px;margin:0}
+.hero-shot img{width:100%;height:auto;border-radius:14px;display:block}
+.hero-shot figcaption{font-size:12.5px;color:var(--body);margin-top:10px;text-align:center}
 
 /* disclaimer */
 .disc{padding:26px 0}
@@ -221,11 +123,16 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 .microcopy{display:flex;align-items:center;gap:7px;margin-top:14px;color:var(--muted)}
 .microcopy .ic{width:15px;height:15px}
 .microcopy span{font-size:12.5px}
+.cta-note{font-size:12.5px;color:var(--body);margin-top:8px}
 .features{display:flex;flex-direction:column;gap:30px}
 .feature{display:flex;gap:18px;align-items:flex-start}
 .feature .ic{width:34px;height:34px;color:var(--blue);margin-top:2px}
 .feature .ft{font-size:16px;font-weight:700;color:var(--blue);margin-bottom:5px}
 .feature .fb{font-size:13.5px;color:var(--body);line-height:1.65;max-width:420px}
+
+/* founder */
+.founder .container{padding-top:72px;padding-bottom:72px}
+.founder p{font-size:15px;color:var(--body);line-height:1.7;max-width:560px;margin-top:16px}
 
 /* report showcase */
 .reports .container{padding-top:88px;padding-bottom:88px}
@@ -314,12 +221,11 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
 /* motion + responsive */
 @media (prefers-reduced-motion:reduce){
   .js .reveal{transition:none;opacity:1;transform:none}
-  .pulse{animation:none}
   html{scroll-behavior:auto}
 }
 @media (max-width:1180px){
   .hero-grid{grid-template-columns:1fr;gap:56px}
-  .stage{margin:0 auto}
+  .hero-shot{margin:0 auto}
 }
 @media (max-width:920px){
   .h1{font-size:38px}
@@ -333,13 +239,10 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
   .trio{flex-direction:column;gap:20px}
   .trio>div{flex-direction:row;text-align:left;border-left:none;padding:0}
 }
-@media (max-width:780px){
-  .stage{transform:scale(.5);transform-origin:top left;height:236px;width:350px}
-}
 @media (max-width:620px){
   .grid-4{grid-template-columns:1fr}
   .paper{transform:none}
-  /* Three header buttons overflow a phone. Sign In and the waitlist CTA stay;
+  /* Three header buttons overflow a phone. Sign In and the early-access CTA stay;
      the demo is still reachable from the For Patients section below. */
   .head-actions .js-demo{display:none}
 }
@@ -381,7 +284,7 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
     </nav>
     <div class="head-actions">
       <a class="btn-o sm js-demo" href="#">Open Demo</a>
-      <a class="btn-p sm" href="mailto:hello@insinahealth.com?subject=Waitlist">Join Waiting List</a>
+      <a class="btn-p sm" href="mailto:hello@insinahealth.com?subject=Early%20access%20request">Request Early Access</a>
       <a class="btn-si" href="/app/">Sign In</a>
     </div>
   </div>
@@ -402,7 +305,9 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
   <div class="container">
     <div class="hero-grid">
       <div>
+        <p class="hero-frame reveal">Organize. Educate. Prepare.</p>
         <h1 class="h1 reveal">Your health.<br />Organized. Intelligent.</h1>
+        <p class="hero-sub reveal" data-d="60">Built for people managing complex care across multiple specialists, beginning with liver disease.</p>
         <p class="hero-sub reveal" data-d="90">Understand your health record.<br />Prepare for better conversations.</p>
         <p class="hero-body reveal" data-d="160">Insina Health brings your medical history from every provider together in one secure place that only you control, and uses AI to explain, organize, and prepare you for conversations with your care team.</p>
         <div class="trio reveal" data-d="230">
@@ -412,36 +317,14 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
         </div>
       </div>
       <div class="reveal" data-d="150">
-        <div class="stage" aria-label="Insina Health app and mobile companion">
-          <!-- laptop: actual dashboard, dark navy -->
-          <div class="lap">
-            <div class="lap-bezel">
-              <div class="lap-screen"><img class="lap-shot" src="/assets/app-dashboard.jpg" alt="Insina Health dashboard" /></div>
-            </div>
-            <div class="lap-base"></div>
-          </div>
-          <!-- phone: mobile companion, dark navy -->
-          <div class="phone">
-            <div class="ph-screen">
-              <div class="ph-status"><span class="tm">9:41</span><span class="ph-island"></span><span class="ph-sig"><i></i><b></b></span></div>
-              <div class="ph-greet">Hi, Alex</div>
-              <div class="ph-date">FRI, JUL 17 · ALL SYNCED</div>
-              <div class="ph-tiles">
-                <div class="ph-tile"><div class="v">3</div><div class="l">MEDS DUE TODAY</div></div>
-                <div class="ph-tile"><div class="v">Jul 22</div><div class="l">NEXT APPT</div></div>
-              </div>
-              <div class="ph-mlabel">MEDICATIONS DUE</div>
-              <div class="ph-list">
-                <div class="ph-med"><span><span class="mn">Tacrolimus</span><br /><span class="md">1 mg · 8:00 AM</span></span><span class="ph-chk done">✓</span></div>
-                <div class="ph-med"><span><span class="mn">Mycophenolate</span><br /><span class="md">500 mg · 8:00 AM</span></span><span class="ph-chk done">✓</span></div>
-                <div class="ph-med"><span><span class="mn">Magnesium</span><br /><span class="md">400 mg · 8:00 PM</span></span><span class="ph-chk due"></span></div>
-              </div>
-              <div class="ph-mlabel">NEXT APPOINTMENT</div>
-              <div class="ph-appt"><span class="ad"></span><span><span class="an">Hepatology</span><br /><span class="am">Jul 22 · 10:00 AM · M. Chen MD</span></span></div>
-              <div class="ph-tabs"><span class="on">⬡</span><span>♡</span><span>◈</span><span>◷</span><span>✦</span></div>
-            </div>
-          </div>
-        </div>
+        <figure class="hero-shot">
+          <picture>
+            <source type="image/avif" srcset="/assets/hero-app.avif 672w, /assets/hero-app-2x.avif 1344w" sizes="(max-width: 1180px) min(672px, calc(100vw - 56px)), 672px" />
+            <source type="image/webp" srcset="/assets/hero-app.webp 672w, /assets/hero-app-2x.webp 1344w" sizes="(max-width: 1180px) min(672px, calc(100vw - 56px)), 672px" />
+            <img src="/assets/hero-app.png" width="672" height="448" fetchpriority="high" decoding="async" alt="The Insina Health record open on a laptop and the companion app on a phone, showing vitals, care team contacts, and flagged lab results." />
+          </picture>
+          <figcaption>Illustrative interface. Fictional patient data.</figcaption>
+        </figure>
       </div>
     </div>
   </div>
@@ -465,7 +348,8 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
         <h2 class="h2 blue">For Patients</h2>
         <p class="pat-lead">One place for your entire health record. Clear insights. Better prepared visits. More confident decisions.</p>
         <div class="pat-ctas">
-          <a class="btn-p" href="mailto:hello@insinahealth.com?subject=Waitlist">Join the Waiting List</a>
+          <a class="btn-p" href="mailto:hello@insinahealth.com?subject=Early%20access%20request">Request Early Access</a>
+          <div class="cta-note">Access is limited and invited.</div>
           <a class="btn-o js-demo" href="#">Open Demo <svg class="ic"><use href="#i-play"/></svg></a>
         </div>
         <div class="microcopy"><svg class="ic"><use href="#i-check"/></svg><span>No credit card. No obligation.</span></div>
@@ -547,6 +431,14 @@ section[id],div[id],footer[id]{scroll-margin-top:140px}
       <div class="dc-card reveal" data-d="160"><svg class="ic"><use href="#i-user"/></svg><div class="dt">Identity-minimized AI</div><div class="db">AI requests carry a pseudonymous ID. Your name, DOB, and contact details are never sent.</div></div>
       <div class="dc-card reveal" data-d="240"><svg class="ic"><use href="#i-export"/></svg><div class="dt">Export or delete anytime</div><div class="db">Take your complete record with you, disconnect storage, or erase everything, whenever you choose.</div></div>
     </div>
+  </div>
+</section>
+
+<!-- ── Founder ── -->
+<section class="founder" id="founder">
+  <div class="container">
+    <h2 class="h3">Built from lived experience</h2>
+    <p>Insina Health was built by a liver transplant recipient who needed one place to hold the medications, labs, records, and appointments spread across nine physicians and seven patient portals.</p>
   </div>
 </section>
 
