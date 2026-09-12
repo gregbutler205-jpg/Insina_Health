@@ -311,6 +311,24 @@ export function rankPrompt({ stores, attestations, hb, sessionId, now = new Date
   return resurfaceable[0] || null;
 }
 
+/** The screen where a prompt's step is actually done. The Dashboard card's
+ *  Open goes to the builder; the builder's own card's Open goes here (Greg,
+ *  2026-09-11: that Open did nothing). Unknown ids stay on the builder. */
+const PROMPT_ROUTES = {
+  "C-01": "medications", "C-02": "medications", "C-25": "medications",
+  "C-03": "careplan",                        // allergies live on the Care team screen (Tab08)
+  "C-04": "profile", "C-26": "profile",      // transplant details, demographics
+  "C-05": "conditions",
+  "C-06": "careplan",
+  "C-09a": "labs", "C-09b": "labs", "C-10": "labs",
+  "C-18": "documents", "C-19": "documents",
+  "C-20": "records",
+  "C-28": "appointments",
+};
+export function routeForPrompt(promptId) {
+  return PROMPT_ROUTES[promptId] || "history";
+}
+
 export function recordDismissal(promptId, sessionId) {
   const hb = loadHbState();
   return saveHbState({ dismissals: [...(hb.dismissals || []), { promptId, sessionId }] });

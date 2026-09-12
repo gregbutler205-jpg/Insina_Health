@@ -5,7 +5,7 @@
 import { useMemo, useState } from "react";
 import { HB_COPY } from "../config/historyBuilderCopy.js";
 import {
-  loadHbState, saveHbState, loadAttestations, setAttestation, readStores,
+  loadHbState, saveHbState, loadAttestations, setAttestation, readStores, routeForPrompt,
   computeGaps, computeReadiness, freshnessAges, rankPrompt, recordDismissal,
   getSessionId, pickUploadCopy, coordinatorPhonePresent,
 } from "../lib/historyBuilder.js";
@@ -124,7 +124,7 @@ export default function HistoryBuilderTab({ onNavChange } = {}) {
         <div style={{ fontSize: 11, color: "#a0b4c8", fontFamily: mono, marginBottom: 12 }}>{HB_COPY["C-07"].text}</div>
       )}
 
-      <HbPromptCard onOpenBuilder={() => {}} refresh={refresh} />
+      <HbPromptCard onOpenBuilder={(promptId) => onNav(routeForPrompt(promptId))} refresh={refresh} />
 
       {(lookupProposal || staged.length > 0) && (
         <div style={{ ...card, border: "1px solid rgba(245,158,11,.3)" }}>

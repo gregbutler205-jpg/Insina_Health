@@ -12,6 +12,17 @@ entry here, then tag the release in git (`git tag v1.5.0 && git push --tags`).
 
 ---
 
+## v1.65.2 (2026-09-11)
+
+### Fixed
+- **Open on the History Builder's Next step card did nothing.** On the
+  builder screen the card's Open button was wired to an empty handler. It now
+  opens the screen where that step is done: Medications, Care team (allergies
+  and care team), Health profile, Conditions, Labs, Documents, Medical
+  records, or Appointments, by prompt. The Dashboard copy of the card still
+  opens the builder, as DEC-P52 set. `npm run test:history-builder` pins the
+  map.
+
 ## v1.65.1 (2026-09-11)
 
 ### Changed

@@ -217,5 +217,22 @@ ok(hb.mapWizardGoal(undefined) === "skipped" && hb.mapWizardGoal("mystery") === 
   ok(!/%|percent|progress bar/i.test(stringsOnly), "A9 no completeness percentage language");
 }
 
+// 7. v1.65.2: the builder's own Next step card opens the step's screen (Greg, 2026-09-11)
+{
+  const r = hb.routeForPrompt;
+  ok(r("C-01") === "medications" && r("C-02") === "medications" && r("C-25") === "medications", "7a medication prompts open Medications");
+  ok(r("C-03") === "careplan" && r("C-06") === "careplan", "7b allergies and care team prompts open Care team (Tab08 owns both stores)");
+  ok(r("C-04") === "profile" && r("C-26") === "profile", "7c transplant details and demographics open Health profile");
+  ok(r("C-05") === "conditions", "7d conditions prompt opens Conditions");
+  ok(r("C-09a") === "labs" && r("C-09b") === "labs" && r("C-10") === "labs", "7e lab prompts open Labs");
+  ok(r("C-18") === "documents" && r("C-19") === "documents" && r("C-20") === "records" && r("C-28") === "appointments", "7f document, past-history and appointment prompts open their screens");
+  ok(r("C-99") === "history" && r(undefined) === "history", "7g an unknown prompt stays on the builder");
+  const tab = readFileSync(new URL("../src/components/HistoryBuilderTab.jsx", import.meta.url), "utf8");
+  ok(tab.includes("onOpenBuilder={(promptId) => onNav(routeForPrompt(promptId))}") && !tab.includes("onOpenBuilder={() => {}}"),
+    "7h the builder screen wires Open to the route instead of a no-op");
+  const cards = readFileSync(new URL("../src/components/onboarding/TaskCards.jsx", import.meta.url), "utf8");
+  ok(cards.includes('onClick={() => onNav?.("history")}>Open'), "7i the Dashboard card's Open still goes to the builder (DEC-P52 disposition 2)");
+}
+
 console.log(`\n${pass} passed, ${fail} failed (history-builder)`);
 assert.equal(fail, 0);
